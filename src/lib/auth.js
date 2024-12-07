@@ -1,5 +1,6 @@
 import { login, logout } from "@/redux/authSlice";
 import { supabase } from "@/lib/supabase"
+import { useRouter } from 'next/router';
 import { redirect } from "next/navigation";
 
 export const handleSignup = async (email, password, dispatch) => {
@@ -54,27 +55,43 @@ export const handleLogout = async (dispatch) => {
 
 
 
+
 export const handleLogin = async (email, password, dispatch) => {
+    try {
         // Attempt to sign in the user
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-        if(error){
-          console.log("error detected",error)
-          return null;
+        if (error) {
+            console.log("Error detected:", error);
+            throw error;
         }
-        const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({email}),
-        headers: { 'Content-Type': 'application/json' },
-        });
-        // If successful, dispatch the login action with user data
-        dispatch(login(data.user));
 
+        // Call your backend API for login
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) {
+            console.log("Failed to log in via API");
+            throw new Error("Failed to log in via API");
+        }
+
+        // Dispatch the login action with user data
+        dispatch(login(data.user));
         console.log("Login Successful:", data);
-        redirect('/')
-        //return { success: true, user: data.user };
-    
+
+        // Redirect to home page
+        //redirect("/");
+        
+        return data.user;
+    } catch (error) {
+        console.error("Login error:", error);
+        throw error;
+    }
 };
+
 
 
  export const handleSignInWithGoogle=async (dispatch) =>{

@@ -6,10 +6,7 @@ const SingleBlog=()=>{
     return (
         <div className="flex">
             <SideProgress/>
-            <div className="relative top-[1rem] left-[10rem]">
-                <SingleBlogForm/>
-                <SinglePageUI/>
-            </div>
+            <SinglePageUI/>
             
         </div>
     )

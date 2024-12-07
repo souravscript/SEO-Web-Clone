@@ -8,9 +8,10 @@ import userPic from "@/../public/userProfile.png";
 import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
 import { handleLogout } from "@/lib/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Navbar = () => {
+    const isLoggedIn=useSelector((state)=>state.auth.isLoggedIn)
     const dispatchLogout=useDispatch()
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -62,10 +63,10 @@ const Navbar = () => {
                         Dashboard
                     </span>
                 </Link>
-                <Link href="/docs">
+                <Link href="/documents">
                     <span
                         className={`${
-                            pathname === "/docs" ? "text-black" : "text-gray-300"
+                            pathname === "/documents" ? "text-black" : "text-gray-300"
                         }`}
                     >
                         Documents
@@ -88,17 +89,17 @@ const Navbar = () => {
                         <CiSearch />
                     </span>
                     <input
-                        className="ml-2 focus:outline-none text-sm w-24 md:w-40"
+                        className="ml-2 focus:outline-none text-sm w-24 md:w-40 focus:wd-[900px]"
                         placeholder="Search..."
                     />
                 </div>
-                <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-4 py-1 text-sm">
+                {isLoggedIn && <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-4 py-1 text-sm">
                     300 $
-                </button>
-                <span className="rounded-full bg-primaryYellow text-white font-bold w-8 h-8 flex items-center justify-center">
+                </button>}
+                {isLoggedIn && <span className="rounded-full bg-primaryYellow text-white font-bold w-8 h-8 flex items-center justify-center">
                     ?
-                </span>
-                <div ref={dropdownRef} className="relative">
+                </span>}
+                {isLoggedIn? <div ref={dropdownRef} className="relative">
                     <span className="flex items-center gap-2">
                         <Image
                             src={userPic}
@@ -130,6 +131,10 @@ const Navbar = () => {
                         </div>
                     )}
                 </div>
+                :
+                <Link href="/auth"><button className="px-6 w-[6rem] py-1 mr-2 ml-2 text-xl rounded bg-primaryYellow text-white cursor-pointer">Login</button></Link>
+                }
+                
             </div>
         </div>
     );

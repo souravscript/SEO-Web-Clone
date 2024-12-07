@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 const TopDashboard = () => {
     // Get the logged-in user's data from the Redux store
     const user = useSelector((state) => state.auth.user);
+    console.log(user)
 
     return (
         <div className="text-center flex flex-col items-start space-y-8">

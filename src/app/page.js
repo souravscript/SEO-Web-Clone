@@ -38,7 +38,7 @@ const blogData = [
     icon: productReviews, // Assign the imported image directly
   },
   {
-    id: "how-to-review",
+    id: "how-to-guide",
     title: "How to Guide",
     description: "A brief description of the how-to review.",
     icon: howToGuide, // Assign the imported image directly

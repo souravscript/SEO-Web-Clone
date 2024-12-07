@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+/_const blogData = [
+{
+id: "single-blog",
+title: "Single Blog",
+description: "A brief description of the single blog.",
+icon: singleBlogPost, // Assign the imported image directly
+},
+{
+id: "bulk-blog",
+title: "Bulk Blog",
+description: "A brief description of the bulk blog.",
+icon: bulkBlogPost, // Assign the imported image directly
+},
+{
+id: "product-roundup",
+title: "Product Roundup",
+description: "A brief description of the product roundup.",
+icon: productRoundup, // Assign the imported image directly
+},
+{
+id: "product-review",
+title: "Product Review",
+description: "A brief description of the product review.",
+icon: productReviews, // Assign the imported image directly
+},
+{
+id: "how-to-review",
+title: "How to Guide",
+description: "A brief description of the how-to review.",
+icon: howToGuide, // Assign the imported image directly
+},
+];_/
 
-## Getting Started
+/\*import BlogBox from "@/components/ui/blog-boxes";
 
-First, run the development server:
+// Correct import of images
+import singleBlogPost from "@/../public/single-blog-post.png";
+import bulkBlogPost from "@/../public/bulk-blog-post.png";
+import productRoundup from "@/../public/product-roundup.png";
+import productReviews from "@/../public/product-reviews.png";
+import howToGuide from "@/../public/how-to-guide.png";
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+import BottomGuide from "@/components/ui/bottom-guide";\*/
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+{/\*<div className="min-h-screen pt-20 pb-8 max-w-full flex flex-col justify-center items-center">
+<div className="w-[1180px] h-[738px] container mx-auto px-4">
+<div className="text-center flex flex-col items-start space-y-8">
+<h1 className="text-3xl font-semibold">Hi Shivam👋🏻,</h1>
+<div className="flex flex-col items-start ">
+<h2 className="text-3xl font-semibold mb-2">Create</h2>
+<p className="text-gray-600">Start creating different modules to optimize your website.</p>
+</div>
+</div>
+<div className="flex flex-wrap gap-2 mt-4">
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+          {blogData.map((blog) => {
+            return (
+              <BlogBox
+                key={blog.id}
+                icon={blog.icon}
+                title={blog.title}
+                desc={blog.description}
+              />
+            );
+          })}
+        </div>
+        <div>
+          <BottomGuide/>
+        </div>
+      </div>
+    </div>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+);\*/}

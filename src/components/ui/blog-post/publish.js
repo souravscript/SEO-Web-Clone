@@ -1,3 +1,7 @@
+"use client";
+
+import { redirect } from "next/navigation";
+
 const Publish = () => {
   return (
     <div className="p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[828px] mx-auto">
@@ -24,6 +28,7 @@ const Publish = () => {
             <span className="text-sm text-gray-700">No</span>
         </label>
         </div>
+        
     </div>
   );
 };

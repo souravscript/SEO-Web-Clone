@@ -4,7 +4,7 @@ const CoreSettingsBulk = () => {
             {/* AI Model */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">AI Model</label>
-                <select className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select {...register('coreSettings.aiModel')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>GPT-4</option>
                     <option>Dall-e</option>
                     <option>GPT-3.5</option>
@@ -14,7 +14,7 @@ const CoreSettingsBulk = () => {
             {/* Language */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">Language</label>
-                <select className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select {...register('coreSettings.language')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>English</option>
                     <option>Spanish</option>
                     <option>French</option>
@@ -24,7 +24,7 @@ const CoreSettingsBulk = () => {
             {/* Target Country */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">Target Country</label>
-                <select className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select {...register('coreSettings.aiModel')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>USA</option>
                     <option>India</option>
                     <option>Germany</option>

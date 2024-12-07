@@ -21,7 +21,6 @@ const BottomGuide=()=>{
                     width="180px"
                     src={guideToDashBoard}
                     alt="Alt"
-                    objectFit="contain" 
                   />
               
           </div>
@@ -38,7 +37,6 @@ const BottomGuide=()=>{
                   width="180px"
                   src={seeYourCreation}
                   alt="Alt"
-                  objectFit="contain" 
                 />
             
         </div>

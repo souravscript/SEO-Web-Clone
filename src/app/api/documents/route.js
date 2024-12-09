@@ -4,6 +4,7 @@ import connectToDatabase from "@/db/db-connect";
 import { NextResponse } from "next/server";
 import Docs from "@/models/Docs";
 import { authenticate } from "@/lib/authenticate";
+import User from "@/models/User";
 
 export async function POST(req) {
     await connectToDatabase();
@@ -21,10 +22,15 @@ export async function POST(req) {
         return NextResponse.json({ error: "Missing title or content" }, { status: 400 });
     }
 
-    console.log("User ID:", user._id);
+    //console.log("User ID:", user._id);
 
     // Create a new Document associated with the user
-    const newDoc = await Docs.create({ userId: user.id, title, content });
+    const authUser=await User.findOne({supabaseId:user.supabaseId})
+
+    console.log("This is supabase user ",user)
+    console.log("This is mongo user ", authUser)
+    //const Documents = await Docs.findOne({ userId:authUser.id });
+    const newDoc = await Docs.create({ userId: authUser.id, title, content });
 
     return NextResponse.json(newDoc, { status: 201 });
 }catch(err){
@@ -46,7 +52,11 @@ export async function GET(req) {
         
         console.log("user id",user.id)
 
-        const Documents = await Docs.findOne({ userId:user.id });
+
+
+        const authUser=await User.findOne({supabaseId:user.supabaseId})
+        const Documents = await Docs.findOne({ userId:authUser.id });
+        //const Documents = await Docs.findOne({ userId:user.id });
 
         // Return Documents in the response
         return NextResponse.json({ Documents }, { status: 200 });

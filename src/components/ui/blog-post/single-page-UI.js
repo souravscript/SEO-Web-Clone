@@ -11,8 +11,10 @@ import Link from "next/link";
 import Image from "next/image";
 import SingleBlogForm from "./single-blog-form";
 import { redirect } from "next/navigation";
+//import Cookies from "universal-cookie"
 //import SingleBlogForm from "./single-blog-form";
 
+//const cookies=new Cookies()
 const tabs = [
         {
             name: "Core Settings",
@@ -65,19 +67,9 @@ const SinglePageUI = () => {
             },
             details: {
                 includeDetails: '',
-                structure: 'introductory',
+                structure: '',
                 openingSentence: '',
-                elements: [
-                    'conclusion',
-                    'tables',
-                    'h3',
-                    'lists',
-                    'italics',
-                    'quotes',
-                    'faqs',
-                    'keyTakeaways',
-                    'bold',
-                ],
+                elements: [],
             },
             seo: {
                 keywords: '',
@@ -86,16 +78,47 @@ const SinglePageUI = () => {
                 connectToWeb: 'None',
                 url: '',
             },
-            publish: {},
+            publish: {
+                isPublish:false
+            },
         },
     });
 
     // Form submission handler
-    const submitHandler = (data) => {
-        setSubmitted(true); // Mark as submitted
-        setCurrentIndex(tabs.length - 1); // Navigate to "Publish" tab
-        console.log("Form Submission Data:", data);
-        alert("Form Submitted!"+ JSON.stringify(data));
+    const submitHandler = async (data) => {
+        try{
+            setSubmitted(true); // Mark as submitted
+            setCurrentIndex(tabs.length - 1); // Navigate to "Publish" tab
+            console.log("Form Submission Data:", data);
+            //alert("Form Submitted!"+ JSON.stringify(data));
+            const {content,title}=data
+            // Retrieve and parse the access token from localStorage
+            const session = localStorage.getItem('session');
+            if (!session) {
+                throw new Error("Session data is not available in localStorage");
+            }
+    
+            const { access_token } = JSON.parse(session); // Destructure the access_token
+            if (!access_token) {
+                throw new Error("Access token is missing in session data");
+            }
+    
+            console.log("Access token is:", access_token);
+            const res=await fetch('/api/documents',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    Authorization:`Bearer ${access_token}`
+                },
+                body:JSON.stringify({title,content})
+                
+            })
+            const result = await res.json();
+            console.log('Success: of POST req to Document ', result);
+            
+        }catch(err){
+            console.log("Error is: ",err)
+        }
     };
 
     const backHandler = () => {

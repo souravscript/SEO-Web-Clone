@@ -33,7 +33,7 @@ export async function POST(req) {
     const jsonWebToken = jwt.sign(
       { id: user._id, email: user.email }, // Include only essential details
       JWT_SECRET_KEY,
-      { expiresIn: "3h" } // Token expires in 1 hour
+      { expiresIn: "3d" } // Token expires in 1 hour
     );
 
     // Return the user data and token

@@ -5,17 +5,18 @@ import { NextResponse } from "next/server";
 export async function POST(req){
     await connectToDatabase()
     try{  
-        const {email,fullName,profilePic}=await req.json();
+        const {email,supabaseId}=await req.json();
         if(!email){
-            return NextResponse.json({message:"No email recieved"})
+            return NextResponse.json({message:"No email recieved"},{status:404})
         }
-        const newUser=User.create({
+        const newUser=await User.create({
             email,
+            supabaseId,
             fullName:"",
             profilePic:""
         })
-        return NextResponse.status(201).json({"user registered":newUser});
+        return NextResponse.json({"user registered":newUser},{status:201});
     }catch(err){
-        return NextResponse.status(400).json({ success: false, error: err.message });
+        return NextResponse.json({ success: false, error: err.message },{status:400});
     }
 }

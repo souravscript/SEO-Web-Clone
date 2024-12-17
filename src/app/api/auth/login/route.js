@@ -3,7 +3,8 @@ import User from "@/models/User";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
-const JWT_SECRET_KEY = "SEO_ENGINE";
+const JWT_SECRET_KEY="m/qSCET7a65mNNqMCUH+MAuLUUXGVFNvcYVcKdilI0KShxKQnv2C1D6Ej0h8O/crrY8csRnTnBJzp/IJM79/9Q=="
+
 
 export async function POST(req) {
   await connectToDatabase();

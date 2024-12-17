@@ -1,4 +1,4 @@
-const CoreSettingsBulk = () => {
+const CoreSettingsBulk = ({register}) => {
     return (
         <div className="w-[828px] mx-auto flex flex-wrap gap-6 p-6 border border-gray-300 rounded-lg shadow-sm">
             {/* AI Model */}

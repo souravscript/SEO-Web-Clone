@@ -1,9 +1,10 @@
+import DocumentsPage from "@/components/ui/docs/ducument-page";
+
 const Documents=()=>{
     return (
-        <div>
-            <h1>This is the Documents.</h1>
-            <h1>Tbh, nothing new here,</h1>
-        </div>
+        <>
+            <DocumentsPage/>
+        </>
     )
 }
 export default Documents;

@@ -15,7 +15,6 @@ export const handleSignup = async (email, password) => {
       console.log("Supabase SignUp Error:", error?.message || "Unknown error");
       return { user: null, error };
     }
-    console.log("supabase login: ",data)
     // Call backend to register user in the database
     const supabaseId=data?.user?.id
     const res = await fetch('/api/auth/register', {
@@ -61,60 +60,37 @@ export const handleLogout = async (dispatch) => {
 };
 
 
-
-
 export const handleLogin = async (email, password, dispatch) => {
-  
   try {
-      console.log("handleLogin called with:", email, password);
+    console.log("handleLogin called with:", email, password);
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      console.log("Supabase login response:", data, error);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      console.error("Supabase login error:", error.message);
+      throw new Error(error.message || "Supabase login failed");
+    }
 
-      if (error) {
-          throw new Error("Supabase login failed");
-      }
-      //console.log()
-      /*const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          body: JSON.stringify({ email }),
-          headers: { 'Content-Type': 'application/json' },
-      });
-      console.log("API response:", res);
+    const userSessionData = JSON.stringify({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+      user: data.user,
+    });
 
-      if (!res.ok) {
-          throw new Error("Failed to log in via API");
-      }*/
-          /*const userSessionData = JSON.stringify({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-            user: data.user,
-          });
-      
-          // Using cookies-next (or you can use native document.cookie):
-          cookies.set('session', userSessionData, {
-            expires: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 days in the future
-          });*/
-          const userSessionData = JSON.stringify({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-            user: data.user,
-          });
-          console.log("data from supabase : ",data);
-          // Save the session data to localStorage
-          localStorage.setItem('session', userSessionData);
-      
-          console.log("Stored session data in localStorage:", userSessionData);
-          console.log("local storage data", localStorage.getItem('session'))
-      //console.log("The cookie data is: ",cookies.get('session'))
-      dispatch(login(data.user));
-      console.log("Dispatched user data:", data.user);
-      
+    console.log("Supabase login successful. User session data:", data);
+
+    // Save the session data to localStorage
+    localStorage.setItem("session", userSessionData);
+    console.log("Stored session data in localStorage");
+
+    // Dispatch the user data
+    dispatch(login(data.user));
+    console.log("Dispatched user data:", data.user);
   } catch (error) {
-      console.log("Login error:", error);
-      throw error;
+    console.error("Login error:", error.message);
+    throw error; // Optional: Pass this error to higher-level error handlers
   }
 };
+
 
 
 

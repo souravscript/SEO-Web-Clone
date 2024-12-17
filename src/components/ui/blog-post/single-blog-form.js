@@ -27,16 +27,17 @@ const SingleBlogForm = ({register,errors}) => {
                     <div className="flex flex-col gap-2 w-full sm:w-[48%]">
                         <label className="text-gray-700 font-medium">Main Keyword <span className="text-red-500">*</span></label>
                         <input
-                            {...register('mainKeyword', { required: 'Main Keyword is required' })}
+                            // {...register('mainKeyword', { required: 'Main Keyword is required' })}
+                            {...register('mainKeyword')}
                             type="text"
                             placeholder="Enter Main Keyword"
                             className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
                         />
-                        {errors?.mainKeyword && (
+                        {/* {errors?.mainKeyword && (
                             <span className="text-red-500 text-sm">
                                 {errors.mainKeyword.message}
                             </span>
-                        )}
+                        )} */}
                     </div>
 
                     {/* Title Input */}

@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import SingleBlogForm from "./single-blog-form";
 import { redirect } from "next/navigation";
+import { generateBlog } from "@/lib/generateBlog";
 //import Cookies from "universal-cookie"
 //import SingleBlogForm from "./single-blog-form";
 
@@ -86,14 +87,22 @@ const SinglePageUI = () => {
 
     // Form submission handler
     const submitHandler = async (data) => {
-        try{
+        try {
             setSubmitted(true); // Mark as submitted
             setCurrentIndex(tabs.length - 1); // Navigate to "Publish" tab
-            console.log("Form Submission Data:", data);
-            //alert("Form Submitted!"+ JSON.stringify(data));
-            const {content,title}=data
+            //console.log("Form Submission Data:", data);
+            
+            // const content=generateBlog(data)
+            // console.log("Content is : ",content)
+            // // Destructure title and mainKeyword directly from the form data
+            const { title} = data;
+    
+            if (!title) {
+                throw new Error("Title or content is missing");
+            }
+    
             // Retrieve and parse the access token from localStorage
-            const session = localStorage.getItem('session');
+            const session = localStorage.getItem("session");
             if (!session) {
                 throw new Error("Session data is not available in localStorage");
             }
@@ -103,23 +112,30 @@ const SinglePageUI = () => {
                 throw new Error("Access token is missing in session data");
             }
     
-            console.log("Access token is:", access_token);
-            const res=await fetch('/api/documents',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                    Authorization:`Bearer ${access_token}`
+            //console.log("Access token is:", access_token);
+    
+            // Make the POST request to the API
+            const res = await fetch("/api/documents", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
                 },
-                body:JSON.stringify({title,content})
-                
-            })
-            const result = await res.json();
-            console.log('Success: of POST req to Document ', result);
-            
-        }catch(err){
-            console.log("Error is: ",err)
+                body: JSON.stringify({ title }),
+            });
+    
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData?.error || "Failed to create document");
+            }
+            console.log(res)
+            //const result = await res;
+            //console.log("Success: POST request to Document", result);
+        } catch (err) {
+            console.log("Error is:", err.message || err);
         }
     };
+    
 
     const backHandler = () => {
         if (!submitted && currentIndex > 0) {

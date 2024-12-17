@@ -1,4 +1,5 @@
-import BlogBox from "@/components/ui/blog-boxes";
+
+import Link from "next/link";
 //style={{ objectFit: "cover" }}
 // Correct import of images
 import singleBlogPost from "@/../public/single-blog-post.png";
@@ -7,10 +8,9 @@ import productRoundup from "@/../public/product-roundup.png";
 import productReviews from "@/../public/product-reviews.png";
 import howToGuide from "@/../public/how-to-guide.png";
 
-
-import BottomGuide from "@/components/ui/bottom-guide";
-import Link from "next/link";
-import TopDashboard from "@/components/ui/TopDashboard";
+import BlogBox from "@/components/ui/home/blog-boxes";
+import BottomGuide from "@/components/ui/home/bottom-guide";
+import TopDashboard from "@/components/ui/home/TopDashboard";
 
 const blogData = [
   {
@@ -52,13 +52,13 @@ export default function Home() {
         <TopDashboard/>
         <div className="flex flex-wrap gap-2 mt-4">
           {/* Iterate over blogData */}
-          {blogData.map((blog) => {
+          {blogData?.map((blog) => {
             return (
-            <Link href={`/${blog.id}`} key={blog.id}>
+            <Link href={`/${blog?.id}`} key={blog?.id}>
               <BlogBox
-                icon={blog.icon}
-                title={blog.title}
-                desc={blog.description}
+                icon={blog?.icon}
+                title={blog?.title}
+                desc={blog?.description}
               />
             </Link>
             );

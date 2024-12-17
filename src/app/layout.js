@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import Navbar from "@/components/ui/navbar";
 import { StoreProvider } from "@/redux/storeProvider";
+import Navbar from "@/components/ui/home/navbar";
 
 // Define your custom fonts
 const geistSans = localFont({

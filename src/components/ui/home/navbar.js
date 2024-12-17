@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CiSearch } from "react-icons/ci";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import userPic from "@/../public/userProfile.png";
 import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
@@ -16,7 +16,7 @@ const Navbar = () => {
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null); // Reference for the dropdown
-
+    const router=useRouter()
 
     const toggleDropdown = () => {
         setDropdownOpen((prev) => !prev);
@@ -25,7 +25,7 @@ const Navbar = () => {
     const logoutHandler=async ()=>{
         await handleLogout(dispatchLogout);
         setDropdownOpen(!dropdownOpen)
-        redirect('/auth')
+        router.push('/auth')
     }
 
     // Close dropdown when clicking outside
@@ -78,7 +78,7 @@ const Navbar = () => {
                             pathname === "/whats-new" ? "text-black" : "text-gray-300"
                         } `}
                     >
-                        What's New
+                        What&apos;s New
                     </span>
                 </Link>
             </div>

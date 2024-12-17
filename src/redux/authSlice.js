@@ -2,7 +2,7 @@ const { createSlice } = require("@reduxjs/toolkit");
 
 const initialState={
     isLoggedIn:false,
-    user:null
+    user:null,
 }
 const authSlice=createSlice({
     name:"auth",
@@ -11,6 +11,7 @@ const authSlice=createSlice({
         login(state,action){
             state.isLoggedIn=true;
             state.user=action.payload;
+            
         },
         logout(state){
             state.isLoggedIn=false;

@@ -55,7 +55,7 @@ export const generateBlog = async (title) => {
         //                 ? result.response.text() 
         //                 : JSON.stringify(result.response.text());
         const content = result.response?.text() || "Fallback content if none found";
-        //console.log("generated content: ",content)
+        console.log("generated content: ",content)
         return content;
     } catch (error) {
         console.error("Error generating blog:", error.message);

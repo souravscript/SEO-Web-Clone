@@ -9,6 +9,7 @@ import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
 import { handleLogout } from "@/lib/auth";
 import { useDispatch, useSelector } from "react-redux";
+import { HiMiniCurrencyDollar } from "react-icons/hi2";
 
 const Navbar = () => {
     const isLoggedIn=useSelector((state)=>state.auth.isLoggedIn)
@@ -93,8 +94,8 @@ const Navbar = () => {
                         placeholder="Search..."
                     />
                 </div>
-                {isLoggedIn && <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-4 py-1 text-sm">
-                    300 $
+                {isLoggedIn && <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-4 py-1 text-sm flex">
+                    <HiMiniCurrencyDollar className="text-white bg-yellow-400 rounded-[100%] mx-1 w-5 h-5" /> 300 
                 </button>}
                 {isLoggedIn && <span className="rounded-full bg-primaryYellow text-white font-bold w-8 h-8 flex items-center justify-center">
                     ?

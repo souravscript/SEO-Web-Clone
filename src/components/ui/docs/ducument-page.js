@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from "react";
 import DocumentCard from "@/components/ui/docs/document-card";
 import DocumentModal from "@/components/ui/docs/document-modal";
+import DocShimmerGrid from "../shimmer/doc-shimmer";
 
 const DocumentsPage = () => {
   const [documentsData, setDocumentsData] = useState([]);
   const [savedDrafts, setSavedDrafts] = useState([]);
   const [isDraft, setIsDraft] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState(null); 
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isLoading,setIsLoading]=useState(false) 
 
   const handleDelete = (id) => {
     setSavedDrafts((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
@@ -27,6 +29,7 @@ const DocumentsPage = () => {
 
   const fetchDocuments = async () => {
     try {
+      setIsLoading(true)
       const session = localStorage.getItem("session");
       if (!session) {
         throw new Error("Session data is not available in localStorage");
@@ -50,6 +53,8 @@ const DocumentsPage = () => {
       setSavedDrafts(documents.filter((doc) => !doc?.isPublished));
     } catch (error) {
       console.log("Error fetching documents:", error);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -77,7 +82,7 @@ const DocumentsPage = () => {
         </div>
 
         {/* Render based on isDraft and data availability */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {!isDraft ? (
             documentsData.length > 0 ? (
               documentsData.map((document) => (
@@ -108,14 +113,53 @@ const DocumentsPage = () => {
               No draft documents available
             </p>
           )} 
-        </div>
+        </div> */}
+        <div className="container mx-auto py-8">
+  {isLoading ? (
+    <DocShimmerGrid />  // Show shimmer effect when loading
+  ) : (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {!isDraft ? (
+        documentsData.length > 0 ? (
+          documentsData.map((document) => (
+            <DocumentCard 
+              onClick={() => handleOpenModal(document)}
+              key={document?._id} 
+              document={document}
+              onDelete={handleDelete} 
+            />
+          ))
+        ) : (
+          <p className="text-gray-500 col-span-full">
+            No published documents available
+          </p>
+        )
+      ) : savedDrafts.length > 0 ? (
+        savedDrafts.map((document) => (
+          <DocumentCard 
+            className="cursor-pointer"
+            onClick={() => handleOpenModal(document)} 
+            key={document?._id} 
+            document={document}
+            onDelete={handleDelete} 
+          />
+        ))
+      ) : (
+        <p className="text-gray-500 col-span-full">
+          No draft documents available
+        </p>
+      )} 
+    </div>
+  )}
+</div>
+
       </div>
 
-      <DocumentModal
+      {modalOpen && <DocumentModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)} 
         document={selectedDocument} 
-      />
+      />}
     </div>
   );
 };

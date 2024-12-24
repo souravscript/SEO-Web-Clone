@@ -3,7 +3,7 @@ import User from "@/models/User";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
-const JWT_SECRET_KEY="m/qSCET7a65mNNqMCUH+MAuLUUXGVFNvcYVcKdilI0KShxKQnv2C1D6Ej0h8O/crrY8csRnTnBJzp/IJM79/9Q=="
+//const JWT_SECRET_KEY="m/qSCET7a65mNNqMCUH+MAuLUUXGVFNvcYVcKdilI0KShxKQnv2C1D6Ej0h8O/crrY8csRnTnBJzp/IJM79/9Q=="
 
 
 export async function POST(req) {
@@ -33,7 +33,7 @@ export async function POST(req) {
     // Create JWT token
     const jsonWebToken = jwt.sign(
       { id: user._id, email: user.email }, // Include only essential details
-      JWT_SECRET_KEY,
+      process.env.JWT_SECRET_KEY,
       { expiresIn: "3d" } // Token expires in 1 hour
     );
 

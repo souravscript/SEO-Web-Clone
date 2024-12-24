@@ -12,6 +12,7 @@ import Image from "next/image";
 import SingleBlogForm from "./single-blog-form";
 import { redirect } from "next/navigation";
 import { generateBlog } from "@/lib/generateBlog";
+import ToastComponent from "@/components/ui/blog-post/toast-component";
 //import Cookies from "universal-cookie"
 //import SingleBlogForm from "./single-blog-form";
 
@@ -46,6 +47,7 @@ const tabs = [
 const SinglePageUI = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [submitted, setSubmitted] = useState(false); // Track submission state
+    const [toastData, setToastData] = useState(null);
     const CurrentComponent = tabs[currentIndex].component;
 
     const {
@@ -115,7 +117,7 @@ const SinglePageUI = () => {
             //console.log("Access token is:", access_token);
     
             // Make the POST request to the API
-            const res = await fetch("/api/documents", {
+            const res = await fetch("/api/documents/single-blog", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -128,14 +130,15 @@ const SinglePageUI = () => {
                 const errorData = await res.json();
                 throw new Error(errorData?.error || "Failed to create document");
             }
-            console.log(res)
+            setToastData({ title });
+            //console.log(res)
             //const result = await res;
             //console.log("Success: POST request to Document", result);
         } catch (err) {
             console.log("Error is:", err.message || err);
         }
     };
-    
+    const closeToast = () => setToastData(null);
 
     const backHandler = () => {
         if (!submitted && currentIndex > 0) {
@@ -159,6 +162,7 @@ const SinglePageUI = () => {
 
     return (
         <>
+        {toastData && <ToastComponent title={toastData.title} onClose={closeToast} />}
         <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
             <SingleBlogForm watch={watch} errors={errors} register={register} />
 
@@ -195,7 +199,7 @@ const SinglePageUI = () => {
                     />
                 </div>
 
-                {/* Navigation Buttons */}
+                {/* Navigation Buttons one
                 <div className="flex float-end
                  items-end mt-5 relative left-20">
                     {currentIndex === tabs.length - 2 && (
@@ -228,15 +232,49 @@ const SinglePageUI = () => {
                             Back
                         </button>
                     )}
+                </div> */}
+                {/* Navigation Buttons  two*/}
+                <div className="flex flex-row-reverse items-end mt-5">
+                    {currentIndex === tabs.length - 2 && (
+                        <button
+                            type="submit" // Submit the form only in the "Link" component
+                            className="px-8 w-[10rem] py-2 ml-3 text-2xl rounded bg-primaryYellow text-white cursor-pointer"
+                        >
+                            Generate
+                        </button>
+                    )}
+                    {currentIndex < tabs.length - 2 && (
+                        <button
+                            type="button" // Prevent submission for "Next" buttons
+                            onClick={nextHandler}
+                            className={`px-8 w-[10rem] py-2 ml-3 text-2xl rounded ${
+                                currentIndex === tabs.length - 1
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-primaryYellow text-white cursor-pointer"
+                            }`}
+                        >
+                            Next
+                        </button>
+                    )}
+                    {currentIndex > 0 && (
+                        <button
+                            type="button"
+                            onClick={backHandler}
+                            className="px-8 w-[10rem] py-2 mr-3 text-2xl rounded bg-gray-400 text-white cursor-pointer"
+                        >
+                            Back
+                        </button>
+                    )}
                 </div>
+
             </div>
         </form>
-        {
+        {/* {
             currentIndex===tabs.length-1 && <div className="absolute left-[55rem] top-[31rem] ">
           <button onClick={()=>{alert("Publish feature not available"); redirect('/')}} className="bg-primaryYellow text-white cursor-pointer px-8 w-[10rem] py-2 mr-3 ml-3 text-2xl rounded">Publish</button>
           <button onClick={()=>{redirect('/')}} className="bg-gray-400 text-white cursor-pointer px-8 w-[10rem] py-2 mr-3 ml-3 text-2xl rounded">Exit</button>
         </div>
-        }
+        } */}
         </>
     );
 };

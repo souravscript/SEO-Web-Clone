@@ -75,6 +75,7 @@ const BulkPageUI = () => {
     // Handle form submission
     const submitHandler = async (data) => {
         try {
+            console.log("lets test the data first", data)
             const payload = {
                 coreSettings: data.coreSettings,
                 blogs: data.blogs,  // Using updated blogs from form data
@@ -82,18 +83,20 @@ const BulkPageUI = () => {
             console.log("Submitting Bulk Blog Data:", payload);
 
             // Example API call
-            const response = await fetch("/api/bulk-blogs", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
+            // const response = await fetch("/api/bulk-blogs", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify(payload),
+            // });
 
-            if (!response.ok) {
-                throw new Error("Failed to submit blogs.");
-            }
-            console.log("Successfully submitted blogs.");
+            // if (!response.ok) {
+            //     throw new Error("Failed to submit blogs.");
+            // }
+            //console.log("Successfully submitted blogs.");
+            alert(`Form submitted successfully with data: ${JSON.stringify(data)}`);
+
         } catch (error) {
             console.error("Error submitting blogs:", error);
         }
@@ -157,8 +160,7 @@ const BulkPageUI = () => {
             <div className="flex flex-row-reverse items-end mt-5">
                 <button
                     type={currentIndex === tabs.length - 1 ? "submit" : "button"}
-                    onClick={currentIndex === tabs.length - 1 ? null : nextHandler}
-                    disabled={currentIndex === tabs.length - 1}
+                    onClick={currentIndex === tabs.length - 1 ? undefined : nextHandler}
                     className="px-8 w-[10rem] py-2 ml-3 text-2xl rounded bg-primaryYellow text-white"
                 >
                     {tabs[currentIndex].next}
@@ -172,6 +174,7 @@ const BulkPageUI = () => {
                     Back
                 </button>
             </div>
+
         </form>
     );
 };

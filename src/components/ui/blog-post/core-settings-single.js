@@ -1,4 +1,4 @@
-const CoreSettingsSingle = ({register}) => {
+const CoreSettingsSingle = ({register,errors}) => {
     return (
         <div className="w-[828px] mx-auto flex flex-wrap gap-6 p-6 border border-gray-300 rounded-lg shadow-sm">
             {/* AI Model */}
@@ -21,6 +21,11 @@ const CoreSettingsSingle = ({register}) => {
                     <option>Spanish</option>
                     <option>French</option>
                 </select>
+                {/* {errors?.coreSettings.language && (
+                            <span className="text-red-500 text-sm">
+                                {errors.coreSettings.language.message}
+                            </span>
+                        )} */}
             </div>
 
             {/* Target Country */}

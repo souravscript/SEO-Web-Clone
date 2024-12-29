@@ -20,14 +20,14 @@ const tabs = [
             component: CoreSettingsSingle,
             next: "Next",
             isCheckedOut:false,
-            filledNum:6
+            filledNum:3
         },
         {
             name: "Details",
             component: Details,
             next: "Next",
             isCheckedOut:false, 
-            filledNum:4,
+            filledNum:2,
         },
         {
             name: "SEO",

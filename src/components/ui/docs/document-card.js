@@ -62,7 +62,7 @@ const DocumentCard = ({ document, onDelete}) => {
   
 
   return (
-    <div className="bg-white relative shadow-md rounded-lg overflow-hidden w-80 px-2 border-gray-300 border-[0.1px] cursor-pointer">
+    <div className="bg-white relative shadow-md rounded-lg overflow-hidden w-80 mx-4 px-2 border-gray-300 border-[0.1px] cursor-pointer">
       <div className="h-20 flex items-center justify-between">
         <Image src={notebookIcon} alt="text img" />
         <span className="text-black text-sm bg-yellow-100 p-2 rounded-full">

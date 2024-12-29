@@ -28,14 +28,14 @@ const SideProgress = () => {
       {/* Progress Section */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-gray-600">Progress</span>
-        <span className="text-sm font-semibold text-gray-800">{`${Math.round(percent)}%`}</span>
+        <span className="text-sm font-semibold text-gray-800">{`${Math.round(Math.min(percent,93))}%`}</span>
       </div>
 
       {/* Progress Bar */}
       <div className="w-full h-2 bg-gray-300 rounded-full mb-4">
         <div
           className="h-2 bg-green-500 rounded-full"
-          style={{ width: `${percent}%` }}
+          style={{ width: `${Math.min(percent,93)}%` }}
         ></div>
       </div>
 

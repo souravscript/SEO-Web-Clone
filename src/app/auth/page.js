@@ -69,7 +69,9 @@ export default function AuthPage() {
     setErrors(validationErrors);
     return isValid;
   };
-
+  const oAuthHandler=()=>{
+    handleSignInWithGoogle(dispatch)
+  }
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -266,6 +268,7 @@ export default function AuthPage() {
 
             <div className="flex justify-between">
               <button
+                onClick={oAuthHandler}
                 type="button"
                 className="flex items-center border border-gray-300 rounded-md px-4 py-2 w-[45%] hover:bg-gray-100"
               >

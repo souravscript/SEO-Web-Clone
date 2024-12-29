@@ -16,7 +16,7 @@ const CoreSettingsSingle = ({register}) => {
             {/* Language */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">Language</label>
-                <select {...register('coreSettings.language')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select {...register('coreSettings.language',  { required: 'language is required' })} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>English</option>
                     <option>Spanish</option>
                     <option>French</option>

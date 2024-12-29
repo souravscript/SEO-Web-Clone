@@ -1,6 +1,4 @@
 
-//const OPEN_AI_API_KEY="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"
-const GEMINI_AI_API="AIzaSyAy6VSzNa5skOsptFbFAkZdr6df3NRKfUY"
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 export const generateBlog = async (title) => {
@@ -42,7 +40,7 @@ export const generateBlog = async (title) => {
         const prompt=`Generate a blog post with details as a professional blogger based on this title: ${title}`
         //console.log("Generated Prompt:\n", prompt);
 
-        const genAI = new GoogleGenerativeAI(GEMINI_AI_API);
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_AI_API);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 

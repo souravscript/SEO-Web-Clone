@@ -53,7 +53,7 @@ export async function GET(req) {
             return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
         }
 
-        console.log("Authenticated Supabase user ID:", user);
+        //console.log("Authenticated Supabase user ID:", user);
 
         // Find the authenticated user in MongoDB
        const authUser = await User.findOne({ supabaseId: user.sub });

@@ -2,6 +2,7 @@
 import { login, logout } from "@/redux/authSlice";
 import { supabase } from "@/lib/supabase"
 import Cookies from "universal-cookie"
+import { reset } from "@/redux/singleBlogFormProgressSlice";
 
 const cookies=new Cookies(null,{path:'/'})
 
@@ -57,6 +58,7 @@ export const handleLogout = async (dispatch) => {
     path: '/', // Ensure the same path is used as when the cookie was set
   });
   dispatch(logout());
+  dispatch(reset())
 };
 
 
@@ -94,20 +96,20 @@ export const handleLogin = async (email, password, dispatch) => {
 
 
 
-/*
+
  export const handleSignInWithGoogle=async (dispatch) =>{
   const { data, error } = await supabase.auth.signInWithIdToken({
     provider: 'google',
-    token: response.credential,
+    //token: response.credential,
   })
-
+  console.log("Data with oAuth ", data)
   if (error) {
     console.log(error.message);
     return null;
   }
 
   // Handle user data after successful login
-  if (user) {
-    dispatch(login(user));  // Dispatch user data to store if needed
-  }
-}*/
+  // if (user) {
+  //   dispatch(login(user));  // Dispatch user data to store if needed
+  // }
+}

@@ -157,23 +157,62 @@ const BulkPageUI = () => {
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex flex-row-reverse items-end mt-5">
-                <button
-                    type={currentIndex === tabs.length - 1 ? "submit" : "button"}
-                    onClick={currentIndex === tabs.length - 1 ? undefined : nextHandler}
-                    className="px-8 w-[10rem] py-2 ml-3 text-2xl rounded bg-primaryYellow text-white"
-                >
-                    {tabs[currentIndex].next}
-                </button>
-                <button
-                    type="button"
-                    onClick={backHandler}
-                    disabled={currentIndex === 0}
-                    className="px-8 w-[10rem] py-2 mr-3 text-2xl rounded bg-gray-400 text-white"
-                >
-                    Back
-                </button>
-            </div>
+            <div className="flex justify-end mt-8 ml-10">
+                    {/* Back Button */}
+                    {currentIndex > 0 && currentIndex < tabs.length - 1 && (
+                        <button
+                        type="button"
+                        onClick={backHandler}
+                        className="px-6 w-32 py-3 text-lg rounded bg-gray-400 text-white"
+                        >
+                        Back
+                        </button>
+                    )}
+
+                    {/* Exit Button */}
+                    {currentIndex === tabs.length - 1 && (
+                        <button
+                        type="button"
+                        onClick={exitHandler}
+                        className="px-6 w-32 py-3 text-lg rounded bg-gray-200 text-gray-700"
+                        >
+                        Exit
+                        </button>
+                    )}
+                    
+                    {/* Next Button */}
+                    {currentIndex < tabs.length - 2 && (
+                        <button
+                        type="button"
+                        onClick={nextHandler}
+                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
+                        >
+                        Next
+                        </button>
+                    )}
+
+                    {/* Generate Button */}
+                    {currentIndex === tabs.length - 2 && (
+                        <button
+                        type="submit"
+                        //onClick={generateHandler}
+                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
+                        >
+                        Generate
+                        </button>
+                    )}
+                    
+                    {/* Publish Button */}
+                    {currentIndex === tabs.length - 1 && (
+                        <button
+                        type="button"
+                        //onClick={publishHandler}
+                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
+                        >
+                        Publish
+                        </button>
+                    )}
+                </div>
 
         </form>
     );

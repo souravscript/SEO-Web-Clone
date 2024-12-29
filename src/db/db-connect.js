@@ -5,12 +5,12 @@ const connectToDatabase = async () => {
     // If already connected, return the existing connection
     return;
   }
-  const MONGO_URL=process.env.MONGO_URI;
-  if (!MONGO_URL) {
+  const MONGO_URI=process.env.MONGO_URI;
+  if (!MONGO_URI) {
     throw new Error('Please define the MONGODB_URI in the .env.local file');
   }
 
-  const connect=await mongoose.connect(MONGO_URL);
+  const connect=await mongoose.connect(MONGO_URI);
   console.log("database connected with ",connect )
 };
 

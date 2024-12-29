@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import BulkBlogForm from "./bulk-blog-form";
+import { useRouter } from "next/navigation";
 
 const BulkPageUI = () => {
     const tabs = [
@@ -22,6 +23,7 @@ const BulkPageUI = () => {
     const [blogEntries, setBlogEntries] = useState([
         { id: uuidv4(), title: "", mainKeyword: "" },
     ]);
+    const router=useRouter()
 
     const { handleSubmit, register, watch, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -96,7 +98,13 @@ const BulkPageUI = () => {
                 throw new Error("Failed to submit blogs.");
             }
             //console.log("Successfully submitted blogs.");  
-            alert(`Form submitted successfully with data: ${JSON.stringify(data)}`);
+            //alert(`Form submitted successfully with data: ${JSON.stringify(data)}`);
+            dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
+            dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
+            dispatch(calculatePercentage());
+            
+            //setToastData({ title });
+            setCurrentIndex(tabs.length - 1);
 
         } catch (error) {
             console.error("Error submitting blogs:", error);
@@ -105,17 +113,39 @@ const BulkPageUI = () => {
 
     const CurrentComponent = tabs[currentIndex].component;
 
-    const backHandler = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-        }
-    };
-
-    const nextHandler = () => {
-        if (currentIndex < tabs.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        }
-    };
+    
+        const backHandler = () => {
+            if (currentIndex > 0) {
+                setCurrentIndex(prevIndex => {
+                    const newIndex = prevIndex - 1;
+                    console.log("currentIndex from back ", newIndex);
+                    dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
+                    dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
+                    dispatch(setTabIndex(newIndex));
+                    dispatch(calculatePercentage());
+                    return newIndex;
+                });
+            }
+        };
+        
+        const nextHandler = () => {
+            if (currentIndex < tabs.length - 1) {
+                setCurrentIndex(prevIndex => {
+                    const newIndex = prevIndex + 1;
+                    console.log("currentIndex from next ", newIndex);
+                    dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
+                    dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
+                    dispatch(setTabIndex(newIndex));
+                    dispatch(calculatePercentage());
+                    return newIndex;
+                });
+            }
+        };
+        
+        const exitHandler = () => {
+            dispatch(reset());
+            router.push("/");
+        };
 
     return (
         <form onSubmit={handleSubmit(submitHandler)} className="p-6 max-w-3xl mx-auto">

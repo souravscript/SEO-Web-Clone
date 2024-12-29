@@ -106,19 +106,19 @@ const SinglePageUI = () => {
         },
     });
 
-    useEffect(() => {
-        const handleRouteChange = () => {
-            dispatch(reset());
-        };
+    // useEffect(() => {
+    //     const handleRouteChange = () => {
+    //         dispatch(reset());
+    //     };
 
-        // Set up the route change listener
-        router.events.on("routeChangeStart", handleRouteChange);
+    //     // Set up the route change listener
+    //     router.events.on("routeChangeStart", handleRouteChange);
 
-        // Cleanup the listener on component unmount
-        return () => {
-            router.events.off("routeChangeStart", handleRouteChange);
-        };
-    }, [router.events, dispatch]);
+    //     // Cleanup the listener on component unmount
+    //     return () => {
+    //         router.events.off("routeChangeStart", handleRouteChange);
+    //     };
+    // }, [router.events, dispatch]);
 
     // ... rest of the handlers remain the same ...
 

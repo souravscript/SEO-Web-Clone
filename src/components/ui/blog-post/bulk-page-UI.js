@@ -83,18 +83,19 @@ const BulkPageUI = () => {
             console.log("Submitting Bulk Blog Data:", payload);
 
             // Example API call
-            // const response = await fetch("/api/bulk-blogs", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify(payload),
-            // });
+            const response = await fetch("/api/bulk-blogs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(payload.blogs),
+            });
 
-            // if (!response.ok) {
-            //     throw new Error("Failed to submit blogs.");
-            // }
-            //console.log("Successfully submitted blogs.");
+            if (!response.ok) {
+                throw new Error("Failed to submit blogs.");
+            }
+            //console.log("Successfully submitted blogs.");  
             alert(`Form submitted successfully with data: ${JSON.stringify(data)}`);
 
         } catch (error) {
@@ -157,7 +158,7 @@ const BulkPageUI = () => {
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-end mt-8 ml-10">
+            <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] right-[-5.5rem]">
                     {/* Back Button */}
                     {currentIndex > 0 && currentIndex < tabs.length - 1 && (
                         <button

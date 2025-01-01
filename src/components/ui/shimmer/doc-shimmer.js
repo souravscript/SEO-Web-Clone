@@ -16,7 +16,7 @@ const ShimmerCard = () => {
 
 const DocShimmerGrid = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
       {/* Render multiple shimmer cards */}
       {Array.from({ length: 12 }).map((_, index) => (
         <ShimmerCard key={index} />

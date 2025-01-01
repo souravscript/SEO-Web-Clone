@@ -9,8 +9,12 @@ import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import BulkBlogForm from "./bulk-blog-form";
 import { useRouter } from "next/navigation";
+import { calculatePercentage, markTabChecked, markTabUnchecked, setFieldCountDecrement, setFieldCountIncrement, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
+import { useDispatch } from "react-redux";
+import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 
 const BulkPageUI = () => {
+    const dispatch=useDispatch()
     const tabs = [
         { name: "Core Settings", component: CoreSettingsBulk, next: "Next" },
         { name: "Details", component: Details, next: "Next" },
@@ -18,12 +22,12 @@ const BulkPageUI = () => {
         { name: "Link", component: LinkComponent, next: "Generate" },
         { name: "Publish", component: Publish, next: "Publish" },
     ];
-
     const [currentIndex, setCurrentIndex] = useState(0);
     const [blogEntries, setBlogEntries] = useState([
         { id: uuidv4(), title: "", mainKeyword: "" },
     ]);
     const router=useRouter()
+    const access_token=useGetAccessToken()
 
     const { handleSubmit, register, watch, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -78,20 +82,24 @@ const BulkPageUI = () => {
     const submitHandler = async (data) => {
         try {
             console.log("lets test the data first", data)
-            const payload = {
-                coreSettings: data.coreSettings,
-                blogs: data.blogs,  // Using updated blogs from form data
-            };
-            console.log("Submitting Bulk Blog Data:", payload);
+            // const payload = {
+            //     coreSettings: data.coreSettings,
+            //     blogs: data.blogs,  // Using updated blogs from form data
+            // };
 
+            // console.log("Submitting Bulk Blog Data:", payload);
+            const payload = {
+                titles: data.blogs.map((blog) => blog.title), // Extract titles from blogs
+            };
             // Example API call
-            const response = await fetch("/api/bulk-blogs", {
+            console.log("Payload:", payload);
+            const response = await fetch("/api/bulk-blog", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${access_token}`,
                 },
-                body: JSON.stringify(payload.blogs),
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -148,7 +156,7 @@ const BulkPageUI = () => {
         };
 
     return (
-        <form onSubmit={handleSubmit(submitHandler)} className="p-6 max-w-3xl mx-auto">
+        <form onSubmit={handleSubmit(submitHandler)} className="p-6 max-w-3xl relative mx-auto">
             <BulkBlogForm
                 blogEntries={blogEntries}
                 addMoreHandler={addMoreHandler}

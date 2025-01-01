@@ -16,6 +16,13 @@ const Navbar = () => {
     const dispatchLogout=useDispatch()
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+    const [searchHistory, setSearchHistory] = useState([
+        "React",
+        "Tailwind",
+        "JavaScript",
+        "Node.js",
+    ]);
     const dropdownRef = useRef(null); // Reference for the dropdown
     const router=useRouter()
 

@@ -1,4 +1,6 @@
+import connectToDatabase from "@/db/db-connect";
 import { authenticate } from "@/lib/authenticate";
+import { generateBlog } from "@/lib/generateBlog";
 import Docs from "@/models/Docs";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
@@ -12,15 +14,20 @@ export async function POST(req) {
         if (error) {
             return NextResponse.json({ error: error }, { status: 401 });
         }
-
+        console.log("User ID:", user.sub);
         // Parse the request body
-        const { titles } = await req.json(); // Expecting an array of titles
+        const titles  = await req.json(); // Expecting an array of titles
+        if(!titles){
+            return NextResponse.json({ error: "No titles provided" }, { status: 400 });
+        }
+        console.log("Titles:", titles);
         if (!Array.isArray(titles) || titles.length === 0) {
             return NextResponse.json({ error: "Titles must be a non-empty array" }, { status: 400 });
         }
 
         // Fetch the authenticated user
         const authUser = await User.findOne({ supabaseId: user.sub });
+        console.log("auth user from bulk blog", authUser);
         if (!authUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }

@@ -3,6 +3,8 @@ import Image from "next/image";
 import notebookIcon from "@/../public/notebook-icon.png";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useState, useEffect, useRef } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const DocumentCard = ({onClick, document, onDelete}) => {
   const [dropDownOpen, setDropDownOpen] = useState(false);
@@ -71,7 +73,7 @@ const DocumentCard = ({onClick, document, onDelete}) => {
       </div>
       <div className="p-4">
         <h2 className="text-2xl font-bold">{document.title}</h2>
-        <p className="text-gray-500 text-sm">{truncatedDescription}</p>
+        <p className="text-gray-500 text-sm"><Markdown remarkPlugins={[remarkGfm]}>{truncatedDescription}</Markdown></p>
       </div>
       {/* {dropDownOpen && (
         <div

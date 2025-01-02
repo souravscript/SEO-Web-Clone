@@ -68,7 +68,7 @@ const BulkBlogForm = ({
             </div>
 
             {/* Add More Button */}
-            <div className="flex gap-4 mt-6">
+            <div className="flex gap-4 mt-6 float-end">
                 <button
                     type="button"
                     onClick={addMoreHandler}
@@ -76,6 +76,15 @@ const BulkBlogForm = ({
                 >
                     Add more
                 </button>
+                <div>
+                    <button
+                        type="button"
+                        onClick={()=>{}}
+                        className="px-4 py-2 text-white bg-primaryYellow rounded-md hover:bg-paleYellow hover:text-primaryYellow hover:border-primaryYellow transition-colors" 
+                    >
+                        Generate
+                    </button>
+                </div>
             </div>
         </div>
     );

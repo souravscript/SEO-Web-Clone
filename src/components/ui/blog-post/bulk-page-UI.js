@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { calculatePercentage, markTabChecked, markTabUnchecked, setFieldCountDecrement, setFieldCountIncrement, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
 import { useGetAccessToken } from "@/hooks/use-get-accessToken";
+import { set } from "mongoose";
 
 const BulkPageUI = () => {
     const dispatch=useDispatch()
@@ -22,6 +23,9 @@ const BulkPageUI = () => {
         { name: "Link", component: LinkComponent, next: "Generate" },
         { name: "Publish", component: Publish, next: "Publish" },
     ];
+
+    const [submitted, setSubmitted] = useState(false);
+    const [tabData, setTabData] = useState(tabs);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [blogEntries, setBlogEntries] = useState([
         { id: uuidv4(), title: "", mainKeyword: "" },
@@ -81,6 +85,7 @@ const BulkPageUI = () => {
     // Handle form submission
     const submitHandler = async (data) => {
         try {
+            setSubmitted(true);
             console.log("lets test the data first", data)
             // const payload = {
             //     coreSettings: data.coreSettings,
@@ -167,22 +172,25 @@ const BulkPageUI = () => {
             />
 
             {/* Tab Navigation */}
-            <div className="flex gap-2 mb-5">
-                {tabs.map((tab, index) => (
-                    <button
-                        key={index}
-                        type="button"
-                        onClick={() => setCurrentIndex(index)}
-                        className={`px-6 py-3 border rounded cursor-pointer ${
-                            currentIndex === index
-                                ? "bg-paleYellow text-primaryYellow font-bold border-primaryYellow rounded-3xl"
-                                : "bg-gray-100 text-gray-600 border-gray-300 rounded-3xl"
-                        }`}
-                    >
-                        {tab.name}
-                    </button>
-                ))}
-            </div>
+            <div className="p-6 max-w-3xl mx-auto">
+                            <div className="flex gap-2 mb-5">
+                                {tabData.map((tab, index) => (
+                                    <button
+                                        key={index}
+                                        type="button"
+                                        className={`px-6 py-3 border rounded ${
+                                            currentIndex === index
+                                                ? "bg-paleYellow text-primaryYellow font-bold border-primaryYellow rounded-3xl"
+                                                : "bg-gray-100 text-gray-600 border-gray-300 rounded-3xl"
+                                        } ${
+                                            submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
+                                        }`}
+                                    >
+                                        {tab.name}
+                                    </button>
+                                ))}
+                            </div>
+                </div>
 
             {/* Tab Content */}
             <div className="flex flex-col items-start">

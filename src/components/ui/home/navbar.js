@@ -125,10 +125,10 @@ const Navbar = () => {
                         <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg">
                             <ul className="flex flex-col">
                                 <li className="hover:bg-gray-100 px-4 py-2">
-                                    <Link href="/profile">Profile</Link>
+                                    <button>Profile</button>
                                 </li>
                                 <li className="hover:bg-gray-100 px-4 py-2">
-                                    <Link href="/settings">Settings</Link>
+                                    <button >Settings</button>
                                 </li>
                                 <li className="hover:bg-gray-100 px-4 py-2">
                                     <button onClick={logoutHandler}>

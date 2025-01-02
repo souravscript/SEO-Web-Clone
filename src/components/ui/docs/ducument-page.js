@@ -68,7 +68,7 @@ const DocumentsPage = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <div className="flex space-x-4 mb-4 ml-4">
+        <div className="flex space-x-4 mb-4 ml-2">
           <h2
             onClick={() => setIsDraft(false)}
             className={`cursor-pointer text-2xl font-bold ${

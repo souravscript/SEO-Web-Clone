@@ -1,6 +1,8 @@
 import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import React, { useEffect, useState } from "react";
 import { X, Trash2, Edit2, MoreVertical } from "lucide-react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
   const [data, setData] = useState({ title: "", content: "" });
@@ -190,7 +192,8 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
                 {document.title}
               </h1>
               <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                {document.content}
+                <Markdown remarkPlugins={[remarkGfm]}>{document.content}</Markdown>
+                
               </div>
             </article>
           )}

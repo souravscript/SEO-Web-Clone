@@ -258,7 +258,7 @@ export default function AuthPage() {
             </form>
 
             {/* Social Login Section */}
-            <div className="flex items-center my-4">
+            {/* <div className="flex items-center my-4">
               <hr className="flex-grow border-gray-300" />
               <span className="mx-2 text-gray-500">
                 or {isSignUp ? "Sign Up" : "Log In"} with
@@ -282,7 +282,7 @@ export default function AuthPage() {
                 <FaFacebook size={20} className="text-blue-600 mr-2" />
                 Facebook
               </button>
-            </div>
+            </div> */}
 
             {/* Toggle Auth Mode */}
             <div className="mt-4 text-center">

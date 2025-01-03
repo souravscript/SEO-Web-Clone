@@ -92,7 +92,6 @@ const BulkPageUI = () => {
             //     blogs: data.blogs,  // Using updated blogs from form data
             // };
 
-            // console.log("Submitting Bulk Blog Data:", payload);
             const payload = {
                 titles: data.blogs.map((blog) => blog.title), // Extract titles from blogs
             };

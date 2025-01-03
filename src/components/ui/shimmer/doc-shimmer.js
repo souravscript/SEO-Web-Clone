@@ -3,12 +3,23 @@ import React from "react";
 
 const ShimmerCard = () => {
   return (
-    <div className="shimmer-card bg-white relative shadow-md rounded-lg overflow-hidden w-80 px-2 border-gray-300 border-[0.1px] cursor-pointer animate-pulse">
-      <div className="h-20 bg-gray-300 rounded mb-4"></div>
-      <div className="p-4">
-        <div className="h-6 bg-gray-300 rounded mb-2"></div>
-        <div className="h-4 bg-gray-300 rounded mb-1"></div>
-        <div className="h-4 bg-gray-300 rounded mb-1 w-3/4"></div>
+    <div className="w-72 cursor-pointer hover:shadow-lg transition-shadow duration-200 animate-pulse">
+      <div className="pt-6 pb-2">
+        <div className="flex justify-between items-start">
+          {/* Placeholder for the icon */}
+          <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+          {/* Placeholder for the badge */}
+          <div className="ml-2 bg-yellow-100 p-2 rounded-full w-16 h-6"></div>
+        </div>
+      </div>
+      <div className="pt-2">
+        {/* Placeholder for the title */}
+        <div className="h-6 bg-gray-300 rounded mb-2 w-3/4"></div>
+        {/* Placeholder for the description */}
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-300 rounded w-full"></div>
+          <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+        </div>
       </div>
     </div>
   );

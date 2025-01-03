@@ -1,6 +1,6 @@
 import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import React, { useEffect, useState } from "react";
-import { X, Trash2, Edit2, MoreVertical } from "lucide-react";
+import { X, Trash2, Edit2, MoreVertical, Check, Copy } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -10,6 +10,7 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
   const [error, setError] = useState("");
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [copied, setCopied] = useState(false);
   const access_token = useGetAccessToken();
 
   useEffect(() => {
@@ -45,6 +46,16 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
 
     fetchModalData();
   }, [isOpen, document, access_token]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(document.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy content:", err);
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -128,6 +139,18 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
             )}
           </h2>
           <div className="flex items-center space-x-2">
+            {/* Copy Button */}
+          <button
+              onClick={handleCopy}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              title={copied ? "Copied!" : "Copy content"}
+            >
+              {copied ? (
+                <Check className="h-5 w-5 text-green-500" />
+              ) : (
+                <Copy className="h-5 w-5 text-gray-500" />
+              )}
+            </button>
             {/* Actions Dropdown */}
             <div className="relative">
               <button

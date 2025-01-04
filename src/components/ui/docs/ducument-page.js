@@ -213,13 +213,13 @@ const DocumentsPage = () => {
           <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0">
             <TabsTrigger 
               value="drafts"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-2xl font-semibold"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold"
             >
               Saved Drafts
             </TabsTrigger>
             <TabsTrigger 
               value="published"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-2xl font-semibold"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold"
             >
               Published
             </TabsTrigger>

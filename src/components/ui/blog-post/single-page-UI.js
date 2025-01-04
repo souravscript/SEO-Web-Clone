@@ -106,21 +106,12 @@ const SinglePageUI = () => {
         },
     });
 
-    // useEffect(() => {
-    //     const handleRouteChange = () => {
-    //         dispatch(reset());
-    //     };
-
-    //     // Set up the route change listener
-    //     router.events.on("routeChangeStart", handleRouteChange);
-
-    //     // Cleanup the listener on component unmount
-    //     return () => {
-    //         router.events.off("routeChangeStart", handleRouteChange);
-    //     };
-    // }, [router.events, dispatch]);
-
-    // ... rest of the handlers remain the same ...
+    useEffect(() => {
+        // Attach the handleExit function when navigating away from Route A
+        return () => {
+          reset();
+        };
+      }, []);
 
     const submitHandler = async (data) => {
         try {

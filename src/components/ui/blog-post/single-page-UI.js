@@ -67,7 +67,6 @@ const SinglePageUI = () => {
     const CurrentComponent = tabs[currentIndex]?.component;
     const access_token = useGetAccessToken();
     const pathName=usePathname();
-
     const {
         register,
         handleSubmit,
@@ -106,13 +105,7 @@ const SinglePageUI = () => {
         },
     });
 
-    useEffect(() => {
-        // Attach the handleExit function when navigating away from Route A
-        return () => {
-          reset();
-        };
-      }, []);
-
+    
     const submitHandler = async (data) => {
         try {
             setLoading(true)

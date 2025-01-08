@@ -8,11 +8,13 @@ module.exports = {
   ],
   theme: {
   	extend: {
+		
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			paleYellow: '#FFFBE8',
   			primaryYellow: '#f6B647',
+			tabColor: "#FCA21C",
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

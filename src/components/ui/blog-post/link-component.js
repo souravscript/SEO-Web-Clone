@@ -3,7 +3,7 @@ import { IoChevronDownOutline } from "react-icons/io5";
 
 const LinkComponent = ({register}) => {
   return (
-    <div className="space-y-6 p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[828px] mx-auto">
+    <div className="space-y-6 p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[765px] mx-auto">
       {/* Connect to web section */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Connect to web</h3>

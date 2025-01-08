@@ -58,15 +58,28 @@ export default function Home() {
         <div className="flex flex-wrap gap-2 mt-4">
           {/* Iterate over blogData */}
           {blogData?.map((blog) => {
-            return (
-            <Link href={`/${blog?.id}`} key={blog?.id}>
-              <BlogBox
-                icon={blog?.icon}
-                title={blog?.title}
-                desc={blog?.description}
-                isComing={blog?.isComing}
-              />
-            </Link>
+            return blog?.isComing === "true" ? (
+              <div
+                key={blog?.id}
+                className="cursor-not-allowed opacity-50"
+                title="Coming Soon"
+              >
+                <BlogBox
+                  icon={blog?.icon}
+                  title={blog?.title}
+                  desc={blog?.description}
+                  isComing={blog?.isComing}
+                />
+              </div>
+            ) : (
+              <Link href={`/${blog?.id}`} key={blog?.id}>
+                <BlogBox
+                  icon={blog?.icon}
+                  title={blog?.title}
+                  desc={blog?.description}
+                  isComing={blog?.isComing}
+                />
+              </Link>
             );
           })}
         </div>

@@ -206,23 +206,29 @@ const SinglePageUI = () => {
                     <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
                         <SingleBlogForm watch={watch} errors={errors} register={register} />
 
-                        <div className="p-6 max-w-3xl mx-auto">
-                            <div className="flex gap-2 mb-5">
-                                {tabData.map((tab, index) => (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        className={`px-6 py-3 border rounded ${
+                        <div className="p-6 max-w-3xl">
+                            <div className="flex gap-[24px] mb-5">
+                            {tabData.map((tab, index) => (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    className={`flex justify-center items-center px-3 text-md py-2 border rounded-full 
+                                        ${
                                             currentIndex === index
-                                                ? "bg-paleYellow text-primaryYellow font-bold border-primaryYellow rounded-3xl"
-                                                : "bg-gray-100 text-gray-600 border-gray-300 rounded-3xl"
+                                                ? "bg-paleYellow text-primaryYellow font-bold border-primaryYellow"
+                                                : "bg-gray-100 text-gray-600 border-gray-300"
                                         } ${
                                             submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
                                         }`}
-                                    >
-                                        {tab.name}
-                                    </button>
-                                ))}
+                                    style={{
+                                        width: '300px',
+                                        height: '36px',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    {tab.name}
+                                </button>
+                            ))}
                             </div>
 
                             <div className="flex flex-col items-start">
@@ -235,12 +241,12 @@ const SinglePageUI = () => {
                                 />
                             </div>
 
-                            <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] right-[-5.5rem]">
+                            <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] gap-[16px] right-[1.6rem]">
                                 {currentIndex > 0 && currentIndex < tabs.length - 1 && (
                                     <button
                                         type="button"
                                         onClick={backHandler}
-                                        className="px-6 w-32 py-3 text-lg rounded bg-gray-400 text-white"
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-gray-400 text-white"
                                     >
                                         Back
                                     </button>
@@ -250,7 +256,7 @@ const SinglePageUI = () => {
                                     <button
                                         type="button"
                                         onClick={exitHandler}
-                                        className="px-6 w-32 py-3 text-lg rounded bg-gray-200 text-gray-700"
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-gray-400 text-white"
                                     >
                                         Exit
                                     </button>
@@ -260,7 +266,7 @@ const SinglePageUI = () => {
                                     <button
                                         type="button"
                                         onClick={nextHandler}
-                                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
+                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
                                     >
                                         Next
                                     </button>
@@ -269,7 +275,7 @@ const SinglePageUI = () => {
                                 {currentIndex === tabs.length - 2 && (
                                     <button
                                         type="submit"
-                                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
                                     >
                                         Generate
                                     </button>
@@ -278,7 +284,7 @@ const SinglePageUI = () => {
                                 {currentIndex === tabs.length - 1 && (
                                     <button
                                         type="button"
-                                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
+                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
                                     >
                                         Publish
                                     </button>

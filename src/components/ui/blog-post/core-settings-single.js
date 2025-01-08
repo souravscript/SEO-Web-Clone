@@ -1,6 +1,6 @@
 const CoreSettingsSingle = ({register,errors}) => {
     return (
-        <div className="w-[828px] mx-auto flex flex-wrap gap-6 p-6 border border-gray-300 rounded-lg shadow-sm">
+        <div className="w-[765px] mx-auto flex flex-wrap gap-6 p-6 border border-gray-300 rounded-lg shadow-sm">
             {/* AI Model */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">AI Model</label>

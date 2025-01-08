@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CiSearch } from "react-icons/ci";
 import { redirect, usePathname, useRouter } from "next/navigation";
+import tokenCoin from "@/../public/tokenCoin.png";
 import userPic from "@/../public/userProfile.png";
 import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
@@ -60,7 +61,7 @@ const Navbar = () => {
                     <Link href="/">
                         <span
                             className={`${
-                                pathname === "/" ? "text-black" : "text-gray-300"
+                                pathname === "/" ? "text-primaryYellow" : "text-[#9D9D9D]"
                             }`}
                         >
                             Dashboard
@@ -69,7 +70,7 @@ const Navbar = () => {
                     <Link href="/documents">
                         <span
                             className={`${
-                                pathname === "/documents" ? "text-black" : "text-gray-300"
+                                pathname === "/documents" ? "text-primaryYellow" : "text-[#9D9D9D]"
                             }`}
                         >
                             Documents
@@ -78,7 +79,7 @@ const Navbar = () => {
                     <Link href="/whats-new">
                         <span
                             className={`${
-                                pathname === "/whats-new" ? "text-black" : "text-gray-300"
+                                pathname === "/whats-new" ? "text-primaryYellow" : "text-[#9D9D9D]"
                             } `}
                         >
                             What&apos;s New
@@ -93,20 +94,23 @@ const Navbar = () => {
                             <CiSearch />
                         </span>
                         <input
-                            className="ml-2 focus:outline-none text-sm w-24 md:w-40"
+                            className="ml-2 text-sm w-16 md:w-16 focus:md:w-24 focus:outline-none transition-all duration-300"
                             placeholder="Search..."
                         />
                     </div>
                     {isLoggedIn && (
-                        <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-4 py-2 text-sm flex justify-center items-center">
-                            <HiMiniCurrencyDollar className="text-white bg-yellow-400 rounded-full mx-1 w-5 h-5" />
+                        <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-2 py-1 text-sm flex justify-center items-center">
+                            {/* <HiMiniCurrencyDollar className="text-white bg-yellow-400 rounded-full mx-1 w-5 h-5" /> */}
+                            <Image src={tokenCoin} alt="User Profile" width={15} height={15} />
                             <span className="mx-1 text-gray-500">300</span>
                         </button>
                     )}
                     {isLoggedIn && (
-                        <span className="rounded-full bg-primaryYellow text-white font-bold w-8 h-8 flex items-center justify-center">
-                            ?
-                        </span>
+                        <Link href="/help">
+                            <span className="rounded-full bg-primaryYellow text-white font-bold w-8 h-8 flex items-center justify-center cursor-pointer">
+                                ?
+                            </span>
+                        </Link>
                     )}
                     {isLoggedIn ? (
                         <div ref={dropdownRef} className="relative">
@@ -126,12 +130,9 @@ const Navbar = () => {
                             {dropdownOpen && (
                                 <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg">
                                     <ul className="flex flex-col">
-                                        <li className="hover:bg-gray-100 px-4 py-2">
+                                        <Link href="/profile"><li className="hover:bg-gray-100 px-4 py-2">
                                             <button>Profile</button>
-                                        </li>
-                                        <li className="hover:bg-gray-100 px-4 py-2">
-                                            <button>Settings</button>
-                                        </li>
+                                        </li></Link>
                                         <li onClick={logoutHandler} className="hover:bg-gray-100 px-4 py-2 cursor-pointer">
                                             <button>Logout</button>
                                         </li>
@@ -141,7 +142,7 @@ const Navbar = () => {
                         </div>
                     ) : (
                         <Link href="/auth">
-                            <button className="px-6 w-[6rem] py-1 text-xl rounded bg-primaryYellow text-white cursor-pointer">
+                            <button className="rounded-full px-4 py-1 text-base flex justify-center items-center bg-primaryYellow text-white cursor-pointer hover:bg-yellow-600">
                                 Login
                             </button>
                         </Link>

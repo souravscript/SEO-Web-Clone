@@ -6,7 +6,7 @@ import seeYourCreation from "@/../public/see-your-creation.png"
 
 const BottomGuide=()=>{
     return (
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 mt-[0.5rem]">
           <div className="flex h-[208px] w-[630px] rounded-lg border border-gray-200">
               <div className="bg-white p-6">
                 <h3 className="text-lg font-semibold mb-2">Guide to dashboard 📚</h3>

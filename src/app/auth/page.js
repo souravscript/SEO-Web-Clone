@@ -241,7 +241,7 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full text-white font-medium py-2 rounded-md mt-4 
+                className={`w-full h-[50px] text-white font-medium py-2 rounded-md mt-4 
                   ${isSubmitting
                     ? "bg-yellow-400 cursor-not-allowed"
                     : "bg-primaryYellow hover:bg-yellow-600"

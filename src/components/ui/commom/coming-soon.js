@@ -34,28 +34,10 @@ const ComingSoon = () => {
   }, [targetDate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-400 to-indigo-600 text-white">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-primaryYellow to-paleYellow text-white">
       <div className="text-center space-y-6 animate-fade-in">
         <h1 className="text-6xl font-bold animate-bounce">Coming Soon</h1>
         <p className="text-xl">We&apos;re working hard to bring you something amazing!</p>
-        <div className="flex justify-center space-x-4 text-3xl">
-          <div className="flex flex-col items-center">
-            <span className="font-bold">{timeLeft.days}</span>
-            <span className="text-sm">Days</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="font-bold">{timeLeft.hours}</span>
-            <span className="text-sm">Hours</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="font-bold">{timeLeft.minutes}</span>
-            <span className="text-sm">Minutes</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="font-bold">{timeLeft.seconds}</span>
-            <span className="text-sm">Seconds</span>
-          </div>
-        </div>
         <p className="text-lg">Stay tuned!</p>
       </div>
     </div>

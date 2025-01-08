@@ -11,7 +11,6 @@ const TopDashboard = () => {
             {/* Display the user's email if available */}
             <h1 className="text-3xl font-semibold">Hi {user ? user.email : "Guest"}👋🏻,</h1>
             <div className="flex flex-col items-start ">
-              <h2 className="text-3xl font-semibold mb-2">Create</h2>
               <p className="text-gray-600">Start creating different modules to optimize your website.</p>
             </div>
         </div>

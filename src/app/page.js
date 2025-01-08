@@ -15,33 +15,38 @@ import TopDashboard from "@/components/ui/home/TopDashboard";
 const blogData = [
   {
     id: "single-blog",
-    title: "Single Blog",
+    title: "Single Blog Post",
     description: "A brief description of the single blog.",
     icon: singleBlogPost, // Assign the imported image directly
+    isComing: "false",
   },
   {
     id: "bulk-blog",
-    title: "Bulk Blog",
+    title: "Bulk Blog Post",
     description: "A brief description of the bulk blog.",
     icon: bulkBlogPost, // Assign the imported image directly
+    isComing: "false",
   },
   {
     id: "product-roundup",
     title: "Product Roundup",
     description: "A brief description of the product roundup.",
     icon: productRoundup, // Assign the imported image directly
+    isComing: "true",
   },
   {
     id: "product-review",
     title: "Product Review",
     description: "A brief description of the product review.",
     icon: productReviews, // Assign the imported image directly
+    isComing: "true",
   },
   {
     id: "how-to-guide",
     title: "How to Guide",
     description: "A brief description of the how-to review.",
     icon: howToGuide, // Assign the imported image directly
+    isComing: "true",
   },
 ];
 
@@ -59,6 +64,7 @@ export default function Home() {
                 icon={blog?.icon}
                 title={blog?.title}
                 desc={blog?.description}
+                isComing={blog?.isComing}
               />
             </Link>
             );

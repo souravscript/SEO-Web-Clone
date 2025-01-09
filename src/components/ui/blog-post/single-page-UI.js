@@ -179,7 +179,7 @@ const SinglePageUI = () => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative left-4">
             {loading && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
                     <div className="relative">
@@ -212,16 +212,16 @@ const SinglePageUI = () => {
                                 <button
                                     key={index}
                                     type="button"
-                                    className={`flex justify-center items-center px-3 text-md py-2 border rounded-full 
+                                    className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
                                         ${
                                             currentIndex === index
-                                                ? "bg-paleYellow text-primaryYellow font-bold border-primaryYellow"
+                                                ? "bg-paleYellow text-tabColor font-bold border-tabColor"
                                                 : "bg-gray-100 text-gray-600 border-gray-300"
                                         } ${
                                             submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
                                         }`}
                                     style={{
-                                        width: '300px',
+                                        width: '360px',
                                         height: '36px',
                                         boxSizing: 'border-box',
                                     }}
@@ -246,7 +246,7 @@ const SinglePageUI = () => {
                                     <button
                                         type="button"
                                         onClick={backHandler}
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-gray-400 text-white"
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
                                     >
                                         Back
                                     </button>
@@ -256,7 +256,7 @@ const SinglePageUI = () => {
                                     <button
                                         type="button"
                                         onClick={exitHandler}
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-gray-400 text-white"
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-[#C8C9B5]"
                                     >
                                         Exit
                                     </button>
@@ -266,7 +266,7 @@ const SinglePageUI = () => {
                                     <button
                                         type="button"
                                         onClick={nextHandler}
-                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white "
                                     >
                                         Next
                                     </button>

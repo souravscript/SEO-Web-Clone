@@ -3,7 +3,8 @@ import React from "react";
 
 const ShimmerCard = () => {
   return (
-    <div className="w-72 cursor-pointer hover:shadow-lg transition-shadow duration-200 animate-pulse">
+    <div className="w-72 cursor-pointer hover:shadow-lg rounded-lg transition-shadow duration-200 animate-pulse">
+      {/* Card Header Section */}
       <div className="pt-6 pb-2">
         <div className="flex justify-between items-start">
           {/* Placeholder for the icon */}
@@ -12,6 +13,8 @@ const ShimmerCard = () => {
           <div className="ml-2 bg-yellow-100 p-2 rounded-full w-16 h-6"></div>
         </div>
       </div>
+
+      {/* Card Content Section */}
       <div className="pt-2">
         {/* Placeholder for the title */}
         <div className="h-6 bg-gray-300 rounded mb-2 w-3/4"></div>
@@ -25,9 +28,10 @@ const ShimmerCard = () => {
   );
 };
 
+
 const DocShimmerGrid = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
+    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {/* Render multiple shimmer cards */}
       {Array.from({ length: 12 }).map((_, index) => (
         <ShimmerCard key={index} />

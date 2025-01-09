@@ -207,23 +207,39 @@ const DocumentsPage = () => {
     }
   };
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 relative left-12 w-[960px]">
       <Tabs defaultValue="drafts" className="w-full">
         <div className="mb-8">
-          <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0">
+          {/* <TabsList className=" w-full justify-start rounded-none bg-transparent p-0">
             <TabsTrigger 
               value="drafts"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold text-gray-400"
             >
               Saved Drafts
             </TabsTrigger>
             <TabsTrigger 
               value="published"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold text-gray-400"
             >
               Published
             </TabsTrigger>
-          </TabsList>
+          </TabsList> */}
+
+        <TabsList className="w-full justify-start rounded-none bg-transparent p-0">
+          <TabsTrigger 
+            value="drafts"
+            className="data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold text-gray-400"
+          >
+            Saved Drafts
+          </TabsTrigger>
+          <div className="h-8 w-px bg-gray-300 mx-2" />
+          <TabsTrigger 
+            value="published"
+            className="data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold text-gray-400"
+          >
+            Published
+          </TabsTrigger>
+        </TabsList>
 
           <div className="mt-6">
             <div className="flex gap-4 mb-6">
@@ -231,7 +247,7 @@ const DocumentsPage = () => {
                 <button
                   key={filter}
                   className={`rounded-full px-4 py-1 text-sm ${
-                    filter === 'All' ? 'bg-paleYellow text-primaryYellow border-primaryYellow border-2 font-bold' : 'bg-gray-100'
+                    filter === 'All' ? 'bg-paleYellow text-tabColor border-tabColor border-2 font-bold' : 'bg-gray-100'
                   }`}
                 >
                   {filter}
@@ -243,7 +259,7 @@ const DocumentsPage = () => {
               <DocShimmerGrid />
             ) : (
               <TabsContent value="drafts">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {savedDrafts.length > 0 ? (
                     savedDrafts.map((document) => (
                       <DocumentCard
@@ -260,7 +276,7 @@ const DocumentsPage = () => {
             )}
 
             <TabsContent value="published">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {documentsData.length > 0 ? (
                   documentsData.map((document) => (
                     <DocumentCard

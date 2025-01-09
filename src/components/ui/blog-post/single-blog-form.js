@@ -19,8 +19,8 @@ const SingleBlogForm = ({register,errors}) => {
                     <Image src={singleBlogPost} alt="single blog post" height={40} width={40} className="rounded-md" />
                     <div className="flex flex-row">
                         <h1 className="text-xl font-semibold text-gray-800">Single Blog Post</h1>
-                        <Image src={tokenCoin} alt="single blog post" height={20} width={20} className="rounded-md ml-3" />
-                        <span className="text-gray-500 text-sm ml-3 mt-1">10 Tokens</span>
+                        <Image src={tokenCoin} alt="single blog post" className="rounded-md h-5 w-5 ml-2 mt-1" />
+                        <span className="text-gray-500 text-sm ml-1 mt-1">10 Tokens</span>
                     </div>
                 </div>
 

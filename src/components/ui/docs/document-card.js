@@ -137,7 +137,7 @@ const DocumentCard = ({ onClick, document }) => {
           </div>
           <Badge 
             variant={getBadgeVariant(getDocumentType(document))}
-            className="ml-2 bg-yellow-100 p-2 rounded-full"
+            className="ml-2 bg-yellow-100 px-5 py-2 rounded-full font-light"
           >
             {getDocumentType(document)}
           </Badge>

@@ -57,7 +57,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Navigation Links */}
-                <div className="hidden md:flex gap-8">
+                <div className="hidden md:flex gap-10 relative left-8">
                     <Link href="/">
                         <span
                             className={`${
@@ -99,7 +99,7 @@ const Navbar = () => {
                         />
                     </div>
                     {isLoggedIn && (
-                        <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-2 py-1 text-sm flex justify-center items-center">
+                        <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-1 py-1 text-sm flex justify-center items-center">
                             {/* <HiMiniCurrencyDollar className="text-white bg-yellow-400 rounded-full mx-1 w-5 h-5" /> */}
                             <Image src={tokenCoin} alt="User Profile" width={15} height={15} />
                             <span className="mx-1 text-gray-500">300</span>
@@ -107,7 +107,7 @@ const Navbar = () => {
                     )}
                     {isLoggedIn && (
                         <Link href="/help">
-                            <span className="rounded-full bg-primaryYellow text-white font-bold w-8 h-8 flex items-center justify-center cursor-pointer">
+                            <span className="rounded-full bg-primaryYellow text-white font-bold w-7 h-7 flex items-center justify-center cursor-pointer">
                                 ?
                             </span>
                         </Link>
@@ -115,13 +115,15 @@ const Navbar = () => {
                     {isLoggedIn ? (
                         <div ref={dropdownRef} className="relative">
                             <span className="flex items-center gap-2">
+                                <Link href="/profile">
                                 <Image
                                     src={userPic}
                                     alt="User Profile"
-                                    width={30}
-                                    height={30}
-                                    className="rounded-full"
+                                    width={25}
+                                    height={25}
+                                    className="rounded-full cursor-pointer"
                                 />
+                                </Link>
                                 <button className="text-lg" onClick={toggleDropdown}>
                                     <MdExpandMore />
                                 </button>

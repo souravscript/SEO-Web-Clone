@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 const Publish = () => {
   return (
-    <div className="p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[765px] mx-auto">
+    <div className="p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[725px] mx-auto">
     <h3 className="text-sm font-semibold text-gray-700 mb-3">Publish to Wordpress</h3>
         <div className="flex gap-2">
             <label className="flex items-center space-x-4">

@@ -57,7 +57,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Navigation Links */}
-                <div className="hidden md:flex gap-10 relative left-8">
+                <div className="hidden md:flex gap-14 relative left-8 max-w-[562px]">
                     <Link href="/">
                         <span
                             className={`${

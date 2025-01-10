@@ -67,6 +67,10 @@ const SinglePageUI = () => {
     const CurrentComponent = tabs[currentIndex]?.component;
     const access_token = useGetAccessToken();
     const pathName=usePathname();
+    useEffect(()=>{
+        reset()
+    },[pathName])
+
     const {
         register,
         handleSubmit,

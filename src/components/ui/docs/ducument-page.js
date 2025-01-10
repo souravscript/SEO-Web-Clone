@@ -146,6 +146,7 @@ import DocumentCard from "@/components/ui/docs/document-card";
 import DocumentModal from "@/components/ui/docs/document-modal";
 import DocShimmerGrid from "../shimmer/doc-shimmer";
 import { useGetAccessToken } from "@/hooks/use-get-accessToken";
+import Link from 'next/link';
 
 const DocumentsPage = () => {
   const [documentsData, setDocumentsData] = useState([]);
@@ -207,7 +208,14 @@ const DocumentsPage = () => {
     }
   };
   return (
-    <div className="container mx-auto px-4 py-8 relative left-12 w-[960px]">
+    <div className="container mx-auto px-4 py-4 relative left-16 w-[960px]">
+      <p className="relative mt-2 mb-9">
+                    <Link href="/">
+                        <span className="text-[#A1A1A1] text-xs">Home</span>
+                    </Link>
+                    <span className="text-gray-400 mr-1 ml-1">/</span>
+                    <span className="text-black text-xs">Single Blog post</span>
+        </p>
       <Tabs defaultValue="drafts" className="w-full">
         <div className="mb-8">
           {/* <TabsList className=" w-full justify-start rounded-none bg-transparent p-0">
@@ -240,6 +248,8 @@ const DocumentsPage = () => {
             Published
           </TabsTrigger>
         </TabsList>
+
+        <p className='text-[#666666] text-sm mt-6 mb-6'>Here you can see all your library of saved SEO documents.</p>
 
           <div className="mt-6">
             <div className="flex gap-4 mb-6">

@@ -7,9 +7,9 @@ import LinkComponent from "@/components/ui/blog-post/link-component";
 import Publish from "@/components/ui/blog-post/publish";
 import CoreSettingsBulk from "./core-settings-bulk";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BulkBlogForm from "./bulk-blog-form";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { calculatePercentage, markTabChecked, markTabUnchecked, reset, setFieldCountDecrement, setFieldCountIncrement, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
 import { useGetAccessToken } from "@/hooks/use-get-accessToken";
@@ -23,6 +23,12 @@ const BulkPageUI = () => {
     const [submitted, setSubmitted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
+    const pathname = usePathname();
+    useEffect(()=>{
+        reset();
+    },[pathname])
+
+    
 
     const tabs = [
         { name: "Core Settings", component: CoreSettingsBulk, next: "Next" },
@@ -156,7 +162,7 @@ const BulkPageUI = () => {
 
 
     return (
-        <div className="relative">
+        <div className="relative left-4">
         {loading && (
                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
                             <div className="relative">
@@ -176,7 +182,7 @@ const BulkPageUI = () => {
                             </div>
                         </div>
                     )}
-        <form onSubmit={handleSubmit(submitHandler)} className="p-6 max-w-3xl relative mx-auto">
+        <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
             <BulkBlogForm
                 fields={fields}
                 register={register}
@@ -188,94 +194,97 @@ const BulkPageUI = () => {
             {/* Rest of the JSX remains the same */}
 
             {/* Tab Navigation */}
-             <div className="p-6 mt-6 max-w-3xl mx-auto">
-                             <div className="flex gap-2 mb-5">
-                                 {tabs.map((tab, index) => (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        className={`px-6 py-3 border rounded ${
+             <div className="p-6 mt-6 max-w-3xl">
+             <div className="flex gap-[24px] mb-5">
+                            {tabs.map((tab, index) => (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
+                                        ${
                                             currentIndex === index
-                                                ? "bg-paleYellow text-primaryYellow font-bold border-primaryYellow rounded-3xl"
-                                                : "bg-gray-100 text-gray-600 border-gray-300 rounded-3xl"
+                                                ? "bg-paleYellow text-tabColor font-bold border-tabColor"
+                                                : "bg-gray-100 text-gray-600 border-gray-300"
                                         } ${
                                             submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
                                         }`}
-                                    >
-                                        {tab.name}
-                                    </button>
-                                ))}
+                                    style={{
+                                        width: '360px',
+                                        height: '36px',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    {tab.name}
+                                </button>
+                            ))}
                             </div>
+
+                            {/* Tab Content */}
+                            <div className="flex flex-col items-start">
+                                <CurrentComponent
+                                    register={register}
+                                    watch={watch}
+                                    setValue={setValue}
+                                    getValues={getValues}
+                                    errors={errors}
+                                />
+                            </div>
+
+
+                            <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] gap-[16px] right-[1.7rem]">
+                                {currentIndex > 0 && currentIndex < tabs.length - 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={backHandler}
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
+                                    >
+                                        Back
+                                    </button>
+                                )}
+
+                                {currentIndex === tabs.length - 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={exitHandler}
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-[#C8C9B5]"
+                                    >
+                                        Exit
+                                    </button>
+                                )}
+
+                                {currentIndex < tabs.length - 2 && (
+                                    <button
+                                        type="button"
+                                        onClick={nextHandler}
+                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white "
+                                    >
+                                        Next
+                                    </button>
+                                )}
+
+                                {currentIndex === tabs.length - 2 && (
+                                    <button
+                                        type="submit"
+                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                                    >
+                                        Generate
+                                    </button>
+                                )}
+
+                                {currentIndex === tabs.length - 1 && (
+                                    <button
+                                        type="button"
+                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                                    >
+                                        Publish
+                                    </button>
+                                )}
+                            </div>
+
+
+
                 </div>
 
-            {/* Tab Content */}
-            <div className="flex flex-col items-start">
-                <CurrentComponent
-                    register={register}
-                    watch={watch}
-                    setValue={setValue}
-                    getValues={getValues}
-                    errors={errors}
-                />
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] right-[-5.5rem]">
-                    {/* Back Button */}
-                    {currentIndex > 0 && currentIndex < tabs.length - 1 && (
-                        <button
-                        type="button"
-                        onClick={backHandler}
-                        className="px-6 w-32 py-3 text-lg rounded bg-gray-400 text-white"
-                        >
-                        Back
-                        </button>
-                    )}
-
-                    {/* Exit Button */}
-                    {currentIndex === tabs.length - 1 && (
-                        <button
-                        type="button"
-                        onClick={exitHandler}
-                        className="px-6 w-32 py-3 text-lg rounded bg-gray-200 text-gray-700"
-                        >
-                        Exit
-                        </button>
-                    )}
-                    
-                    {/* Next Button */}
-                    {currentIndex < tabs.length - 2 && (
-                        <button
-                        type="button"
-                        onClick={nextHandler}
-                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
-                        >
-                        Next
-                        </button>
-                    )}
-
-                    {/* Generate Button */}
-                    {currentIndex === tabs.length - 2 && (
-                        <button
-                        type="submit"
-                        //onClick={generateHandler}
-                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
-                        >
-                        Generate
-                        </button>
-                    )}
-                    
-                    {/* Publish Button */}
-                    {currentIndex === tabs.length - 1 && (
-                        <button
-                        type="button"
-                        //onClick={publishHandler}
-                        className="px-6 w-32 py-3 ml-3 text-lg rounded bg-primaryYellow text-white"
-                        >
-                        Publish
-                        </button>
-                    )}
-                </div>
         </form>
         </div>
     );

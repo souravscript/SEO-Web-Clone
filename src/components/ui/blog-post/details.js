@@ -26,7 +26,7 @@ const Details = ({ register, errors, watch }) => {
   const selectedElements = watch("details.elements", []);
 
   return (
-    <div className="p-6 space-y-6 border border-gray-300 rounded-lg shadow-sm w-[765px] mx-auto">
+    <div className="p-6 space-y-6 border border-gray-300 rounded-lg shadow-sm w-[725px] mx-auto">
       {/* Details Section */}
       <div className="space-y-4">
         <div>

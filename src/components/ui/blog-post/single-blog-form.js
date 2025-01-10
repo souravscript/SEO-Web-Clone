@@ -6,13 +6,13 @@ import tokenCoin from "@/../public/tokenCoin.png";
 
 const SingleBlogForm = ({register,errors}) => {
     return (
-        <div className="p-6 w-[823px] mx-auto">
+        <div className="p-6 w-[780px] mx-auto">
                 <p className="absolute top-[2px] mb-[2rem]">
                     <Link href="/">
-                        <span className="text-gray-400">Home</span>
+                        <span className="text-[#A1A1A1] text-sm">Home</span>
                     </Link>
                     <span className="text-gray-400 mr-1 ml-1">/</span>
-                    <span className="text-black">Single Blog post</span>
+                    <span className="text-black text-sm">Single Blog post</span>
                 </p>
                 {/* Header Section */}
                 <div className="flex items-start mt-6 gap-4 mb-5">

@@ -1,6 +1,6 @@
 const SEO = ({ register }) => {
   return (
-    <div className="space-y-4 p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[765px] mx-auto">
+    <div className="space-y-4 p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[725px] mx-auto">
       <label className="block text-lg font-semibold text-gray-700">
         Keywords to include in text
       </label>

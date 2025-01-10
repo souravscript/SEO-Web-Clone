@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     supabaseId:{type: String, required: true, unique: true},
     profilePic: { type: String, default: '' },
     createdAt: { type: Date, default: Date.now },
+    phoneNumber: { type: String, default: '' },
     token: {type: Number, default:0}
   },
   { timestamps: true }

@@ -10,7 +10,9 @@ const cookies=new Cookies(null,{path:'/'})
 export const handleSignup = async (email, password) => {
   try {
     // Supabase authentication
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password,options: {
+      emailRedirectTo: 'https://seo-web-clone-iufe.vercel.app/auth',
+    }, });
 
     if (error || !data) {
       console.log("Supabase SignUp Error:", error?.message || "Unknown error");

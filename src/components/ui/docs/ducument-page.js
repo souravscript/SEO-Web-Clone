@@ -208,7 +208,7 @@ const DocumentsPage = () => {
     }
   };
   return (
-    <div className="container mx-auto px-4 py-4 relative left-16 w-[960px]">
+    <div className="container mx-auto px-4 py-4 relative left-6 max-w-[1180px">
       <p className="relative mt-2 mb-9">
                     <Link href="/">
                         <span className="text-[#A1A1A1] text-xs">Home</span>
@@ -233,19 +233,27 @@ const DocumentsPage = () => {
             </TabsTrigger>
           </TabsList> */}
 
-        <TabsList className="w-full justify-start rounded-none bg-transparent p-0">
+        <TabsList className="w-full justify-start rounded-none bg-transparent p-0 shadow-none relative left-[-16px]">
           <TabsTrigger 
             value="drafts"
             className="data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold text-gray-400"
+            style={{ boxShadow: "none" }}
           >
             Saved Drafts
+            <span
+              className="absolute bottom-0 left-1/2 w-[90%] -translate-x-1/2 border-b-2 border-transparent data-[state=active]:border-black"
+            />
           </TabsTrigger>
           <div className="h-8 w-px bg-gray-300 mx-2" />
           <TabsTrigger 
             value="published"
             className="data-[state=active]:text-black rounded-none border-transparent px-4 pb-2 pt-2 text-xl font-semibold text-gray-400"
+            style={{ boxShadow: "none" }}
           >
             Published
+            <span
+              className="absolute bottom-0 left-1/2 w-[90%] -translate-x-1/2 border-b-2 border-transparent data-[state=active]:border-black"
+            />
           </TabsTrigger>
         </TabsList>
 
@@ -269,7 +277,7 @@ const DocumentsPage = () => {
               <DocShimmerGrid />
             ) : (
               <TabsContent value="drafts">
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {savedDrafts.length > 0 ? (
                     savedDrafts.map((document) => (
                       <DocumentCard
@@ -286,7 +294,7 @@ const DocumentsPage = () => {
             )}
 
             <TabsContent value="published">
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {documentsData.length > 0 ? (
                   documentsData.map((document) => (
                     <DocumentCard

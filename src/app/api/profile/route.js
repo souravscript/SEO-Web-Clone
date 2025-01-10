@@ -7,15 +7,15 @@ export async function PUT(req){
     await connectToDatabase();
     try{
         const {user,error}=await authenticate(req)
+        console.log("user from profile", user.sub);
         if (error) {
             return NextResponse.json({ error: error }, { status: 401 });
         }
         const authUser = await User.findOne({ supabaseId: user.sub });
-        console.log("auth user from bulk blog", authUser);
         if (!authUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
-
+        console.log("auth user from profile", authUser);
         const {fullName,phoneNumber}=await req.json();
         if(!fullName || !phoneNumber ){
             return NextResponse.json({ error: "All fields are required" }, { status: 400 });

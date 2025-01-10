@@ -122,7 +122,7 @@ const DocumentCard = ({ onClick, document }) => {
   return (
     <Card 
       onClick={onClick} 
-      className="w-72 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      className="w-70 cursor-pointer hover:shadow-lg transition-shadow duration-200"
     >
       <CardHeader className="pt-6 pb-2">
         <div className="flex justify-between items-start">

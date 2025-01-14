@@ -40,8 +40,8 @@ export default function ProfilePage() {
   useEffect(()=>{
     console.log("user",user);
     const fullName=user?.fullName.split(" ");
-    //const initials=fullName[0][0]+fullName[1][0];
-    //setAvatarName(initials)
+    const initials=fullName.split(" ")
+    setAvatarName(initials[0][0]+initials[1][0])
   },[user])
   const [countryCode, setCountryCode] = useState("IN");
   const handleSubmit = async (e) => {

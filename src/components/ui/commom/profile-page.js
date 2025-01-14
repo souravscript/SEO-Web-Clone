@@ -35,11 +35,14 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     fullName: fullName ||'',
     email: extractedEmail,
-    phoneNumber: phoneNumber.slice(1) || '',
+    phoneNumber: phoneNumber.slice(2) || '',
   });
   useEffect(()=>{
     console.log("user",user);
-    // const fullName=user?.fullName.split(" ");
+    const fullName=user?.fullName.split(" ");
+    console.log("fullname ",fullName)
+    const newFullName=fullName?.map((name)=>name.slice(0,1))
+    setAvatarName(newFullName?.join("").slice(0,2))
     // const initials=fullName[0][0]+fullName[1][0];
     // setAvatarName(initials)
   },[user])

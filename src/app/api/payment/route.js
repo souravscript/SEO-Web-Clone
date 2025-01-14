@@ -4,7 +4,6 @@ import User from "@/models/User";
 import { NextResponse } from "next/server";
 
 
-
 export async function PUT(req) {
     await connectToDatabase();
     try {
@@ -25,20 +24,23 @@ export async function PUT(req) {
                 { status: 404 }
             );
         }
-        const amount = countTokens(content);
-        if(amount>authUser.token){
+        //console.log("auth user from payment", authUser.token);
+        const { amount } = await req.json();
+        
+        if (!amount) {
             return NextResponse.json(
-                { message: "Insufficient tokens" }, 
+                { message: "Amount not received" }, 
                 { status: 400 }
             );
         }
-        authUser.token -= 1;  // Corrected variable name
+        
+        
+        console.log("Amount from token", amount);
+        authUser.token += amount;  // Corrected variable name
         await authUser.save();  
-
+        console.log("User token from token", authUser.token);
         return NextResponse.json(
-            { 
-                token: authUser.token
-             }, 
+            { token: authUser.token }, 
             { status: 200 }
         );
     } catch (err) {

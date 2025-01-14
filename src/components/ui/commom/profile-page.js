@@ -16,22 +16,34 @@ import {
 } from "@/components/ui/select"
 import { useGetAccessToken } from '@/hooks/use-get-accessToken'
 import { ThreeCircles } from 'react-loader-spinner'
+import { useGetUser } from "@/hooks/use-get-user";
+import { useSelector } from "react-redux";
+import { useCookieValue } from "@/hooks/useCookie";
 
 export default function ProfilePage() {
-  const access_token = useGetAccessToken();
+  //const access_token = useGetAccessToken();
+
+  const {fullName, phoneNumber}=useSelector((state) => state.auth.user);
   const sessionData = localStorage.getItem("session");
   const parsedData = sessionData ? JSON.parse(sessionData) : {};
   const extractedEmail = parsedData?.user?.email || "";
-
+  const access_token =useCookieValue('access_token')
   const { toast } = useToast();
+  const user = useGetUser('/api/profile');
   const [isLoading, setIsLoading] = useState(false);
+  const [avatarName, setAvatarName] = useState("");
   const [formData, setFormData] = useState({
-    fullName: '',
+    fullName: fullName ||'',
     email: extractedEmail,
-    phoneNumber: ''
+    phoneNumber: phoneNumber.slice(1) || '',
   });
+  useEffect(()=>{
+    console.log("user",user);
+    const fullName=user?.fullName.split(" ");
+    //const initials=fullName[0][0]+fullName[1][0];
+    //setAvatarName(initials)
+  },[user])
   const [countryCode, setCountryCode] = useState("IN");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -49,16 +61,26 @@ export default function ProfilePage() {
       if (!/^\d{10}$/.test(phoneNumber)) {
         throw new Error("Phone number must be 10 digits");
       }
+      // const session = localStorage.getItem("session");
+      // if (!session) {
+      //   throw new Error("Session data is not available in localStorage");
+      // }
 
+      // const { access_token } = JSON.parse(session);
+      
+      // if (!access_token) {
+      //   throw new Error("Access token is missing in session data");
+      // }
       const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${access_token}`,
         },
+        //credentials: 'include',
         body: JSON.stringify({
           fullName,
-          phoneNumber: `${countryCode}${phoneNumber}`
+          phoneNumber: `${countryCode} ${phoneNumber}`
         })
       });
       console.log("response", response);
@@ -81,6 +103,7 @@ export default function ProfilePage() {
     }
   };
 
+
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-8">
       {isLoading && (
@@ -91,19 +114,12 @@ export default function ProfilePage() {
       <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16 bg-gray-100">
           <AvatarFallback className="text-lg">
-            {formData.fullName
-              .split(' ')
-              .map((word, index) =>
-                index === 0 ? word[0] : word[1]
-              )
-              .join('')
-              .slice(0, 2)
-              .toUpperCase()}
+            {avatarName?avatarName:"JD"}
           </AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-xl font-semibold">{formData.fullName}</h1>
-          <p className="text-sm text-gray-500">{formData.email}</p>
+          <h1 className="text-xl font-semibold">{user?.fullName?user.fullName:formData?.fullName}</h1>
+          <p className="text-sm text-gray-500">{formData?.email}</p>
         </div>
       </div>
       <Card>

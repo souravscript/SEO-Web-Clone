@@ -13,8 +13,9 @@ export const useFetchModalData = async (apiUrl) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
+          //Authorization: `Bearer ${authToken}`,
         },
+        credentials: 'include',
       });
   
       if (!response.ok) {

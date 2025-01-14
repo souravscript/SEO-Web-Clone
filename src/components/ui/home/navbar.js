@@ -10,16 +10,24 @@ import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
 import { handleLogout } from "@/lib/auth";
 import { useDispatch, useSelector } from "react-redux";
-import { HiMiniCurrencyDollar } from "react-icons/hi2";
+//import { HiMiniCurrencyDollar } from "react-icons/hi2";
+//import { useGetUser } from "@/hooks/use-get-user";
+//import { set } from "nprogress";
+import { setProfile } from "@/redux/authSlice";
+//import { useGetUser } from "@/hooks/use-get-user";
 
-const Navbar = () => {
+const Navbar = ({user}) => {
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    const userData=useSelector((state)=>state.auth.user)
+    const token=useSelector((state) => state.auth.token);
     const dispatchLogout = useDispatch();
+    const dispatch = useDispatch();
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [searchHistory, setSearchHistory] = useState(["React", "Tailwind", "JavaScript", "Node.js"]);
     const dropdownRef = useRef(null); 
     const router = useRouter();
+    //const user=useGetUser('/api/profile');
 
     const toggleDropdown = () => {
         setDropdownOpen((prev) => !prev);
@@ -30,8 +38,31 @@ const Navbar = () => {
         setDropdownOpen(false);
         router.push("/auth");
     };
-
+    // const fetchProfileData=async ()=>{
+    //     const session = localStorage.getItem("session");
+    //     if (!session) {
+    //         throw new Error("Session data is not available in localStorage");
+    //     }
+    //     const { access_token } = JSON.parse(session);
+    //     try{
+    //         const response=await fetch(`${url}`,{
+    //         method: 'GET',
+    //         headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${access_token}`,
+    //         },
+    //     });
+    //         const result=await response.json();
+    //         dispatch(setProfile(result.authUser));
+    //         console.log("User data fetched successfully: in navbar",result)
+    //     }catch(err){
+    //         console.error("Error fetching user data: ",err);
+    //     }
+    // }
     useEffect(() => {
+        //fetchProfileData();
+        //dispatch(setProfile(user));
+        //console.log("token in navbar",token);
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setDropdownOpen(false);
@@ -43,6 +74,9 @@ const Navbar = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+    // useEffect(()=>{
+        
+    // },[token])
 
     return pathname === "/auth" ? null : (
         <div className="w-full h-[60px] bg-white shadow-[0_4px_40px_rgba(0,0,0,0.04)] px-4">
@@ -99,11 +133,12 @@ const Navbar = () => {
                         />
                     </div>
                     {isLoggedIn && (
-                        <button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-1 py-1 text-sm flex justify-center items-center">
+                        <Link href="/payment"><button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-1 py-1 text-sm flex justify-center items-center">
                             {/* <HiMiniCurrencyDollar className="text-white bg-yellow-400 rounded-full mx-1 w-5 h-5" /> */}
                             <Image src={tokenCoin} alt="User Profile" width={15} height={15} />
-                            <span className="mx-1 text-gray-500">300</span>
+                            <span className="mx-1 text-gray-500">{token}</span>
                         </button>
+                        </Link>
                     )}
                     {isLoggedIn && (
                         <Link href="/help">

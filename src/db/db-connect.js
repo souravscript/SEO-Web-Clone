@@ -11,7 +11,7 @@ const connectToDatabase = async () => {
   }
 
   const connect=await mongoose.connect(MONGO_URI);
-  console.log("database connected successfully with ",connect )
+  console.log("database connected successfully with ");
 };
 
 export default connectToDatabase;

@@ -5,37 +5,41 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { markTabChecked, markTabUnchecked } from "@/redux/singleBlogFormProgressSlice";
 import { Circle, CircleCheck } from 'lucide-react';
+import { useFormState } from "@/context/FormProgressContext";
 const SideProgress = () => {
   // const dispatch = useDispatch();
    const [progressPercent, setProgressPercent] = useState(0);
+   const {progress,
+           activeTabIndex,
+           totalInputs,
+           completedFields,
+           sections,
+           updateProgress,
+           addFieldCount,
+           removeFieldCount,
+           resetFormState,
+           setActiveTabIndex,
+           completeSection,
+           uncompleteSection,}=useFormState()
 
   // Extracting values from the Redux store
   const { currentTabIndex,percent, totalFields, filledFormFields, tabs } = useSelector((state) => state.formProgress);
   console.log("progress Percent is ", progressPercent)
   // Calculate the progress percentage
 
-  // useEffect(() => {
-  //   if (totalFields > 0) {
-  //     const percent = (filledFormFields / totalFields) * 100;
-  //     setProgressPercent(Math.min(percent, 100)); // Ensure the percentage does not exceed 100%
-  //   } else {
-  //     setProgressPercent(0); // To avoid NaN when totalFields is 0
-  //   }
-  // }, [filledFormFields, totalFields]);
-
   return (
     <div className="p-4 relative top-[2rem] h-max left-[48px] bg-white rounded-md shadow-md w-64">
       {/* Progress Section */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-gray-600">Progress</span>
-        <span className="text-sm font-semibold text-gray-800">{`${Math.round(Math.min(percent,93))}%`}</span>
+        <span className="text-sm font-semibold text-gray-800">{`${Math.round(Math.min(progress,93))}%`}</span>
       </div>
 
       {/* Progress Bar */}
       <div className="w-full h-2 bg-gray-300 rounded-full mb-4">
         <div
           className="h-2 bg-green-500 rounded-full"
-          style={{ width: `${Math.min(percent,93)}%` }}
+          style={{ width: `${Math.min(progress,93)}%` }}
         ></div>
       </div>
 

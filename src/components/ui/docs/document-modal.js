@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { X, Trash2, Edit2, MoreVertical, Check, Copy } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useCookieValue } from "@/hooks/useCookie";
 
 const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
   const [data, setData] = useState({ title: "", content: "" });
@@ -11,7 +12,8 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [copied, setCopied] = useState(false);
-  const access_token = useGetAccessToken();
+  //const access_token = useGetAccessToken();
+  const access_token =useCookieValue('access_token')
 
   useEffect(() => {
     const fetchModalData = async () => {
@@ -28,6 +30,7 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
+          //credentials: 'include',
         });
 
         if (!response.ok) {
@@ -64,8 +67,9 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
+        //credentials: 'include',
       });
-
+      console.log("delete doc called ",response)
       if (!response.ok) {
         throw new Error("Failed to delete the document");
       }

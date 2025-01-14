@@ -9,10 +9,12 @@ import { useForm } from "react-hook-form";
 import SingleBlogForm from "./single-blog-form";
 import { usePathname, useRouter } from "next/navigation";
 import ToastComponent from "@/components/ui/blog-post/toast-component";
-import { setFieldCountIncrement,calculatePercentage,setFieldCountDecrement, markTabChecked, markTabUnchecked, reset, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
+//import { setFieldCountIncrement,calculatePercentage,setFieldCountDecrement, markTabChecked, markTabUnchecked, reset, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
-import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import { InfinitySpin, ThreeCircles } from "react-loader-spinner";
+import { useCookieValue } from "@/hooks/useCookie";
+import { setToken } from "@/redux/authSlice";
+import { useFormState } from "@/context/FormProgressContext";
 
 const tabs = [
         {
@@ -65,11 +67,25 @@ const SinglePageUI = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const CurrentComponent = tabs[currentIndex]?.component;
-    const access_token = useGetAccessToken();
+    const access_token = useCookieValue('access_token');
+    
+    //const user = useGetUser("/api/profile");
+    const {progress,
+        activeTabIndex,
+        totalInputs,
+        completedFields,
+        sections,
+        updateProgress,
+        addFieldCount,
+        removeFieldCount,
+        resetFormState,
+        setActiveTabIndex,
+        completeSection,
+        uncompleteSection,}=useFormState()
     const pathName=usePathname();
     useEffect(()=>{
-        reset()
-    },[pathName])
+        resetFormState()
+        },[pathName])
 
     const {
         register,
@@ -84,11 +100,11 @@ const SinglePageUI = () => {
             mainKeyword: '',
             title: '',
             coreSettings: {
-                aiModel: 'GPT-4',
+                aiModel: 'Open Router',
                 language: 'English',
                 targetCountry: 'USA',
                 toneOfVoice: 'Professional',
-                articleSize: 'Medium',
+                articleSize: 400,
             },
             details: {
                 includeDetails: '',
@@ -109,8 +125,40 @@ const SinglePageUI = () => {
         },
     });
 
+
     
     const submitHandler = async (data) => {
+        const { title} = data;
+        const {elements}=data.details
+        const reqJSONdata={
+            title:title,
+            structure_dict: {
+            conclusion: elements.includes("conclusion")?true:false,
+            tables: elements.includes("tables")?1:0,
+            video_urls: ["https://example.com/video1", "https://example.com/video2"],
+            video_quantity: 2,
+            layout: "comprehensive",
+            h3: elements.includes("h3")?3:0,
+            lists: elements.includes("lists")?2:0,
+            italics: elements.includes("italics")?true:false,
+            quotes: elements.includes("quotes")?true:false,
+            key_takeaways: elements.includes("KeyTakeaways")?true:false,
+            faq: elements.includes("faqs")?true:false,
+            bold: elements.includes("bold")?true:false,   
+            },
+            article_size: 1500,
+            arguments: {
+                web_search_bool: false,
+                video_search_bool: false,
+                image_gen_bool: false,
+                web_search: "BS4",
+                tone: "professional",
+                audience: "tech professionals",
+                "Additional Info": ""
+            },
+            improve_context: false,
+            llm: "openrouter"
+        }
         try {
             setLoading(true)
             setSubmitted(true); // Mark as submitted
@@ -121,24 +169,40 @@ const SinglePageUI = () => {
             if (!title) {
                 throw new Error("Title or content is missing");
             }
+            console.log("req JSON data in frontend",reqJSONdata)
             const res = await fetch("/api/documents/single-blog", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${access_token}`,
                 },
-                body: JSON.stringify({ title }),
+                //credentials: 'include',
+                body: JSON.stringify({ reqJSONdata }),
             });
-    
+            
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData?.error || "Failed to create document");
             }
-
-            dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
-            dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
-            dispatch(calculatePercentage());
-            
+            // const tokenRes = await fetch("/api/tokens", {
+            //     method: "PUT",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         Authorization: `Bearer ${access_token}`,
+            //     },
+            //     //credentials: 'include',
+            // })
+            // if (tokenRes.ok) {
+            //     dispatch(setProfile(user));
+            // }
+            // dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
+            // dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
+            // dispatch(calculatePercentage());
+            addFieldCount(tabs[prevIndex].filledNum)
+            completeSection({tabName: tabs[prevIndex].name })
+            setActiveTabIndex(newIndex)
+            updateProgress()
+            dispatch(setToken(1))
             setToastData({ title });
             setCurrentIndex(tabs.length - 1);
         } catch (err) {
@@ -154,10 +218,14 @@ const SinglePageUI = () => {
             setCurrentIndex(prevIndex => {
                 const newIndex = prevIndex - 1;
                 console.log("currentIndex from back ", newIndex);
-                dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
-                dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
-                dispatch(setTabIndex(newIndex));
-                dispatch(calculatePercentage());
+                removeFieldCount(tabs[prevIndex].filledNum)
+                uncompleteSection({ tabName: tabs[prevIndex].name })
+                setActiveTabIndex(newIndex)
+                updateProgress()
+                // dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
+                // dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
+                // dispatch(setTabIndex(newIndex));
+                // dispatch(calculatePercentage());
                 return newIndex;
             });
         }
@@ -168,17 +236,22 @@ const SinglePageUI = () => {
             setCurrentIndex(prevIndex => {
                 const newIndex = prevIndex + 1;
                 console.log("currentIndex from next ", newIndex);
-                dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
-                dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
-                dispatch(setTabIndex(newIndex));
-                dispatch(calculatePercentage());
+                addFieldCount(tabs[prevIndex].filledNum)
+                completeSection({tabName: tabs[prevIndex].name })
+                setActiveTabIndex(newIndex)
+                updateProgress()
+                // dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
+                // dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
+                // dispatch(setTabIndex(newIndex));
+                // dispatch(calculatePercentage());
                 return newIndex;
             });
         }
     };
     
     const exitHandler = () => {
-        dispatch(reset());
+        resetFormState()
+        //dispatch(reset());
         router.push("/");
     };
 

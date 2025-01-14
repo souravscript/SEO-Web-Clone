@@ -12,23 +12,35 @@ import BulkBlogForm from "./bulk-blog-form";
 import { usePathname, useRouter } from "next/navigation";
 import { calculatePercentage, markTabChecked, markTabUnchecked, reset, setFieldCountDecrement, setFieldCountIncrement, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
-import { useGetAccessToken } from "@/hooks/use-get-accessToken";
+//import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import { InfinitySpin } from "react-loader-spinner";
+import { useFormState } from "@/context/FormProgressContext";
 
 const BulkPageUI = () => {
     const dispatch = useDispatch();
     const router = useRouter();
-    const access_token = useGetAccessToken();
+    //const access_token = useGetAccessToken();
     
     const [submitted, setSubmitted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
-    const pathname = usePathname();
-    useEffect(()=>{
-        reset();
-    },[pathname])
+    const pathName = usePathname();
+    const {progress,
+            activeTabIndex,
+            totalInputs,
+            completedFields,
+            sections,
+            updateProgress,
+            addFieldCount,
+            removeFieldCount,
+            resetFormState,
+            setActiveTabIndex,
+            completeSection,
+            uncompleteSection,}=useFormState()
 
-    
+        useEffect(()=>{
+            resetFormState()
+            },[pathName])
 
     const tabs = [
         { name: "Core Settings", component: CoreSettingsBulk, next: "Next" },
@@ -73,6 +85,12 @@ const BulkPageUI = () => {
 
     const submitHandler = async (data) => {
         try {
+            // const session = localStorage.getItem("session");
+            // if (!session) {
+            //     throw new Error("Session data is not available in localStorage");
+            // }
+
+            // const { access_token } = JSON.parse(session);
             setSubmitted(true);
             console.log("Form data:", data);
 
@@ -104,18 +122,22 @@ const BulkPageUI = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
+                    //Authorization: `Bearer ${access_token}`,
                 },
+                credentials: 'include',
                 body: JSON.stringify(titles),
             });
 
             if (!response.ok) {
                 throw new Error("Failed to submit blogs.");
             }
-
-            dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
-            dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
-            dispatch(calculatePercentage());
+            addFieldCount(tabs[prevIndex].filledNum)
+            completeSection({tabName: tabs[prevIndex].name })
+            setActiveTabIndex(newIndex)
+            updateProgress()
+            // dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
+            // dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
+            // dispatch(calculatePercentage());
             setCurrentIndex(tabs.length - 1);
 
         } catch (error) {
@@ -131,10 +153,14 @@ const BulkPageUI = () => {
                 setCurrentIndex(prevIndex => {
                     const newIndex = prevIndex - 1;
                     console.log("currentIndex from back ", newIndex);
-                    dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
-                    dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
-                    dispatch(setTabIndex(newIndex));
-                    dispatch(calculatePercentage());
+                    removeFieldCount(tabs[prevIndex].filledNum)
+                    uncompleteSection({ tabName: tabs[prevIndex].name })
+                    setActiveTabIndex(newIndex)
+                    updateProgress()
+                    // dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
+                    // dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
+                    // dispatch(setTabIndex(newIndex));
+                    // dispatch(calculatePercentage());
                     return newIndex;
                 });
             }
@@ -145,17 +171,22 @@ const BulkPageUI = () => {
                 setCurrentIndex(prevIndex => {
                     const newIndex = prevIndex + 1;
                     console.log("currentIndex from next ", newIndex);
-                    dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
-                    dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
-                    dispatch(setTabIndex(newIndex));
-                    dispatch(calculatePercentage());
+                    addFieldCount(tabs[prevIndex].filledNum)
+                    completeSection({tabName: tabs[prevIndex].name })
+                    setActiveTabIndex(newIndex)
+                    updateProgress()
+                    // dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
+                    // dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
+                    // dispatch(setTabIndex(newIndex));
+                    // dispatch(calculatePercentage());
                     return newIndex;
                 });
             }
         };
         
         const exitHandler = () => {
-            dispatch(reset());
+            resetFormState()
+            //dispatch(reset());
             router.push("/");
         };
 

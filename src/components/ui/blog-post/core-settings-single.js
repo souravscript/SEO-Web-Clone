@@ -5,9 +5,7 @@ const CoreSettingsSingle = ({register,errors}) => {
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">AI Model</label>
                 <select {...register('coreSettings.aiModel')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>GPT-4</option>
-                    <option>Dall-e</option>
-                    <option>GPT-3.5</option>
+                    <option>Open Router</option>
                 </select>
                 
             </div>
@@ -16,7 +14,7 @@ const CoreSettingsSingle = ({register,errors}) => {
             {/* Language */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">Language</label>
-                <select {...register('coreSettings.language',  { required: 'language is required' })} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select {...register('coreSettings.language')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>English</option>
                     <option>Spanish</option>
                     <option>French</option>
@@ -41,7 +39,7 @@ const CoreSettingsSingle = ({register,errors}) => {
             {/* Tone of Voice */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">Tone of Voice</label>
-                <select {...register('coreSettings.toneOfVoice')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select {...register('coreSettings.toneOfVoice',{ required: 'tone of voice is required' })} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>Professional</option>
                     <option>Casual</option>
                     <option>Creative</option>
@@ -51,11 +49,26 @@ const CoreSettingsSingle = ({register,errors}) => {
             {/* Article Size */}
             <div className="flex flex-col w-[48%]">
                 <label className="text-gray-700 font-medium mb-1">Article Size</label>
-                <select {...register('coreSettings.articleSize')} className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Short</option>
-                    <option>Medium</option>
-                    <option>Long</option>
-                </select>
+                <input
+                    type="range"
+                    {...register('coreSettings.articleSize',{ required: 'article size is required' })}
+                    min="400"
+                    max="2000"
+                    step="50"
+                    className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-500 mt-1">Range: 400 - 2000 words</span>
+            </div>
+
+            {/* Audience */}
+            <div className="flex flex-col w-[48%]">
+                <label className="text-gray-700 font-medium mb-1">Audience</label>
+                <input
+                    type="text"
+                    {...register('coreSettings.audience',{ required: 'audience is required' })}
+                    placeholder="Enter your audience"
+                    className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
             </div>
         </div>
     );

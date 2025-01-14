@@ -1,17 +1,18 @@
 
-import { login, logout } from "@/redux/authSlice";
+import { login, logout,setToken } from "@/redux/authSlice";
 import { supabase } from "@/lib/supabase"
-import Cookies from "universal-cookie"
 import { reset } from "@/redux/singleBlogFormProgressSlice";
+import { useCookieValue } from "@/hooks/useCookie";
+// import useCookie from "@/hooks/useCookie";
+// import { cookies } from "next/headers";
 
-const cookies=new Cookies(null,{path:'/'})
 
 
 export const handleSignup = async (email, password) => {
   try {
     // Supabase authentication
     const { data, error } = await supabase.auth.signUp({ email, password,options: {
-      emailRedirectTo: 'https://seo-web-clone-iufe.vercel.app/auth',
+      emailRedirectTo: `${origin}/auth`,
     }, });
 
     if (error || !data) {
@@ -51,14 +52,26 @@ export const handleSignup = async (email, password) => {
  
 
 export const handleLogout = async (dispatch) => {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.log(error.message);
-    return null;
-  }
-  cookies.remove('session', {
-    path: '/', // Ensure the same path is used as when the cookie was set
+
+  // const { error } = await supabase.auth.signOut();
+  // if (error) {
+  //   console.log(error.message);
+  //   return null;
+  // }
+  const res = await fetch('/api/auth/logout', {
+    method: 'POST',
+    credentials: 'include', // Ensure cookies are sent with the request
   });
+
+  if (!res.ok) {
+    const error = await res.json();
+    console.error("Logout Error:", error.message);
+    return;
+  }
+
+  // cookies.delete('access_token')
+  // cookies.delete('refresh_token')
+  console.log("User logged out successfully.");
   dispatch(logout());
   dispatch(reset())
 };
@@ -66,29 +79,55 @@ export const handleLogout = async (dispatch) => {
 
 export const handleLogin = async (email, password, dispatch) => {
   try {
-    console.log("handleLogin called with:", email, password);
-
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      console.error("Supabase login error:", error.message);
-      throw new Error(error.message || "Supabase login failed");
-    }
-
-    const userSessionData = JSON.stringify({
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token,
-      user: data.user,
+    //console.log("handleLogin called with:", email, password);
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // Ensure cookies are included in the request
     });
 
-    console.log("Supabase login successful. User session data:", data);
+    console.log("cookie data",document.cookie)
 
-    // Save the session data to localStorage
-    localStorage.setItem("session", userSessionData);
-    console.log("Stored session data in localStorage");
+    if (!res.ok) {
+      const error = await res.json();
+      console.error("Login Error:", error.message);
+      throw new Error(error.message || "Login failed");
+    }
 
-    // Dispatch the user data
-    dispatch(login(data.user));
-    console.log("Dispatched user data:", data.user);
+    // Parse the response to get user data (no need to handle tokens here)
+    const responseData = await res.json();
+    console.log("Login response data:", responseData);
+    // Dispatch user data to your store (e.g., Redux)
+    const { user,token } = responseData;
+
+    
+
+    // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    // if (error) {
+    //   console.error("Supabase login error:", error.message);
+    //   throw new Error(error.message || "Supabase login failed");
+    // }
+
+    // const userSessionData = JSON.stringify({
+    //   access_token: data.session.access_token,
+    //   refresh_token: data.session.refresh_token,
+    //   user: data.user,
+    // });
+
+
+    // console.log("Supabase login successful. User session data:", data);
+
+    // // Save the session data to localStorage
+    // localStorage.setItem("session", userSessionData);
+    // console.log("Stored session data in localStorage");
+
+    // // Dispatch the user data
+     dispatch(login(user));
+     dispatch(setToken(token))
+    console.log("Dispatched user data:", user);
+
+    console.log("Dispatched token data:", token);
   } catch (error) {
     console.error("Login error:", error.message);
     throw error; // Optional: Pass this error to higher-level error handlers

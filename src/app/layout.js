@@ -9,6 +9,11 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import nProgress from "nprogress";
 import { Toaster } from "@/components/ui/toaster"
+import { useDispatch } from "react-redux";
+import { setToken } from "@/redux/authSlice";
+import { useGetUser } from "@/hooks/use-get-user";
+import { store } from "@/redux";
+import { FormProgressProvider } from "@/context/FormProgressContext";
 
 
 // Define your custom fonts
@@ -51,6 +56,7 @@ nProgress.configure({
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
+  //const user=useGetUser('/api/profile')
 
   useEffect(() => {
     nProgress.start();
@@ -59,10 +65,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`font-public-sans antialiased`}>
       <body>
-        <StoreProvider>
-          <Toaster/>
-          <Navbar />
-          <main>{children}</main>
+        <StoreProvider store={store}>
+          <FormProgressProvider>          
+            <Toaster/>
+            <Navbar/>
+            <main>{children}</main>
+          </FormProgressProvider>
         </StoreProvider>
       </body>
     </html>

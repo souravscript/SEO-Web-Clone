@@ -20,7 +20,7 @@ const SingleBlogForm = ({register,errors}) => {
                     <div className="flex flex-row">
                         <h1 className="text-xl font-semibold text-gray-800">Single Blog Post</h1>
                         <Image src={tokenCoin} alt="single blog post" className="rounded-md h-5 w-5 ml-2 mt-1" />
-                        <span className="text-gray-500 text-sm ml-1 mt-1">10 Tokens</span>
+                        <span className="text-gray-500 text-sm ml-1 mt-1">1 Token</span>
                     </div>
                 </div>
 

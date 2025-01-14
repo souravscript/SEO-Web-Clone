@@ -31,6 +31,7 @@ export async function POST(req) {
         if (!authUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
+        
 
         // Process each title
         const results = await Promise.allSettled(
@@ -52,7 +53,8 @@ export async function POST(req) {
         const failed = results
             .filter((result) => result.status === "rejected")
             .map((result) => result.reason);
-
+        authUser.token -= successful.length; // Corrected variable name
+        await authUser.save();
         // Return the results
         return NextResponse.json({ successful, failed }, { status: 207 }); // 207 Multi-Status
     } catch (err) {

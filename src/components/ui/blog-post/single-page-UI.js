@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import SingleBlogForm from "./single-blog-form";
 import { usePathname, useRouter } from "next/navigation";
 import ToastComponent from "@/components/ui/blog-post/toast-component";
-//import { setFieldCountIncrement,calculatePercentage,setFieldCountDecrement, markTabChecked, markTabUnchecked, reset, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
+import { setFieldCountIncrement,calculatePercentage,setFieldCountDecrement, markTabChecked, markTabUnchecked, reset, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
 import { InfinitySpin, ThreeCircles } from "react-loader-spinner";
 import { useCookieValue } from "@/hooks/useCookie";

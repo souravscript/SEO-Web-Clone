@@ -56,7 +56,7 @@ const SideProgress = () => {
         <div className="space-y-2">
           {tabs.map((tab, index) => (
             <div key={tab.name} className="flex items-center gap-2">
-              <span className="mx-2">{tab.isCheckedOut? <CircleCheck color="green"/>:<Circle/> }</span>
+              <span className="mx-2">{sections.isCheckedOut? <CircleCheck color="green"/>:<Circle/> }</span>
               <span
                 className={`text-sm font-medium ${
                   tab.isCheckedOut ? "text-gray-700" : "text-gray-700"

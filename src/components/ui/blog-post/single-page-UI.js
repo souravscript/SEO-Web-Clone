@@ -195,13 +195,13 @@ const SinglePageUI = () => {
             // if (tokenRes.ok) {
             //     dispatch(setProfile(user));
             // }
-            // dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
-            // dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
-            // dispatch(calculatePercentage());
-            addFieldCount(tabs[prevIndex].filledNum)
-            completeSection({tabName: tabs[prevIndex].name })
-            setActiveTabIndex(newIndex)
-            updateProgress()
+            dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
+            dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
+            dispatch(calculatePercentage());
+            // addFieldCount(tabs[prevIndex].filledNum)
+            // completeSection({tabName: tabs[prevIndex].name })
+            // setActiveTabIndex(newIndex)
+            // updateProgress()
             dispatch(setToken(1))
             setToastData({ title });
             setCurrentIndex(tabs.length - 1);
@@ -218,14 +218,14 @@ const SinglePageUI = () => {
             setCurrentIndex(prevIndex => {
                 const newIndex = prevIndex - 1;
                 console.log("currentIndex from back ", newIndex);
-                removeFieldCount(tabs[prevIndex].filledNum)
-                uncompleteSection({ tabName: tabs[prevIndex].name })
-                setActiveTabIndex(newIndex)
-                updateProgress()
-                // dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
-                // dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
-                // dispatch(setTabIndex(newIndex));
-                // dispatch(calculatePercentage());
+                // removeFieldCount(tabs[prevIndex].filledNum)
+                // uncompleteSection({ tabName: tabs[prevIndex].name })
+                // setActiveTabIndex(newIndex)
+                // updateProgress()
+                dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
+                dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
+                dispatch(setTabIndex(newIndex));
+                dispatch(calculatePercentage());
                 return newIndex;
             });
         }
@@ -236,22 +236,22 @@ const SinglePageUI = () => {
             setCurrentIndex(prevIndex => {
                 const newIndex = prevIndex + 1;
                 console.log("currentIndex from next ", newIndex);
-                addFieldCount(tabs[prevIndex].filledNum)
-                completeSection({tabName: tabs[prevIndex].name })
-                setActiveTabIndex(newIndex)
-                updateProgress()
-                // dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
-                // dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
-                // dispatch(setTabIndex(newIndex));
-                // dispatch(calculatePercentage());
+                // addFieldCount(tabs[prevIndex].filledNum)
+                // completeSection({tabName: tabs[prevIndex].name })
+                // setActiveTabIndex(newIndex)
+                // updateProgress()
+                dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
+                dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
+                dispatch(setTabIndex(newIndex));
+                dispatch(calculatePercentage());
                 return newIndex;
             });
         }
     };
     
     const exitHandler = () => {
-        resetFormState()
-        //dispatch(reset());
+        // resetFormState()
+        dispatch(reset());
         router.push("/");
     };
 

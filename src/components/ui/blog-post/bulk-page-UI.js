@@ -15,11 +15,12 @@ import { useDispatch } from "react-redux";
 //import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import { InfinitySpin } from "react-loader-spinner";
 import { useFormState } from "@/context/FormProgressContext";
+import { useCookieValue } from "@/hooks/useCookie";
 
 const BulkPageUI = () => {
     const dispatch = useDispatch();
     const router = useRouter();
-    //const access_token = useGetAccessToken();
+    const access_token = useCookieValue('access_token');
     
     const [submitted, setSubmitted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -116,28 +117,61 @@ const BulkPageUI = () => {
 
 
             const titles = payload.blogEntries.map(entry => entry.title)
-            console.log("titles", titles)   
+            console.log("titles", titles)
+            
+            const {elements}=data.details
+        const reqJSONdata={
+            structure_dict: {
+            conclusion: elements.includes("conclusion")?true:false,
+            tables: elements.includes("tables")?1:0,
+            video_urls: ["https://example.com/video1", "https://example.com/video2"],
+            video_quantity: 2,
+            layout: "comprehensive",
+            h3: elements.includes("h3")?3:0,
+            lists: elements.includes("lists")?2:0,
+            italics: elements.includes("italics")?true:false,
+            quotes: elements.includes("quotes")?true:false,
+            key_takeaways: elements.includes("KeyTakeaways")?true:false,
+            faq: elements.includes("faqs")?true:false,
+            bold: elements.includes("bold")?true:false,   
+            },
+            article_size: 1500,
+            arguments: {
+                web_search_bool: false,
+                video_search_bool: false,
+                image_gen_bool: false,
+                web_search: "BS4",
+                tone: "professional",
+                audience: "tech professionals",
+                "Additional Info": ""
+            },
+            improve_context: false,
+            llm: "openrouter"
+        }
 
             const response = await fetch("/api/documents/bulk-blog", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    //Authorization: `Bearer ${access_token}`,
+                    Authorization: `Bearer ${access_token}`,
                 },
-                credentials: 'include',
-                body: JSON.stringify(titles),
+                //credentials: 'include',
+                body: JSON.stringify(titles, reqJSONdata),
             });
 
             if (!response.ok) {
                 throw new Error("Failed to submit blogs.");
             }
-            addFieldCount(tabs[prevIndex].filledNum)
-            completeSection({tabName: tabs[prevIndex].name })
-            setActiveTabIndex(newIndex)
-            updateProgress()
-            // dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
-            // dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
-            // dispatch(calculatePercentage());
+            // addFieldCount(tabs[prevIndex].filledNum)
+            // completeSection({tabName: tabs[prevIndex].name })
+            // setActiveTabIndex(newIndex)
+            // updateProgress()
+            dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
+            dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
+            dispatch(calculatePercentage());
+            setCurrentIndex(tabs.length - 1);
+            dispatch(setToken(titles.length))
+            // setToastData({ title });
             setCurrentIndex(tabs.length - 1);
 
         } catch (error) {
@@ -153,14 +187,14 @@ const BulkPageUI = () => {
                 setCurrentIndex(prevIndex => {
                     const newIndex = prevIndex - 1;
                     console.log("currentIndex from back ", newIndex);
-                    removeFieldCount(tabs[prevIndex].filledNum)
-                    uncompleteSection({ tabName: tabs[prevIndex].name })
-                    setActiveTabIndex(newIndex)
-                    updateProgress()
-                    // dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
-                    // dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
-                    // dispatch(setTabIndex(newIndex));
-                    // dispatch(calculatePercentage());
+                    // removeFieldCount(tabs[prevIndex].filledNum)
+                    // uncompleteSection({ tabName: tabs[prevIndex].name })
+                    // setActiveTabIndex(newIndex)
+                    // updateProgress()
+                    dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
+                    dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
+                    dispatch(setTabIndex(newIndex));
+                    dispatch(calculatePercentage());
                     return newIndex;
                 });
             }
@@ -171,22 +205,22 @@ const BulkPageUI = () => {
                 setCurrentIndex(prevIndex => {
                     const newIndex = prevIndex + 1;
                     console.log("currentIndex from next ", newIndex);
-                    addFieldCount(tabs[prevIndex].filledNum)
-                    completeSection({tabName: tabs[prevIndex].name })
-                    setActiveTabIndex(newIndex)
-                    updateProgress()
-                    // dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
-                    // dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
-                    // dispatch(setTabIndex(newIndex));
-                    // dispatch(calculatePercentage());
+                    // addFieldCount(tabs[prevIndex].filledNum)
+                    // completeSection({tabName: tabs[prevIndex].name })
+                    // setActiveTabIndex(newIndex)
+                    // updateProgress()
+                    dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
+                    dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
+                    dispatch(setTabIndex(newIndex));
+                    dispatch(calculatePercentage());
                     return newIndex;
                 });
             }
         };
         
         const exitHandler = () => {
-            resetFormState()
-            //dispatch(reset());
+            //resetFormState()
+            dispatch(reset());
             router.push("/");
         };
 

@@ -29,8 +29,10 @@ export async function POST(req) {
     // }
     // const content=await generateBlog(title)
     //console.log("User ID:", user._id);
-    
-    const content = await fetch("http://localhost:8080/api/layouts/generate-content", {
+    const hostedMLService = process.env.HOSTED_ML_SERVICE;
+    console.log("ML Service",hostedMLService)
+    //const localMLService = "http://localhost:8080/api/layouts/generate-content";
+    const content = await fetch(hostedMLService, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

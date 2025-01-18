@@ -133,7 +133,7 @@ const Navbar = ({user}) => {
                         />
                     </div>
                     {isLoggedIn && (
-                        <Link href="/payment"><button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-1 py-1 text-sm flex justify-center items-center">
+                        <Link href="/pricing"><button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-1 py-1 text-sm flex justify-center items-center">
                             {/* <HiMiniCurrencyDollar className="text-white bg-yellow-400 rounded-full mx-1 w-5 h-5" /> */}
                             <Image src={tokenCoin} alt="User Profile" width={15} height={15} />
                             <span className="mx-1 text-gray-500">{token}</span>

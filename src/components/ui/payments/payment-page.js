@@ -1,20 +1,15 @@
 "use client";
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Coins } from 'lucide-react';
+
 
 export default function PaymentPage() {
-  const tokens = 1000;
+  
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      {/* Token Display */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm">
-        <Coins className="w-5 h-5 text-[#f6B647]" />
-        <span className="font-medium">{tokens} tokens</span>
-      </div>
-
+    <div className="min-h-screen relative left-[8rem]  p-8 max-w-[1180px]">
+      
       {/* Header */}
-      <div className="max-w-5xl mx-auto mb-12">
+      <div className="max-w-5xl mb-12">
         <h1 className="text-4xl font-bold mb-4">Simple pricing based on your needs</h1>
         <p className="text-gray-600">Discover a variety of our advanced features. Unlimited and free for individuals.</p>
       </div>

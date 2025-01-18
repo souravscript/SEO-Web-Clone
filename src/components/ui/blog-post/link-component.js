@@ -5,36 +5,33 @@ const LinkComponent = ({ register, setValue, getValues, watch }) => {
   const [inputValue, setInputValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-
-
   // Function to validate URL
   const isValidURL = (url) => {
     const urlRegex = /^(https?:\/\/[^\s/$.?#].[^\s]*)$/i;
     return urlRegex.test(url);
   };
 
-  const connectToWebValue=watch("link.connectToWeb")
+  // Watch for changes in the "link.connectToWeb" field
+  const connectToWebValue = watch("link.connectToWeb");
 
   // Handle input submission
   const handleInput = (e) => {
-    setInputValue(e.target.value);
     e.preventDefault();
     if (isValidURL(inputValue)) {
       const currentLinks = getValues("link.links") || [];
       const updatedLinks = [...currentLinks, inputValue];
-
       setValue("link.links", updatedLinks); // Update the React Hook Form state
       setInputValue(""); // Clear the input field
-      setErrorMessage(""); // Clear error message
+      setErrorMessage(""); // Clear the error message
     } else {
       setErrorMessage("Please enter a valid URL.");
     }
   };
 
   // Handle chip removal
-  const removeLink = (link) => {
+  const removeLink = (linkToRemove) => {
     const currentLinks = getValues("link.links") || [];
-    const updatedLinks = currentLinks.filter((item) => item !== link);
+    const updatedLinks = currentLinks.filter((link) => link !== linkToRemove);
     setValue("link.links", updatedLinks); // Update the React Hook Form state
   };
 
@@ -71,7 +68,7 @@ const LinkComponent = ({ register, setValue, getValues, watch }) => {
 
         {/* Chips to display added links */}
         <div className="flex flex-wrap gap-2 mt-4">
-          {(getValues("link.links") || []).map((link, index) => (
+          {(watch("link.links") || []).map((link, index) => (
             <div
               key={index}
               className="flex items-center px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm"

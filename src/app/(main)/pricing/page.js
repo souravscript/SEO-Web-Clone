@@ -1,10 +1,10 @@
 import PaymentPage from "@/components/ui/payments/payment-page";
 
-const Payment=()=>{
+const Pricing=()=>{
     return(
-        <div>
+        <div className="bg-gray-50">
             <PaymentPage/>
         </div>
     )
 }
-export default Payment;
+export default Pricing;

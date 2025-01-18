@@ -71,7 +71,7 @@ const DocumentsPage = () => {
     }
   };
   return (
-    <div className="container mx-auto px-4 py-4 relative left-8 max-w-[1180px">
+    <div className="container mx-auto px-4 py-4 relative max-w-[1180px]">
       <p className="relative mt-2 mb-9">
                     <Link href="/">
                         <span className="text-[#A1A1A1] text-xs">Home</span>

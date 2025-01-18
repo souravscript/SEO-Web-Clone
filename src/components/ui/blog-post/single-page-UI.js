@@ -169,7 +169,7 @@ const SinglePageUI = () => {
             if (!title) {
                 throw new Error("Title or content is missing");
             }
-            console.log("req JSON data in frontend",reqJSONdata)
+            //console.log("req JSON data in frontend",reqJSONdata)
             const res = await fetch("/api/documents/single-blog", {
                 method: "POST",
                 headers: {
@@ -206,7 +206,7 @@ const SinglePageUI = () => {
             setToastData({ title });
             setCurrentIndex(tabs.length - 1);
         } catch (err) {
-            console.log("Error is:", err.message || err);
+            //console.log("Error is:", err.message || err);
         }finally{
             setLoading(false)}
     };

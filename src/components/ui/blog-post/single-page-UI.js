@@ -116,8 +116,8 @@ const SinglePageUI = () => {
                 keywords: '',
             },
             link: {
-                connectToWeb: 'None',
-                url: '',
+                connectToWeb: false,
+                links: [],
             },
             publish: {
                 isPublish: false

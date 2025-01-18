@@ -11,15 +11,15 @@ const Details = ({ register, errors, watch }) => {
   ];
 
   const elements = [
-    { id: "conclusion", label: "Conclusion", defaultChecked: true },
-    { id: "tables", label: "Tables", defaultChecked: true },
-    { id: "h3", label: "H3" },
-    { id: "lists", label: "Lists" },
-    { id: "italics", label: "Italics" },
-    { id: "quotes", label: "Quotes" },
-    { id: "faqs", label: "FAQs" },
-    { id: "keyTakeaways", label: "Key Takeaways", defaultChecked: true },
-    { id: "bold", label: "Bold", defaultChecked: true },
+    { id: "tables", label: "Tables", type:"number"  },
+    { id: "h3", label: "H3",type:"number" },
+    { id: "lists", label: "Lists", type:"number" },
+    { id: "conclusion", label: "Conclusion", type:"checkbox", },
+    { id: "italics", label: "Italics", type:"checkbox" },
+    { id: "quotes", label: "Quotes", type:"checkbox" },
+    { id: "faqs", label: "FAQs", type:"checkbox" },
+    { id: "keyTakeaways", label: "Key Takeaways", type:"checkbox" },
+    { id: "bold", label: "Bold", type:"checkbox" },
   ];
 
   // Watch for selected elements
@@ -34,10 +34,10 @@ const Details = ({ register, errors, watch }) => {
             htmlFor="details"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Include these details
+           Additional Information
           </label>
           <textarea
-            {...register("details.includeDetails", {
+            {...register("details.additionalInfo", {
               required: "Details are required",
             })}
             id="details"
@@ -97,25 +97,49 @@ const Details = ({ register, errors, watch }) => {
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-3">Elements</h3>
           <div className="flex flex-wrap gap-4">
-            {elements.map((element) => (
-              <div key={element.id} className="flex items-center gap-2">
-                <input
-                  {...register("details.elements")}
-                  type="checkbox"
-                  defaultChecked={false}
-                  value={element.id}
-                  id={element.id}
-                  className="w-4 h-4"
-                />
-                <label
-                  htmlFor={element.id}
-                  className="text-sm font-medium text-gray-600"
+          {elements.map((element) => (
+    <div key={element.id} className="flex flex-col gap-4">
+        {element.type === 'checkbox' ? (
+            <div className="flex items-center gap-4">
+              <label
+                    htmlFor={element.id}
+                    className="text-sm font-medium text-gray-600 mt-1"
                 >
-                  {element.label}
+                    {element.label}
                 </label>
-              </div>
-            ))}
-          </div>
+                <input
+                    {...register(`details.elements.checkType`)}
+                    type="checkbox"
+                    value={element.id}
+                    id={element.id}
+                    className="w-4 h-4 mt-1"
+                />
+                
+            </div>
+        ) : element.type === 'number' ? (
+            <div className="flex items-center gap-4 ">
+                <label
+                    htmlFor={element.id}
+                    className="text-sm font-medium text-gray-600"
+                >
+                    {element.label}
+                </label>
+                <input
+                    {...register(`details.elements.numType.${element.id}`)}
+                    type="number"
+                    min={0}
+                    max={10}
+                    defaultValue={0}
+                    id={element.id}
+                    className="w-[80px] h-[28px] border border-gray-300 rounded px-3 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                />
+            </div>
+        ) : null}
+    </div>
+))}
+
+</div>
+
         </div>
       </div>
     </div>

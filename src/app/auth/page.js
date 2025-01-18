@@ -123,9 +123,11 @@ export default function AuthPage() {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
-      <h1 className="text-2xl font-bold mb-4">SEO Engine</h1>
-
-      <div className="w-[450px] bg-white shadow-lg rounded-lg p-6">
+      <h1 className="text-2xl absolute top-[8rem] font-bold">SEO Engine</h1>
+      <h2 className="text-3xl font-semibold mb-4 text-center">
+              {isSignUp ? "New Here? Let's Get You Started!" : "Welcome Back!"}
+            </h2>
+      <div className="w-[450px] rounded-lg p-6">
         {isSignupSuccessful ? (
           <div className="text-center">
             <h2 className="text-xl font-semibold mb-4">
@@ -146,9 +148,6 @@ export default function AuthPage() {
           </div>
         ) : (
           <>
-            <h2 className="text-xl font-semibold mb-4 text-center">
-              {isSignUp ? "New Here? Let's Get You Started!" : "Welcome Back!"}
-            </h2>
 
             {errorMessage && (
               <div
@@ -159,14 +158,14 @@ export default function AuthPage() {
               </div>
             )}
 
-            <form onSubmit={onSubmit} className="space-y-3">
+            <form onSubmit={onSubmit} className="space-y-4">
               {/* Email Input */}
               <div className="relative">
                 <div className="flex items-center border border-gray-300 rounded-md px-3 h-[50px]">
                   <input
                     type="email"
                     placeholder="Email"
-                    className="flex-grow focus:outline-none"
+                    className="flex-grow bg-gray-50 focus:outline-none"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -183,7 +182,7 @@ export default function AuthPage() {
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
-                    className="flex-grow focus:outline-none"
+                    className="flex-grow bg-gray-50 focus:outline-none"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -213,7 +212,7 @@ export default function AuthPage() {
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm Password"
-                      className="flex-grow focus:outline-none"
+                      className="flex-grow bg-gray-50 focus:outline-none"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
@@ -244,7 +243,7 @@ export default function AuthPage() {
                 className={`w-full h-[50px] text-white font-medium py-2 rounded-md mt-4 
                   ${isSubmitting
                     ? "bg-yellow-400 cursor-not-allowed"
-                    : "bg-primaryYellow hover:bg-yellow-600"
+                    : "bg-tabColor hover:bg-yellow-600"
                   }`}
               >
                 {isSubmitting
@@ -286,7 +285,7 @@ export default function AuthPage() {
 
             {/* Toggle Auth Mode */}
             <div className="mt-4 text-center">
-              <span className="text-gray-600">
+              <span className="text-[#A3A3A3] font-sans text-sm">
                 {isSignUp
                   ? "Already have an account?"
                   : "Don't have an account?"}{" "}

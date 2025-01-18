@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "lucide-react";
 
-const LinkComponent = ({ register, setValue, getValues }) => {
+const LinkComponent = ({ register, setValue, getValues, watch }) => {
   const [inputValue, setInputValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -12,6 +12,8 @@ const LinkComponent = ({ register, setValue, getValues }) => {
     const urlRegex = /^(https?:\/\/[^\s/$.?#].[^\s]*)$/i;
     return urlRegex.test(url);
   };
+
+  const connectToWebValue=watch("link.connectToWeb")
 
   // Handle input submission
   const handleInput = (e) => {

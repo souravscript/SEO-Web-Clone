@@ -20,16 +20,16 @@ const formProgressSlice = createSlice({
   initialState,
   reducers: {
     calculatePercentage: (state) => {
-      console.log("filled fields",state.filledFormFields)
+      //console.log("filled fields",state.filledFormFields)
       state.percent = ((state.filledFormFields) / state.totalFields) * 100;
     },
     setFieldCountIncrement: (state, action) => {
-      console.log("action payload in next",action.payload)
+      //console.log("action payload in next",action.payload)
       state.filledFormFields = Math.min((state.filledFormFields) + (action.payload), state.totalFields);
       state.percent = (state.filledFormFields / state.totalFields) * 100;
     },
     setFieldCountDecrement: (state, action) => {
-      console.log("action payload in back",action.payload)
+      //console.log("action payload in back",action.payload)
       state.filledFormFields = Math.max((state.filledFormFields) - (action.payload), 0);
       state.percent = (state.filledFormFields / state.totalFields) * 100;
     },

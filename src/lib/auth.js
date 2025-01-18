@@ -65,13 +65,13 @@ export const handleLogout = async (dispatch) => {
 
   if (!res.ok) {
     const error = await res.json();
-    console.error("Logout Error:", error.message);
+    //console.error("Logout Error:", error.message);
     return;
   }
 
   // cookies.delete('access_token')
   // cookies.delete('refresh_token')
-  console.log("User logged out successfully.");
+  //console.log("User logged out successfully.");
   dispatch(logout());
   dispatch(reset())
 };
@@ -87,17 +87,17 @@ export const handleLogin = async (email, password, dispatch) => {
       credentials: 'include', // Ensure cookies are included in the request
     });
 
-    console.log("cookie data",document.cookie)
+    //console.log("cookie data",document.cookie)
 
     if (!res.ok) {
       const error = await res.json();
-      console.error("Login Error:", error.message);
+      //console.error("Login Error:", error.message);
       throw new Error(error.message || "Login failed");
     }
 
     // Parse the response to get user data (no need to handle tokens here)
     const responseData = await res.json();
-    console.log("Login response data:", responseData);
+    //console.log("Login response data:", responseData);
     // Dispatch user data to your store (e.g., Redux)
     const { user,token } = responseData;
 
@@ -125,11 +125,11 @@ export const handleLogin = async (email, password, dispatch) => {
     // // Dispatch the user data
      dispatch(login(user));
      dispatch(setToken(token))
-    console.log("Dispatched user data:", user);
+    //console.log("Dispatched user data:", user);
 
-    console.log("Dispatched token data:", token);
+    //console.log("Dispatched token data:", token);
   } catch (error) {
-    console.error("Login error:", error.message);
+    //console.error("Login error:", error.message);
     throw error; // Optional: Pass this error to higher-level error handlers
   }
 };
@@ -143,9 +143,9 @@ export const handleLogin = async (email, password, dispatch) => {
     provider: 'google',
     //token: response.credential,
   })
-  console.log("Data with oAuth ", data)
+  //console.log("Data with oAuth ", data)
   if (error) {
-    console.log(error.message);
+    //console.log(error.message);
     return null;
   }
 

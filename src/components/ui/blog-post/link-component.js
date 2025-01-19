@@ -42,6 +42,7 @@ const LinkComponent = ({ register, setValue, getValues, watch }) => {
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Connect to web</h3>
         <select
           {...register("link.connectToWeb")}
+          defaultValue="yes"
           className="w-[40%] px-4 py-3 border border-gray-300 rounded-md bg-white text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-gray-50 transition-all duration-300 ease-in-out"
         >
           <option value="yes">Yes</option>

@@ -22,9 +22,9 @@ export const useGetUser = (url) => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${access_token}`,
+                    //Authorization: `Bearer ${access_token}`,
                 },
-                //credentials: 'include',
+                credentials: 'include',
             });
             const result = await response.json();
             setUser(result.authUser);

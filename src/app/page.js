@@ -2,6 +2,8 @@
 import Link from "next/link";
 //style={{ objectFit: "cover" }}
 // Correct import of images
+
+import dynamic from 'next/dynamic';
 import singleBlogPost from "@/../public/single-blog-post.png";
 import bulkBlogPost from "@/../public/bulk-blog-post.png";
 import productRoundup from "@/../public/product-roundup.png";
@@ -12,6 +14,9 @@ import BlogBox from "@/components/ui/home/blog-boxes";
 import BottomGuide from "@/components/ui/home/bottom-guide";
 import TopDashboard from "@/components/ui/home/TopDashboard";
 
+const ClientTopDashboard = dynamic(() => import("@/components/ui/home/TopDashboard"), {
+  ssr: false,
+});
 const blogData = [
   {
     id: "single-blog",
@@ -54,7 +59,7 @@ export default function Home() {
   return (
     <div className="min-h-screen pt-20 pb-8 max-w-full flex flex-col justify-center items-center">
       <div className="w-[1180px] h-[738px] container mx-auto px-4">
-        <TopDashboard/>
+        <ClientTopDashboard/>
         <div className="flex flex-wrap gap-2 mt-4">
           {/* Iterate over blogData */}
           {blogData?.map((blog) => {

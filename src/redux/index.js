@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "@/redux/authSlice"
 import formReducer from "@/redux/singleBlogFormSlice"
 import formProgressReducer from "@/redux/singleBlogFormProgressSlice";
-import profileReducer from "@/redux/profileSlice"
+import tokenReducer from "@/redux/tokenSlice"
 
 
 
@@ -11,6 +11,6 @@ export const store=configureStore({
         auth:authReducer,
         form: formReducer,
         formProgress: formProgressReducer,
-        profile: profileReducer
+        token: tokenReducer
     },
 })

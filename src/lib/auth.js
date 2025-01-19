@@ -2,11 +2,28 @@
 import { login, logout,setToken } from "@/redux/authSlice";
 import { supabase } from "@/lib/supabase"
 import { reset } from "@/redux/singleBlogFormProgressSlice";
-import { useCookieValue } from "@/hooks/useCookie";
+import { resetToken } from "@/redux/tokenSlice";
+
 // import useCookie from "@/hooks/useCookie";
 // import { cookies } from "next/headers";
 
 
+const userLogin = (user, token) => {
+  // Store user and token in localStorage
+  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("token", token);
+  localStorage.setItem("isLoggedin",true)
+  // Optional: Log to confirm
+  console.log("User logged in, data stored in localStorage");
+};
+const userLogout = () => {
+  // Clear data from localStorage
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  localStorage.removeItem("isLoggedin")
+
+  console.log("User logged out, localStorage cleared");
+};
 
 export const handleSignup = async (email, password) => {
   try {
@@ -69,11 +86,9 @@ export const handleLogout = async (dispatch) => {
     return;
   }
 
-  // cookies.delete('access_token')
-  // cookies.delete('refresh_token')
-  //console.log("User logged out successfully.");
-  dispatch(logout());
+  userLogout()
   dispatch(reset())
+  dispatch(resetToken())
 };
 
 
@@ -102,29 +117,14 @@ export const handleLogin = async (email, password, dispatch) => {
     const { user,token } = responseData;
 
     
+    if(res.ok){
+      userLogin(user,token)
+    }
 
-    // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    // if (error) {
-    //   console.error("Supabase login error:", error.message);
-    //   throw new Error(error.message || "Supabase login failed");
-    // }
-
-    // const userSessionData = JSON.stringify({
-    //   access_token: data.session.access_token,
-    //   refresh_token: data.session.refresh_token,
-    //   user: data.user,
-    // });
-
-
-    // console.log("Supabase login successful. User session data:", data);
-
-    // // Save the session data to localStorage
-    // localStorage.setItem("session", userSessionData);
-    // console.log("Stored session data in localStorage");
 
     // // Dispatch the user data
-     dispatch(login(user));
-     dispatch(setToken(token))
+    //  dispatch(login(user));
+    //  dispatch(setToken(token))
     //console.log("Dispatched user data:", user);
 
     //console.log("Dispatched token data:", token);

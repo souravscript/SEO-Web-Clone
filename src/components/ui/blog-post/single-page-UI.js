@@ -13,8 +13,8 @@ import { setFieldCountIncrement,calculatePercentage,setFieldCountDecrement, mark
 import { useDispatch } from "react-redux";
 import { InfinitySpin, ThreeCircles } from "react-loader-spinner";
 import { useCookieValue } from "@/hooks/useCookie";
-import { setToken } from "@/redux/authSlice";
 import { useFormState } from "@/context/FormProgressContext";
+import { setTokenAfterBlog } from "@/redux/tokenSlice";
 
 const tabs = [
         {
@@ -67,7 +67,7 @@ const SinglePageUI = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const CurrentComponent = tabs[currentIndex]?.component;
-    const access_token = useCookieValue('access_token');
+    //const access_token = useCookieValue('access_token');
     
     //const user = useGetUser("/api/profile");
     const {progress,
@@ -174,9 +174,9 @@ const SinglePageUI = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
+                    //Authorization: `Bearer ${access_token}`,
                 },
-                //credentials: 'include',
+                credentials: 'include',
                 body: JSON.stringify({ reqJSONdata }),
             });
             
@@ -198,11 +198,7 @@ const SinglePageUI = () => {
             dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
             dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
             dispatch(calculatePercentage());
-            // addFieldCount(tabs[prevIndex].filledNum)
-            // completeSection({tabName: tabs[prevIndex].name })
-            // setActiveTabIndex(newIndex)
-            // updateProgress()
-            dispatch(setToken(1))
+            dispatch(setTokenAfterBlog(1))
             setToastData({ title });
             setCurrentIndex(tabs.length - 1);
         } catch (err) {
@@ -277,14 +273,14 @@ const SinglePageUI = () => {
                 </div>
             )}
             
-            <div className={`relative ${loading ? 'opacity-50' : ''}`} style={{ zIndex: 1 }}>
+            <div className={` relative ${loading ? 'opacity-50' : ''}`} style={{ zIndex: 1 }}>
                 {toastData && <ToastComponent title={toastData.title} onClose={closeToast} />}
                 {!loading && (
                     <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
                         <SingleBlogForm watch={watch} errors={errors} register={register} />
 
                         <div className="p-6 max-w-3xl">
-                            <div className="flex gap-[24px] mb-5">
+                            <div className="flex gap-[24px] mb-3">
                             {tabData.map((tab, index) => (
                                 <button
                                     key={index}

@@ -4,7 +4,23 @@ import Image from "next/image";
 import singleBlogPost from "@/../public/single-blog-post.png";
 import tokenCoin from "@/../public/tokenCoin.png";
 
-const SingleBlogForm = ({register,errors}) => {
+const SingleBlogForm = ({register,errors,watch}) => {
+    const mainKeywordValue=watch('mainKeyword')
+    const generateTitle=async ()=>{
+        const result=await fetch('http://34.131.28.178:8080/api/titles/generate-title',{
+            method:"POST",
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body:JSON.stringify({keywords:mainKeywordValue})
+        })
+        if(!result.ok){
+            console.error("Failed to generate title");
+            return 
+        }
+        const data=await result.json()
+        console.log("generated content",data)
+    }
     return (
         <div className="p-6 w-[780px] mx-auto">
                 <p className="absolute top-[2px] mb-[2rem]">
@@ -59,6 +75,16 @@ const SingleBlogForm = ({register,errors}) => {
                         )}
                     </div>
                 </div>
+                <div className="flex justify-end gap-4 mt-6 relative right-3">
+                
+                <button
+                    type="button"
+                    onClick={() => {generateTitle}}
+                    className="px-4 py-2 text-white bg-primaryYellow rounded-md hover:bg-paleYellow hover:text-primaryYellow hover:border-primaryYellow transition-colors"
+                >
+                    Generate
+                </button>
+            </div>
         </div>
     );
 };

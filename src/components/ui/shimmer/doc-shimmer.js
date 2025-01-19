@@ -8,20 +8,20 @@ const ShimmerCard = () => {
       <div className="pt-6 pb-2">
         <div className="flex justify-between items-start">
           {/* Placeholder for the icon */}
-          <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+          <div className="w-12 h-12 bg-gray-200 ml-3 rounded-full"></div>
           {/* Placeholder for the badge */}
-          <div className="ml-2 bg-yellow-100 p-2 rounded-full w-16 h-6"></div>
+          <div className="ml-2 bg-yellow-50 p-2 mr-4 rounded-full w-16 h-6"></div>
         </div>
       </div>
 
       {/* Card Content Section */}
       <div className="pt-2">
         {/* Placeholder for the title */}
-        <div className="h-6 bg-gray-300 rounded mb-2 w-3/4"></div>
+        <div className="h-6 bg-gray-200 rounded mb-2 w-3/4"></div>
         {/* Placeholder for the description */}
         <div className="space-y-2">
-          <div className="h-4 bg-gray-300 rounded w-full"></div>
-          <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+          <div className="h-4 bg-gray-200 rounded w-full"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
         </div>
       </div>
     </div>

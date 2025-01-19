@@ -8,18 +8,13 @@ import tokenCoin from "@/../public/tokenCoin.png";
 import userPic from "@/../public/userProfile.png";
 import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
-import { handleLogout } from "@/lib/auth";
 import { useDispatch, useSelector } from "react-redux";
-//import { HiMiniCurrencyDollar } from "react-icons/hi2";
-//import { useGetUser } from "@/hooks/use-get-user";
-//import { set } from "nprogress";
-import { setProfile } from "@/redux/authSlice";
-//import { useGetUser } from "@/hooks/use-get-user";
+import { handleLogout } from "@/lib/auth";
 
-const Navbar = ({user}) => {
-    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-    const userData=useSelector((state)=>state.auth.user)
-    const token=useSelector((state) => state.auth.token);
+const Navbar = () => {
+    const localUser = localStorage.getItem("user");
+    const user= localUser ? JSON.parse(localUser) : null;
+    const isLoggedIn=localStorage.getItem("isLoggedin");
     const dispatchLogout = useDispatch();
     const dispatch = useDispatch();
     const pathname = usePathname();
@@ -29,12 +24,14 @@ const Navbar = ({user}) => {
     const router = useRouter();
     //const user=useGetUser('/api/profile');
 
+    const token = useSelector((state) => state.token.token);
+
     const toggleDropdown = () => {
         setDropdownOpen((prev) => !prev);
     };
 
     const logoutHandler = async () => {
-        await handleLogout(dispatchLogout);
+        await handleLogout(dispatch);
         setDropdownOpen(false);
         router.push("/auth");
     };

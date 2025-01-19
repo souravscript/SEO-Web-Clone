@@ -23,7 +23,6 @@ export default function AuthPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loggedinUser,setLoggedinUser]=useState({})
-  const dispatch=useDispatch()
   const router=useRouter()
 
   // Validation state
@@ -70,7 +69,6 @@ export default function AuthPage() {
     return isValid;
   };
   const oAuthHandler=()=>{
-    handleSignInWithGoogle(dispatch)
   }
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -96,7 +94,7 @@ export default function AuthPage() {
           setConfirmPassword("");
         }
       } else {
-        await handleLogin(email, password,dispatch);
+        await handleLogin(email, password);
         router.push('/')
         //setLoggedinUser(user)
         // Optional: Add redirect or further action on successful login

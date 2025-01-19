@@ -28,9 +28,9 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
+            //Authorization: `Bearer ${access_token}`,
           },
-          //credentials: 'include',
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -65,9 +65,9 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete }) => {
       const response = await fetch(`/api/documents/single-blog/${document._id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          //Authorization: `Bearer ${access_token}`,
         },
-        //credentials: 'include',
+        credentials: 'include',
       });
       console.log("delete doc called ",response)
       if (!response.ok) {

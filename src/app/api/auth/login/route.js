@@ -59,8 +59,9 @@ export async function POST(req) {
     response.cookies.set({
       name: "access_token",
       value: access_token,
-      //httpOnly: true, // Secure cookie, not accessible via JavaScript
-      //secure: process.env.NODE_ENV === "production", // Use HTTPS in production
+      httpOnly: true, // Secure cookie, not accessible via JavaScript
+      secure:true,
+      //process.env.NODE_ENV === "production", // Use HTTPS in production
       sameSite: "Strict", // Prevent CSRF attacks
       maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
       path: "/", // Available to all routes
@@ -70,8 +71,9 @@ export async function POST(req) {
     response.cookies.set({
       name: "refresh_token",
       value: refresh_token,
-      //httpOnly: true,
-      //secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      secure: true,
+      //process.env.NODE_ENV === "production",
       sameSite: "Strict",
       maxAge: 60 * 60 * 24 * 30, // 30 days in seconds
       path: "/",

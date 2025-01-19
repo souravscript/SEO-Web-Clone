@@ -15,12 +15,12 @@ import { useDispatch } from "react-redux";
 //import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import { InfinitySpin } from "react-loader-spinner";
 import { useFormState } from "@/context/FormProgressContext";
-import { useCookieValue } from "@/hooks/useCookie";
+import { setTokenAfterBlog } from "@/redux/tokenSlice";
 
 const BulkPageUI = () => {
     const dispatch = useDispatch();
     const router = useRouter();
-    const access_token = useCookieValue('access_token');
+    //const access_token = useCookieValue('access_token');
     
     const [submitted, setSubmitted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -170,7 +170,7 @@ const BulkPageUI = () => {
             dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
             dispatch(calculatePercentage());
             setCurrentIndex(tabs.length - 1);
-            dispatch(setToken(titles.length))
+            dispatch(setTokenAfterBlog(titles.length))
             // setToastData({ title });
             setCurrentIndex(tabs.length - 1);
 

@@ -1,19 +1,24 @@
 
 const { createSlice } = require("@reduxjs/toolkit");
-
 const initialState={
-    token:300,
+    token:0,
 }
 const tokenSlice=createSlice({
-    name:"auth",
+    name:"token",
     initialState,
     reducers:{
-        setToken(state,action){
-            state.userProfile=action.payload;
+        setInitialTokenValue(state,action){
+            state.token=action.payload
+        },
+        setTokenAfterBlog(state,action){
+            state.token-=action.payload;
+        },
+        resetToken(state){
+            state.token=0
         }
     },
 })
 
-const { actions, reducer } = authSlice
-export const { setToken } = actions;
+const { actions, reducer } = tokenSlice
+export const { setTokenAfterBlog, resetToken, setInitialTokenValue } = actions;
 export default reducer;

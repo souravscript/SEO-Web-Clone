@@ -4,7 +4,9 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute=({children})=>{
-    const {user,isLoggedIn}=useSelector((state)=>state.auth)
+    const localUser = localStorage.getItem("user");
+    const user= localUser ? JSON.parse(localUser) : null;
+    const isLoggedIn=localStorage.getItem("isLoggedin");
     //const user=localStorage.getItem('session')
     useEffect(()=>{
         if( !user){

@@ -1,5 +1,6 @@
 # Branching strategies 
-feature/feature-name
-bugfix/bug-fix-name
-bugifix/ticket-id-short-description
-hotfix/issue-name
+
+<!-- - feature/feature-name
+- bug-fix/bug-fix-name
+- bug-fix/ticket-id-short-description
+- hot-fix/issue-name -->

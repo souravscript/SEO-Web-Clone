@@ -1,10 +1,16 @@
 "use client";
-import { useSelector } from "react-redux";
+
+import { setInitialTokenValue } from "@/redux/tokenSlice";
+import { useDispatch } from "react-redux";
 
 const TopDashboard = () => {
-    // Get the logged-in user's data from the Redux store
-    const user = useSelector((state) => state.auth.user);
-
+    const dispatch=useDispatch()
+    const localUser = localStorage.getItem("user");
+    const user= localUser ? JSON.parse(localUser) : null;
+    const localToken=localStorage.getItem("token")
+    const token=localToken? JSON.parse(localToken) : 'null'
+    dispatch(setInitialTokenValue(localToken))
+    console.log("Redux after logout", user)
     const fullName=user?.fullName.split(" ")[1]
     // console.log(user)
 

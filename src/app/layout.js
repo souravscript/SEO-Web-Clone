@@ -14,7 +14,11 @@ import { setToken } from "@/redux/authSlice";
 import { useGetUser } from "@/hooks/use-get-user";
 import { store } from "@/redux";
 import { FormProgressProvider } from "@/context/FormProgressContext";
+import dynamic from 'next/dynamic';
 
+const ClientNavbar = dynamic(() => import("@/components/ui/home/navbar"), {
+  ssr: false,
+});
 
 // Define your custom fonts
 const geistSans = localFont({
@@ -68,7 +72,7 @@ export default function RootLayout({ children }) {
         <StoreProvider store={store}>
           <FormProgressProvider>          
             <Toaster/>
-            <Navbar/>
+            <ClientNavbar/>
             <main>{children}</main>
           </FormProgressProvider>
         </StoreProvider>

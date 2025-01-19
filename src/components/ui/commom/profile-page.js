@@ -14,28 +14,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useGetAccessToken } from '@/hooks/use-get-accessToken'
 import { ThreeCircles } from 'react-loader-spinner'
 import { useGetUser } from "@/hooks/use-get-user";
-import { useSelector } from "react-redux";
-import { useCookieValue } from "@/hooks/useCookie";
 
 export default function ProfilePage() {
-  //const access_token = useGetAccessToken();
 
-  const {fullName, phoneNumber}=useSelector((state) => state.auth.user);
-  const sessionData = localStorage.getItem("session");
+  const sessionData=localStorage.getItem("user");
   const parsedData = sessionData ? JSON.parse(sessionData) : {};
-  const extractedEmail = parsedData?.user?.email || "";
-  const access_token =useCookieValue('access_token')
+  const extractedEmail = parsedData?.email || "";
+  const extractedPhoneNumber=parsedData?.phoneNumber || ""
+  const extractedFullName=parsedData?.fullName || ""
+  //const access_token =useCookieValue('access_token')
   const { toast } = useToast();
   const user = useGetUser('/api/profile');
   const [isLoading, setIsLoading] = useState(false);
   const [avatarName, setAvatarName] = useState("");
   const [formData, setFormData] = useState({
-    fullName: fullName ||'',
+    fullName: extractedFullName ||'',
     email: extractedEmail,
-    phoneNumber: phoneNumber.slice(2) || '',
+    phoneNumber: extractedPhoneNumber.slice(2) || '',
   });
   useEffect(()=>{
     console.log("user",user);
@@ -78,9 +75,9 @@ export default function ProfilePage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          //Authorization: `Bearer ${access_token}`,
         },
-        //credentials: 'include',
+        credentials: 'include',
         body: JSON.stringify({
           fullName,
           phoneNumber: `${countryCode} ${phoneNumber}`

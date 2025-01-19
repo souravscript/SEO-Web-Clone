@@ -55,9 +55,9 @@ const DocumentsPage = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${access_token}`,
+          //Authorization: `Bearer ${access_token}`,
         },
-        //credentials: 'include',
+        credentials: 'include',
       });
       const { documents } = await response.json();
       console.log("Document data: ", documents);

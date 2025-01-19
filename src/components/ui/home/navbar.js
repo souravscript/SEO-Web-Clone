@@ -10,12 +10,16 @@ import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogout } from "@/lib/auth";
+import Cookies from 'js-cookie'
 
 const Navbar = () => {
-    const localUser = localStorage.getItem("user");
-    const user= localUser ? JSON.parse(localUser) : null;
-    const isLoggedIn=localStorage.getItem("isLoggedin");
-    const dispatchLogout = useDispatch();
+    // const localUser = localStorage.getItem("user");
+    // const user= localUser ? JSON.parse(localUser) : null;
+    // const isLoggedIn=localStorage.getItem("isLoggedin");
+
+    const localUser = Cookies.get("user");
+    const user = localUser ? JSON.parse(localUser) : null;
+    const isLoggedIn = Cookies.get("isLoggedin") === "true";
     const dispatch = useDispatch();
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);

@@ -8,23 +8,43 @@ import { resetToken } from "@/redux/tokenSlice";
 // import { cookies } from "next/headers";
 
 
+// const userLogin = (user, token) => {
+//   // Store user and token in localStorage
+//   localStorage.setItem("user", JSON.stringify(user));
+//   localStorage.setItem("token", token);
+//   localStorage.setItem("isLoggedin",true)
+//   // Optional: Log to confirm
+//   console.log("User logged in, data stored in localStorage");
+// };
+// const userLogout = () => {
+//   // Clear data from localStorage
+//   localStorage.removeItem("user");
+//   localStorage.removeItem("token");
+//   localStorage.removeItem("isLoggedin")
+
+//   console.log("User logged out, localStorage cleared");
+// };
+import Cookies from "js-cookie";
+
+
 const userLogin = (user, token) => {
-  // Store user and token in localStorage
-  localStorage.setItem("user", JSON.stringify(user));
-  localStorage.setItem("token", token);
-  localStorage.setItem("isLoggedin",true)
+  // Store user and token in cookies
+  Cookies.set("user", JSON.stringify(user), { expires: 7 }); // Expires in 7 days
+  Cookies.set("token", token, { expires: 7 });
+  Cookies.set("isLoggedin", true, { expires: 7 });
+
   // Optional: Log to confirm
-  console.log("User logged in, data stored in localStorage");
+  console.log("User logged in, data stored in cookies");
 };
+
 const userLogout = () => {
-  // Clear data from localStorage
-  localStorage.removeItem("user");
-  localStorage.removeItem("token");
-  localStorage.removeItem("isLoggedin")
+  // Clear data from cookies
+  Cookies.remove("user");
+  Cookies.remove("token");
+  Cookies.remove("isLoggedin");
 
-  console.log("User logged out, localStorage cleared");
+  console.log("User logged out, cookies cleared");
 };
-
 export const handleSignup = async (email, password) => {
   try {
     // Supabase authentication

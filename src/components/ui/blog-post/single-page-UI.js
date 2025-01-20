@@ -15,6 +15,7 @@ import { InfinitySpin, ThreeCircles } from "react-loader-spinner";
 import { useCookieValue } from "@/hooks/useCookie";
 import { useFormState } from "@/context/FormProgressContext";
 import { setTokenAfterBlog } from "@/redux/tokenSlice";
+import useBeforeUnload from "@/hooks/useBeforeUnload";
 
 const tabs = [
         {
@@ -66,9 +67,10 @@ const SinglePageUI = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
+    const percentState= [0, 29, 75, 79, 87, 96, 100]
     const CurrentComponent = tabs[currentIndex]?.component;
     //const access_token = useCookieValue('access_token');
-    
+    //useBeforeUnload();
     //const user = useGetUser("/api/profile");
     const {progress,
         activeTabIndex,
@@ -116,7 +118,7 @@ const SinglePageUI = () => {
                 keywords: '',
             },
             link: {
-                connectToWeb: false,
+                connectToWeb: "yes",
                 links: [],
             },
             publish: {
@@ -200,6 +202,7 @@ const SinglePageUI = () => {
             dispatch(calculatePercentage());
             dispatch(setTokenAfterBlog(1))
             setToastData({ title });
+            dispatch(setTabIndex(tabs.length-1))
             setCurrentIndex(tabs.length - 1);
         } catch (err) {
             //console.log("Error is:", err.message || err);
@@ -363,17 +366,17 @@ const SinglePageUI = () => {
                                     </button>
                                 )}
                             </div>
-                            <div className="h-6 w-full"></div>
                         </div>
                     </form>
                 )}
             </div>
+
+            <div className="h-[12rem] w-full"></div>
         </div>
     );
 };
 
 export default SinglePageUI;
-
 
 
 

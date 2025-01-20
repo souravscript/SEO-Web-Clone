@@ -1,7 +1,7 @@
 
 import { login, logout,setToken } from "@/redux/authSlice";
 import { supabase } from "@/lib/supabase"
-import { reset } from "@/redux/singleBlogFormProgressSlice";
+import { reset, resetPercent } from "@/redux/singleBlogFormProgressSlice";
 import { resetToken } from "@/redux/tokenSlice";
 
 // import useCookie from "@/hooks/useCookie";
@@ -28,10 +28,14 @@ import Cookies from "js-cookie";
 
 
 const userLogin = (user, token) => {
+
+  const percentData=[0,29,75,79,87,96,100]
   // Store user and token in cookies
   Cookies.set("user", JSON.stringify(user), { expires: 7 }); // Expires in 7 days
   Cookies.set("token", token, { expires: 7 });
   Cookies.set("isLoggedin", true, { expires: 7 });
+  Cookies.set("progressState", JSON.stringify(percentData)); 
+  
 
   // Optional: Log to confirm
   console.log("User logged in, data stored in cookies");
@@ -42,6 +46,8 @@ const userLogout = () => {
   Cookies.remove("user");
   Cookies.remove("token");
   Cookies.remove("isLoggedin");
+  Cookies.remove("progressState");
+
 
   console.log("User logged out, cookies cleared");
 };

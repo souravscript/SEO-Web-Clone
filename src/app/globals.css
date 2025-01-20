@@ -142,3 +142,20 @@ body { /* Black text */ /* White background */
 }
 
 /* Optional: Add more custom styles */
+.clip-diagonal-top {
+  clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
+}
+
+.clip-diagonal-bottom {
+  clip-path: polygon(100% 100%, 0% 100%, 100% 0%);
+}
+.bg-yellow-half {
+  background: linear-gradient(to top left, #f9f9c4 50%, white 50%);
+}
+
+
+.bg-blue-half {
+  background: linear-gradient(to top left, #e7eff9, white 50%);
+  clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%);
+}
+

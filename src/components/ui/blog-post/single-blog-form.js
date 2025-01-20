@@ -80,7 +80,7 @@ const SingleBlogForm = ({register,errors,watch}) => {
                 <button
                     type="button"
                     onClick={() => {generateTitle}}
-                    className="px-4 py-2 text-white bg-primaryYellow rounded-md hover:bg-paleYellow hover:text-primaryYellow hover:border-primaryYellow transition-colors"
+                    className="px-4 py-2 text-white bg-tabColor  rounded-md hover:bg-paleYellow hover:text-primaryYellow hover:border-primaryYellow transition-colors"
                 >
                     Generate
                 </button>

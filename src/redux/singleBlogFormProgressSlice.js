@@ -8,10 +8,10 @@ const initialState = {
   filledFormFields: 0,
   tabs: [
     { name: "Core Settings", isCheckedOut: false},
-    { name: "Details", isCheckedOut: false,},
-    { name: "SEO", isCheckedOut: false,},
-    { name: "Link", isCheckedOut: false,},
-    { name: "Publish", isCheckedOut: false,},
+    { name: "Details", isCheckedOut: false},
+    { name: "SEO", isCheckedOut: false},
+    { name: "Link", isCheckedOut: false},
+    { name: "Publish", isCheckedOut: false},
   ],
 };
 

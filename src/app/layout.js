@@ -73,7 +73,7 @@ export default function RootLayout({ children }) {
           <FormProgressProvider>          
             <Toaster/>
             <ClientNavbar/>
-            <main>{children}</main>
+            <main className="bg-white h-full w-full">{children}</main>
           </FormProgressProvider>
         </StoreProvider>
       </body>

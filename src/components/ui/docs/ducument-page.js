@@ -16,12 +16,7 @@ const DocumentsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const access_token =useCookieValue('access_token')
-
-  const handleDelete = (id) => {
-    setSavedDrafts((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
-    setDocumentsData((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
-  };
+  //const access_token =useCookieValue('access_token')
 
   const handleOpenModal = (document) => {
     console.log("Document data: ", document);
@@ -77,7 +72,7 @@ const DocumentsPage = () => {
                         <span className="text-[#A1A1A1] text-xs">Home</span>
                     </Link>
                     <span className="text-gray-400 mr-1 ml-1">/</span>
-                    <span className="text-black text-xs">Single Blog post</span>
+                    <span className="text-black text-xs">Documents</span>
         </p>
       <Tabs defaultValue="drafts" className="w-full">
         <div className="mb-8">
@@ -140,12 +135,13 @@ const DocumentsPage = () => {
               <DocShimmerGrid />
             ) : (
               <TabsContent value="drafts">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                   {savedDrafts.length > 0 ? (
                     savedDrafts.map((document) => (
                       <DocumentCard
                         key={document._id}
                         document={document}
+                        isDraft={true}
                         onClick={() => handleOpenModal(document)}
                       />
                     ))
@@ -157,10 +153,11 @@ const DocumentsPage = () => {
             )}
 
             <TabsContent value="published">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
                 {documentsData.length > 0 ? (
                   documentsData.map((document) => (
                     <DocumentCard
+                      isDraft={false}
                       key={document._id}
                       document={document}
                       onClick={() => handleOpenModal(document)}
@@ -177,6 +174,7 @@ const DocumentsPage = () => {
 
       {modalOpen && selectedDocument && (
         <DocumentModal
+          refreshDocuments={fetchDocuments}
           isOpen={modalOpen}
           onClose={handleCloseModal}
           document={selectedDocument}

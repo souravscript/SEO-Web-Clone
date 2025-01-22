@@ -8,8 +8,16 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-const DocumentCard = ({ onClick, document }) => {
+const DocumentCard = ({ onClick, document, isDraft }) => {
   const truncatedDescription = document?.content?.slice(0, 75) + "...";
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
 
   // Function to determine badge color based on document type
   const getBadgeVariant = (type) => {
@@ -27,10 +35,12 @@ const DocumentCard = ({ onClick, document }) => {
     return document.type || 'Blog post';
   };
 
+  //console.log("create at")
+
   return (
     <Card 
       onClick={onClick} 
-      className="w-70 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      className="w-68 h-max cursor-pointer hover:shadow-lg transition-shadow duration-200"
     >
       <CardHeader className="pt-6 pb-2">
         <div className="flex justify-between items-start">
@@ -56,9 +66,28 @@ const DocumentCard = ({ onClick, document }) => {
           {document.title}
         </h3>
         <div className="text-sm text-gray-500 line-clamp-2">
+          <p>
           <Markdown remarkPlugins={[remarkGfm]}>
             {truncatedDescription}
           </Markdown>
+          </p>
+        </div>
+
+        <div className="flex items-center mt-4 text-sm text-gray-400">
+          <svg 
+            className="w-4 h-4 mr-1" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
+            />
+          </svg>
+          <span>{isDraft? "Saved" : "Published"} {formatDate(document.createdAt)}</span>
         </div>
       </CardContent>
     </Card>

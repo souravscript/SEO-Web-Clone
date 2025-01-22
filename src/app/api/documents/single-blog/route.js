@@ -87,7 +87,7 @@ export async function GET(req) {
         }
 
         // Fetch documents associated with the authenticated user
-        const documents = await Docs.find({ userId: authUser._id }); 
+        const documents = await Docs.find({ userId: authUser._id }).sort({ createdAt: -1 }); 
 
         //console.log("MongoDB User:", JSON.stringify(authUser));
         //console.log("User Documents:", documents);

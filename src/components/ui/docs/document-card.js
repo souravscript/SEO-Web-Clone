@@ -1,5 +1,5 @@
- "use client";
- 
+"use client";
+
 import React from 'react';
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -19,23 +19,16 @@ const DocumentCard = ({ onClick, document, isDraft }) => {
     });
   };
 
-  // Function to determine badge color based on document type
-  const getBadgeVariant = (type) => {
-    const types = {
-      'How to Guide': 'warning',
-      'Product Review': 'success',
-      'Product Roundup': 'info',
-      'Blog post': 'secondary'
-    };
-    return types[type] || 'default';
-  };
-
+  // Function to determine document type
   const getDocumentType = (document) => {
-    // Add logic to determine document type
-    return document.type || 'Blog post';
+    const docTypeMap = {
+      'blog': 'Blog post',
+      'review': 'Product Review',
+      'roundup': 'Product Roundup',
+      'guide': 'How to Guide'
+    };
+    return docTypeMap[document.docType] || 'Blog post'; // Default to "Blog post" if docType is not provided
   };
-
-  //console.log("create at")
 
   return (
     <Card 
@@ -54,8 +47,7 @@ const DocumentCard = ({ onClick, document, isDraft }) => {
             />
           </div>
           <Badge 
-            variant={getBadgeVariant(getDocumentType(document))}
-            className="ml-2 bg-yellow-100 px-5 py-2 rounded-full font-light"
+            className="ml-2 bg-yellow-100 px-5 py-2 rounded-full text-black font-thin"
           >
             {getDocumentType(document)}
           </Badge>
@@ -95,4 +87,3 @@ const DocumentCard = ({ onClick, document, isDraft }) => {
 };
 
 export default DocumentCard;
-

@@ -1,9 +1,10 @@
-import ComingSoon from "@/components/ui/commom/coming-soon";
+
+import GuidePage from "@/components/ui/product/guide-page";
 
 const HowToGuide=()=>{
     return (
         <div>
-            <ComingSoon/>
+            <GuidePage/>
         </div>
     )
 }

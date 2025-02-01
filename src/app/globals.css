@@ -5,6 +5,10 @@
 :root { /* White background */ /* Black text */
 }
 
+html, body {
+  height: 100%;
+}
+
 body { /* Black text */ /* White background */
   font-family: 'Public Sans', sans-serif; /* Font fallback */
   margin: 0; /* Reset margin */
@@ -60,6 +64,16 @@ body { /* Black text */ /* White background */
     #f0f0f0 100%
   );
   background-size: 200% 100%;
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 @layer base {

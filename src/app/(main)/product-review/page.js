@@ -1,9 +1,10 @@
-import ComingSoon from "@/components/ui/commom/coming-soon";
+
+import ReviewPage from "@/components/ui/product/review-page";
 
 const ProductReview=()=>{
     return (
         <div>
-            <ComingSoon/>
+            <ReviewPage/>
         </div>
     )
 }

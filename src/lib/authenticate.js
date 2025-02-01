@@ -10,7 +10,7 @@ export async function authenticate(req) {
 
   // const token = authHeader.split(" ")[1];
   const token = req.cookies.get('access_token')?.value;
-  //console.log("token recieved: ",token)
+  console.log("token recieved: ",token)
 
   // Verify the token
   const { user, error } = verifyToken(token);

@@ -50,14 +50,17 @@ export async function POST(req) {
     // Create a new Document associated with the user
     const authUser=await User.findOne({supabaseId:user.sub})
     console.log("authUser ",authUser)
-    authUser.token-=1;
-    await authUser.save();
+    
     //console.log("auth user", authUser)
     //console.log("This is supabase user",user)
     //console.log("This is mongo user ", JSON.stringify(authUser))
     //const Documents = await Docs.findOne({ userId:authUser.id });
-    const newDoc = await Docs.create({ userId: authUser._id, title, content: responseBody.content });
-    console.log(newDoc)
+    const newDoc = await Docs.create({ userId: authUser._id, title, content: responseBody.content, docType: 'blog' });
+    if(newDoc){
+        console.log(newDoc)
+        authUser.token-=1;
+        await authUser.save();
+    }
 
     return NextResponse.json(newDoc, { status: 201 });
 }catch(err){

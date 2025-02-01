@@ -5,7 +5,7 @@ const docSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    docType: {type: String, enum:['blog']},
+    docType: {type: String, enum:['blog','review','roundup','guide']},
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     createdAt: { type: Date, default: Date.now },
     isPublished: {type: Boolean, default:false}

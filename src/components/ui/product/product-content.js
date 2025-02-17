@@ -73,8 +73,17 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
 
     return () => {
       if (editorRef.current) {
-        editorRef.current.destroy();
-        editorRef.current = null;
+        try {
+          if (typeof editorRef.current.destroy === 'function') {
+            editorRef.current.destroy();
+          } else {
+            console.warn('EditorJS destroy method not found');
+          }
+        } catch (error) {
+          console.error('Error destroying EditorJS:', error);
+        } finally {
+          editorRef.current = null;
+        }
       }
     };
   }, []);
@@ -111,7 +120,7 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
       </div>
       <div id="editorjs" className="mt-4 w-[50rem] max-h-[40rem] overflow-auto border p-4 rounded bg-white"></div>
       
-      {/* Markdown Preview */}
+      {/* Markdown Preview
       <div className="mt-4 prose max-w-full">
         <Markdown 
           remarkPlugins={[remarkGfm]} 
@@ -136,7 +145,7 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
         >
           {markdownContent}
         </Markdown>
-      </div>
+      </div> */}
       <div className="mt-28"></div>
     </div>
   );

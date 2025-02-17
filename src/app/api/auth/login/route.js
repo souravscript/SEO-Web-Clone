@@ -38,7 +38,11 @@ export async function POST(req) {
 
 
     const authUser=await User.findOne({supabaseId:user.id})
-    console.log("auth user in login ",authUser)
+    console.log("auth user in login ", {
+      supabaseId: user.id,
+      fullName: authUser?.fullName,
+      phoneNumber: authUser?.phoneNumber
+    })
     // Set a secure cookie with the access token
     const response = NextResponse.json(
       {

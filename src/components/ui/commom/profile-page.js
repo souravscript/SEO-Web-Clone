@@ -32,8 +32,19 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     fullName: extractedFullName || '',
     email: extractedEmail,
-    phoneNumber: extractedPhoneNumber.slice(2) || '',
+    phoneNumber: extractedPhoneNumber 
+      ? extractedPhoneNumber.replace(/^(IN|US|UK)\s*/, '') // More robust country code removal
+      : '',
   });
+
+  useEffect(() => {
+    console.log('Initial Phone Number State:', {
+      sessionData,
+      parsedData,
+      extractedPhoneNumber,
+      formData
+    });
+  }, []);
 
   useEffect(() => {
     console.log("user", user);
@@ -59,6 +70,32 @@ export default function ProfilePage() {
   }, [user, formData.fullName]);
 
   const [countryCode, setCountryCode] = useState("IN");
+
+  const formatPhoneNumber = (value) => {
+    // Remove non-digit characters
+    const cleaned = value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    const truncated = cleaned.slice(0, 10);
+    
+    // Format with dashes if 10 digits
+    if (truncated.length === 10) {
+      return `${truncated.slice(0, 3)}-${truncated.slice(3, 6)}-${truncated.slice(6)}`;
+    }
+    
+    return truncated;
+  };
+
+  const handlePhoneChange = (e) => {
+    const rawValue = e.target.value;
+    const formattedValue = formatPhoneNumber(rawValue);
+    
+    setFormData(prev => ({
+      ...prev, 
+      phoneNumber: formattedValue
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -130,11 +167,6 @@ export default function ProfilePage() {
     }
   };
 
-  // Modify the phone number input to show the full phone number
-  const displayPhoneNumber = formData.phoneNumber.length === 10 
-    ? `${formData.phoneNumber.slice(0, 3)}-${formData.phoneNumber.slice(3, 6)}-${formData.phoneNumber.slice(6)}` 
-    : formData.phoneNumber;
-
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-8">
       {isLoading && (
@@ -193,9 +225,10 @@ export default function ProfilePage() {
                 <Input
                   id="phone"
                   type="tel"
-                  value={displayPhoneNumber}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                  value={formData.phoneNumber}
+                  onChange={handlePhoneChange}
                   className="flex-1"
+                  placeholder="Enter 10-digit phone number"
                 />
               </div>
             </div>

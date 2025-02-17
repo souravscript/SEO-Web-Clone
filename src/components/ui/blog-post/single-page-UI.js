@@ -87,6 +87,7 @@ const SinglePageUI = () => {
     const pathName=usePathname();
     useEffect(()=>{
         resetFormState()
+        dispatch(reset())
         },[pathName])
 
     const {
@@ -377,8 +378,3 @@ const SinglePageUI = () => {
 };
 
 export default SinglePageUI;
-
-
-
-
-

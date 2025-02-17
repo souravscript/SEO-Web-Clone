@@ -12,13 +12,20 @@ const TopDashboard = () => {
     // const token=localToken? JSON.parse(localToken) : 'null'
 
     const localUser = Cookies.get("user");
-    const user = localUser ? JSON.parse(localUser) : null;
-    const localToken = Cookies.get("token");
-    const token = localToken || null;
 
-    dispatch(setInitialTokenValue(localToken))
-    console.log("Redux after logout", user)
-    const fullName=user?.fullName.split(" ")[1]
+    let user = null;
+    try {
+    user = localUser ? JSON.parse(localUser) : null;
+    } catch (error) {
+    console.error("Error parsing user from cookies:", error);
+    user = null;
+    }
+
+    const localToken = Cookies.get("token") || null;
+    dispatch(setInitialTokenValue(localToken));
+
+    const fullName = user?.fullName?.split(" ")[0];
+
     // console.log(user)
 
     return (

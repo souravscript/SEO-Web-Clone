@@ -16,33 +16,48 @@ import {
 } from "@/components/ui/select"
 import { ThreeCircles } from 'react-loader-spinner'
 import { useGetUser } from "@/hooks/use-get-user";
+import Cookies from 'js-cookie';
 
 export default function ProfilePage() {
 
-  const sessionData=localStorage.getItem("user");
+  const sessionData = Cookies.get('user');
   const parsedData = sessionData ? JSON.parse(sessionData) : {};
   const extractedEmail = parsedData?.email || "";
-  const extractedPhoneNumber=parsedData?.phoneNumber || ""
-  const extractedFullName=parsedData?.fullName || ""
-  //const access_token =useCookieValue('access_token')
+  const extractedPhoneNumber = parsedData?.phoneNumber || ""
+  const extractedFullName = parsedData?.fullName || ""
   const { toast } = useToast();
   const user = useGetUser('/api/profile');
   const [isLoading, setIsLoading] = useState(false);
   const [avatarName, setAvatarName] = useState("");
   const [formData, setFormData] = useState({
-    fullName: extractedFullName ||'',
+    fullName: extractedFullName || '',
     email: extractedEmail,
     phoneNumber: extractedPhoneNumber.slice(2) || '',
   });
-  useEffect(()=>{
-    console.log("user",user);
-    const fullName=user?.fullName.split(" ");
-    console.log("fullname ",fullName)
-    const newFullName=fullName?.map((name)=>name.slice(0,1))
-    setAvatarName(newFullName?.join("").slice(0,2))
-    // const initials=fullName[0][0]+fullName[1][0];
-    // setAvatarName(initials)
-  },[user])
+
+  useEffect(() => {
+    console.log("user", user);
+    if (user?.fullName) {
+      const fullName = user.fullName.split(" ");
+      console.log("fullname ", fullName);
+      
+      // Improved avatar name generation
+      let avatarInitials = fullName.length > 1 
+        ? fullName[0].slice(0, 1) + fullName[1].slice(0, 1)
+        : fullName[0].slice(0, 2);
+      
+      setAvatarName(avatarInitials.toUpperCase());
+    } else if (formData.fullName) {
+      // Fallback to form data if user data is not available
+      const fullName = formData.fullName.split(" ");
+      let avatarInitials = fullName.length > 1 
+        ? fullName[0].slice(0, 1) + fullName[1].slice(0, 1)
+        : fullName[0].slice(0, 2);
+      
+      setAvatarName(avatarInitials.toUpperCase());
+    }
+  }, [user, formData.fullName]);
+
   const [countryCode, setCountryCode] = useState("IN");
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,46 +66,58 @@ export default function ProfilePage() {
       setIsLoading(true);
       const { fullName, phoneNumber } = formData;
       console.log("formData", formData);
+      
       // Validation
       if (!fullName || !phoneNumber) {
         throw new Error("Missing data fields");
       }
-      if (!/^[a-zA-Z\s]+$/.test(fullName)) {
-        throw new Error("Full name can only contain letters and spaces");
-      }
-      if (!/^\d{10}$/.test(phoneNumber)) {
-        throw new Error("Phone number must be 10 digits");
-      }
-      // const session = localStorage.getItem("session");
-      // if (!session) {
-      //   throw new Error("Session data is not available in localStorage");
-      // }
-
-      // const { access_token } = JSON.parse(session);
       
-      // if (!access_token) {
-      //   throw new Error("Access token is missing in session data");
-      // }
+      // Improved full name validation
+      if (!/^[a-zA-Z\s]{2,}$/.test(fullName)) {
+        throw new Error("Full name must be at least 2 characters and contain only letters and spaces");
+      }
+      
+      // Improved phone number validation
+      const sanitizedPhoneNumber = phoneNumber.replace(/\D/g, ''); // Remove non-digit characters
+      if (sanitizedPhoneNumber.length !== 10) {
+        throw new Error("Phone number must be exactly 10 digits");
+      }
+      
       const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          //Authorization: `Bearer ${access_token}`,
         },
         credentials: 'include',
         body: JSON.stringify({
           fullName,
-          phoneNumber: `${countryCode} ${phoneNumber}`
+          phoneNumber: `${countryCode} ${sanitizedPhoneNumber}`
         })
       });
       console.log("response", response);
+      
       if (response.ok) {
+        // Update the user cookie with new data
+        const updatedUserData = {
+          ...parsedData,
+          fullName,
+          phoneNumber: `${countryCode} ${sanitizedPhoneNumber}`
+        };
+        
+        // Set the updated user data in cookies
+        Cookies.set('user', JSON.stringify(updatedUserData), { 
+          expires: 7, // 7 days expiry 
+          secure: process.env.NODE_ENV === 'production', 
+          sameSite: 'strict' 
+        });
+
         toast({
           title: "Profile Updated",
           description: "Your profile information has been updated successfully.",
         });
       } else {
-        throw new Error("Failed to update profile");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update profile");
       }
     } catch (error) {
       toast({
@@ -103,6 +130,10 @@ export default function ProfilePage() {
     }
   };
 
+  // Modify the phone number input to show the full phone number
+  const displayPhoneNumber = formData.phoneNumber.length === 10 
+    ? `${formData.phoneNumber.slice(0, 3)}-${formData.phoneNumber.slice(3, 6)}-${formData.phoneNumber.slice(6)}` 
+    : formData.phoneNumber;
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-8">
@@ -162,7 +193,7 @@ export default function ProfilePage() {
                 <Input
                   id="phone"
                   type="tel"
-                  value={formData.phoneNumber}
+                  value={displayPhoneNumber}
                   onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                   className="flex-1"
                 />

@@ -51,7 +51,7 @@ const blogData = [
     title: "How to Guide",
     description: "A brief description of the how-to review.",
     icon: howToGuide, // Assign the imported image directly
-    isComing: "false",
+    isComing: "true",
   },
 ];
 

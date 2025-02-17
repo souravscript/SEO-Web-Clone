@@ -17,9 +17,6 @@ const Navbar = () => {
     // const user= localUser ? JSON.parse(localUser) : null;
     // const isLoggedIn=localStorage.getItem("isLoggedin");
 
-    const localUser = Cookies.get("user");
-    const user = localUser ? JSON.parse(localUser) : null;
-    const isLoggedIn = Cookies.get("isLoggedin") === "true";
     const dispatch = useDispatch();
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -28,6 +25,17 @@ const Navbar = () => {
     const router = useRouter();
     //const user=useGetUser('/api/profile');
 
+    const localUser = Cookies.get("user");
+
+    let user = null;
+    try {
+    user = localUser ? JSON.parse(localUser) : null;
+    } catch (error) {
+    console.error("Error parsing user from cookies:", error);
+    user = null;
+    }
+    
+    const isLoggedIn = Cookies.get("isLoggedin") === "true";
     const token = useSelector((state) => state.token.token);
 
     const toggleDropdown = () => {
@@ -92,7 +100,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Navigation Links */}
-                <div className="hidden md:flex gap-14 relative left-8 max-w-[562px]">
+                <div className="hidden md:flex gap-14 relative  max-w-[562px]">
                     <Link href="/">
                         <span
                             className={`${
@@ -111,7 +119,7 @@ const Navbar = () => {
                             Documents
                         </span>
                     </Link>
-                    <Link href="/whats-new">
+                    {/* <Link href="/whats-new">
                         <span
                             className={`${
                                 pathname === "/whats-new" ? "text-primaryYellow" : "text-[#9D9D9D]"
@@ -119,12 +127,12 @@ const Navbar = () => {
                         >
                             What&apos;s New
                         </span>
-                    </Link>
+                    </Link> */}
                 </div>
 
                 {/* Search and Other Controls */}
                 <div className="flex items-center gap-4 flex-wrap justify-end">
-                    <div className="flex items-center border border-gray-300 rounded-full px-3 py-1 w-full md:w-auto">
+                    {/* <div className="flex items-center border border-gray-300 rounded-full px-3 py-1 w-full md:w-auto">
                         <span className="text-gray-500">
                             <CiSearch />
                         </span>
@@ -132,7 +140,7 @@ const Navbar = () => {
                             className="ml-2 text-sm w-16 md:w-16 focus:md:w-24 focus:outline-none transition-all duration-300"
                             placeholder="Search..."
                         />
-                    </div>
+                    </div> */}
                     {isLoggedIn && (
                         <Link href="/pricing"><button className="border border-primaryYellow bg-paleYellow text-black rounded-full px-1 py-1 text-sm flex justify-center items-center">
                             {/* <HiMiniCurrencyDollar className="text-white bg-yellow-400 rounded-full mx-1 w-5 h-5" /> */}

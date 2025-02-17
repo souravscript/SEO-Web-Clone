@@ -126,7 +126,7 @@ const SideBarInput = ({ handleGenerate, handleSave, productLink, setProductLink 
               type="url"
               value={productLink}
               onChange={handleInputChange}
-              className="w-full h-[80px]"
+              className="w-full h-[40px]"
             />
           </div>
         </div>

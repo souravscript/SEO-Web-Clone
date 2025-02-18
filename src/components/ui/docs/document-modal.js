@@ -269,6 +269,7 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete,refreshDocuments })
 
         const result = await response.json();
         setData(result);
+        console.log("Data for markdown conversion", result);
       } catch (err) {
         console.error("Error fetching modal data:", err);
         setError("Failed to load content. Please try again.");
@@ -379,7 +380,7 @@ const DocumentModal = ({ document, isOpen, onClose, onDelete,refreshDocuments })
                 {document.title}
               </h1>
               <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                <Markdown remarkPlugins={[remarkGfm]}>{document.content}</Markdown>
+                <Markdown remarkPlugins={[remarkGfm]}>{data?.document?.content}</Markdown>
               </div>
             </article>
           )}

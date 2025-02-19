@@ -33,13 +33,6 @@ const blogData = [
     isComing: "false",
   },
   {
-    id: "product-roundup",
-    title: "Product Roundup",
-    description: "A brief description of the product roundup.",
-    icon: productRoundup, // Assign the imported image directly
-    isComing: "false",
-  },
-  {
     id: "product-review",
     title: "Product Review",
     description: "A brief description of the product review.",
@@ -51,6 +44,13 @@ const blogData = [
     title: "How to Guide",
     description: "A brief description of the how-to review.",
     icon: howToGuide, // Assign the imported image directly
+    isComing: "false",
+  },
+  {
+    id: "product-roundup",
+    title: "Product Roundup",
+    description: "A brief description of the product roundup.",
+    icon: productRoundup, // Assign the imported image directly
     isComing: "true",
   },
 ];

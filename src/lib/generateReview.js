@@ -1,21 +1,47 @@
+//const { GoogleGenerativeAI } = require("@google/generative-ai");
+const DEFAULT_LLM = "openrouter";
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-export const generateReview = async (link) => {
+export const generateReview = async (product_url) => {
     try {
-        const prompt=`Generate a review for a amazon product with details as a general user based on this product link: ${link}`
-        //console.log("Generated Prompt:\n", prompt);
+        console.log("Generating review for URL:", product_url);
+        
+        const response = await fetch("/api/product/review/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ 
+                product_url, 
+                llm: DEFAULT_LLM 
+            }),
+        });
 
-        const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_AI_API);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // Detailed error handling
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Review Generation Error:", errorData);
+            
+            // Throw an error with a descriptive message
+            throw new Error(
+                errorData.details || 
+                errorData.error || 
+                "Failed to generate review"
+            );
+        }
 
-
-        const result = await model.generateContent(prompt);
-        const content = result.response?.text() || "Fallback content if none found";
-        //console.log("generated content: ",content)
+        // Parse the response
+        const data = await response.json();
+        console.log("Generated Review:\n", data);
+        
+        // Return the technical review or a fallback message
+        const content = data?.technical_review || "Unable to generate review at this time.";
         return content;
+
     } catch (error) {
-        console.error("Error generating blog:", error.message);
-        throw error;
+        console.error("Review Generation Process Error:", error);
+        
+        // Provide a user-friendly error message
+        return `Review generation failed: ${error.message}. Please try again later.`;
     }
 };

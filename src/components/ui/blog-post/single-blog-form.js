@@ -4,11 +4,12 @@ import Image from "next/image";
 import singleBlogPost from "@/../public/single-blog-post.png";
 import tokenCoin from "@/../public/tokenCoin.png";
 
-const SingleBlogForm = ({register,errors,watch}) => {
+const SingleBlogForm = ({register,errors,watch,setValue}) => {
     const mainKeywordValue=watch('mainKeyword')
     const generateTitle=async ()=>{
-        const result=await fetch('http://34.131.28.178:8080/api/titles/generate-title',{
+        const result=await fetch('/api/documents/title-generate',{
             method:"POST",
+            credentials:"include",
             headers:{
                 'Content-Type':'application/json',
             },
@@ -19,7 +20,9 @@ const SingleBlogForm = ({register,errors,watch}) => {
             return 
         }
         const data=await result.json()
-        console.log("generated content",data)
+        console.log("generated content",data.title)
+        // Use setValue from react-hook-form to set the title
+        setValue('title', data.title);
     }
     return (
         <div className="p-6 w-[780px] mx-auto">

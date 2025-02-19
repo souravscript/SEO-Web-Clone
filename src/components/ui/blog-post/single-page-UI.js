@@ -281,7 +281,7 @@ const SinglePageUI = () => {
                 {toastData && <ToastComponent title={toastData.title} onClose={closeToast} />}
                 {!loading && (
                     <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
-                        <SingleBlogForm watch={watch} errors={errors} register={register} />
+                        <SingleBlogForm watch={watch} errors={errors} register={register} setValue={setValue} />
 
                         <div className="p-6 max-w-3xl">
                             <div className="flex gap-[24px] mb-3">

@@ -52,17 +52,59 @@ const convertToMarkdown = (blocks) => {
     .join("\n\n");
 };
 
-function markdownToEditorJS(markdown) {
+export function markdownToEditorJS(markdown) {
   const blocks = [];
   const lines = markdown.split('\n');
   let currentListItems = [];
   let inList = false;
 
+  // Regular expression for image detection
+  const imageRegex = /!\[(.*?)\]\((.*?)\)|(?:^|\s)((https?:\/\/\S+\.(?:png|jpg|jpeg|gif|bmp|webp)(?:\?[^\s]+)?))(?:\s|$)/gi;
+
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    let line = lines[i].trim();
     
     // Skip empty lines
     if (!line) continue;
+
+    // Image detection (both markdown and direct URL styles)
+    const imageMatches = [...line.matchAll(imageRegex)];
+    if (imageMatches.length > 0) {
+      imageMatches.forEach(match => {
+        // Markdown style: ![alt](url)
+        if (match[2]) {
+          blocks.push({
+            type: 'image',
+            data: {
+              caption: match[1] || '',
+              url: match[2],
+              withBorder: false,
+              withBackground: false,
+              stretched: false
+            }
+          });
+        }
+        // Direct URL style
+        else if (match[3]) {
+          blocks.push({
+            type: 'image',
+            data: {
+              caption: '',
+              url: match[3],
+              withBorder: false,
+              withBackground: false,
+              stretched: false
+            }
+          });
+        }
+      });
+      
+      // Remove image URLs from the line for further processing
+      line = line.replace(imageRegex, '').trim();
+      
+      // If line is empty after removing images, continue to next line
+      if (!line) continue;
+    }
 
     // Headers
     const headerMatch = line.match(/^(#{1,6})\s+(.+)$/);
@@ -72,22 +114,6 @@ function markdownToEditorJS(markdown) {
         data: {
           text: headerMatch[2],
           level: headerMatch[1].length
-        }
-      });
-      continue;
-    }
-
-    // Images
-    const imageMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
-    if (imageMatch) {
-      blocks.push({
-        type: 'image',
-        data: {
-          caption: imageMatch[1],
-          url: imageMatch[2],
-          withBorder: false,
-          withBackground: false,
-          stretched: false
         }
       });
       continue;
@@ -125,13 +151,15 @@ function markdownToEditorJS(markdown) {
     const italicRegex = /\*(.*?)\*/g;
     paragraphText = paragraphText.replace(italicRegex, '<i>$1</i>');
 
-    // Regular paragraph
-    blocks.push({
-      type: 'paragraph',
-      data: {
-        text: paragraphText
-      }
-    });
+    // Regular paragraph (only if not empty after processing)
+    if (paragraphText.trim()) {
+      blocks.push({
+        type: 'paragraph',
+        data: {
+          text: paragraphText
+        }
+      });
+    }
   }
 
   return { blocks };
@@ -178,11 +206,21 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
   }, []);
   
   useEffect(() => {
-    if (editorRef.current && apiData) {
-      editorRef.current.isReady.then(() => {
-        editorRef.current.render(apiData);
-        const markdown = convertToMarkdown(apiData.blocks);
-        setMarkdownContent(markdown);
+    if (editorRef.current && apiData && apiData.blocks) {
+      editorRef.current.isReady.then(async () => {
+        try {
+          // Clear existing content
+          await editorRef.current.clear();
+
+          // Render new data
+          await editorRef.current.render(apiData);
+
+          // Convert blocks to markdown for state update
+          const markdown = convertToMarkdown(apiData.blocks);
+          setMarkdownContent(markdown);
+        } catch (error) {
+          console.error('Error rendering API data:', error);
+        }
       });
     }
   }, [apiData]);

@@ -101,7 +101,6 @@ import { useState, useRef } from "react";
 import { generateReview } from "@/lib/generateReview";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { scrapeProductData } from "@/lib/scrappingData";
 
 const ReviewPage = () => {
   const [apiData, setApiData] = useState("");
@@ -127,7 +126,7 @@ const ReviewPage = () => {
   
       const content = JSON.stringify(savedData.blocks[0].data.text);
   
-      const res = await fetch("/api/product/review", {
+      const res = await fetch("/api/product/review/save-review", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -168,10 +167,10 @@ const ReviewPage = () => {
   };
   
   
-  const handleReviewGeneration = async (url) => {
-    scrapeProductData()
+  const handleReviewGeneration = async (product_url) => {
+    //scrapeProductData()
     console.log("product link ", typeof productLink)
-    const data = await generateReview(url);
+    const data = await generateReview(product_url);
     //console.log("Data fetched from Gemini:", data);
 
     // Set the generated data in the EditorJS instance

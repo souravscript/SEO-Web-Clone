@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 export const verifyToken= (token) => {
   try {
     const decoded = jwt.verify(token,process.env.JWT_SECRET_KEY);
-    //console.log("This is the user", decoded)
+    console.log("This is the user", decoded)
     return { user: decoded, error: null };
   } catch (error) {
     return { user: null, error: error };

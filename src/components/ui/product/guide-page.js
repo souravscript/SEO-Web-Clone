@@ -1,11 +1,11 @@
 "use client";
-import SideBarInput from "@/components/ui/product/sidebar-input";
 import ProductContent from "@/components/ui/product/product-content";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { scrapeProductData } from "@/lib/scrappingData";
 import { generateProductGuide } from "@/lib/generateProductGuide";
+import GuideSidebar from "./guide-sidebar";
 
 const GuidePage = () => {
   const [apiData, setApiData] = useState("");
@@ -72,10 +72,23 @@ const GuidePage = () => {
   };
   
   
-  const handleGuideGeneration = async (url) => {
-    scrapeProductData()
-    console.log("product link ", typeof productLink)
-    const data = await generateProductGuide(url);
+  const handleGuideGeneration = async (title,description,articleSize) => {
+    //scrapeProductData()
+    const response = await fetch("/api/product/guide/", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title:title,article_size:articleSize, description: description }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to generate title");
+    }
+
+    const data = await response.json().content;
+    console.log("Generated title:", data.description);
     //console.log("Data fetched from Gemini:", data);
 
     // Set the generated data in the EditorJS instance
@@ -91,7 +104,7 @@ const GuidePage = () => {
 
   return (
     <div className="flex">
-      <SideBarInput
+      <GuideSidebar
         productLink={productLink}
         setProductLink={setProductLink}
         handleGenerate={handleGuideGeneration}

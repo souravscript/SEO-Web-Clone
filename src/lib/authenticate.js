@@ -14,7 +14,7 @@ export async function authenticate(req) {
 
   // Verify the token
   const { user, error } = verifyToken(token);
-  //console.log("user from verify token: ", user)
+  console.log("user from verify token: ", user)
   if (error) {
     return { error };
   }

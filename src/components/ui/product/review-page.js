@@ -101,10 +101,14 @@ import { useState, useRef } from "react";
 import { generateReview } from "@/lib/generateReview";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+<<<<<<< HEAD
 import Link from "next/link";
 import Image from "next/image";
 import notebook from "@/../public/single-blog-post.png";
 import tokenCoin from "@/../public/tokenCoin.png";
+=======
+import { markdownToEditorJS } from "@/components/ui/product/product-content";
+>>>>>>> 51cd5195a5bf249a0783f4290c38fd7e0a609934
 
 const ReviewPage = () => {
   const [apiData, setApiData] = useState("");
@@ -172,20 +176,22 @@ const ReviewPage = () => {
   
   
   const handleReviewGeneration = async (product_url) => {
-    //scrapeProductData()
-    console.log("product link ", typeof productLink)
-    const data = await generateReview(product_url);
-    //console.log("Data fetched from Gemini:", data);
-
-    // Set the generated data in the EditorJS instance
-    setApiData({
-      blocks: [
-        {
-          type: "paragraph",
-          data: { text: data },
-        },
-      ],
-    });
+    try {
+      const data = await generateReview(product_url);
+      
+      // Convert markdown to EditorJS blocks
+      const { blocks } = markdownToEditorJS(data);
+      
+      // Set the generated data in the EditorJS instance
+      setApiData({ blocks });
+    } catch (error) {
+      console.error('Error generating review:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate review",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

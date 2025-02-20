@@ -3,9 +3,11 @@ import ProductContent from "@/components/ui/product/product-content";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { scrapeProductData } from "@/lib/scrappingData";
-import { generateProductGuide } from "@/lib/generateProductGuide";
 import GuideSidebar from "./guide-sidebar";
+import Image from "next/image";
+import Link from "next/link";
+import notebook from "@/../public/single-blog-post.png";
+import tokenCoin from "@/../public/tokenCoin.png";
 
 const GuidePage = () => {
   const [apiData, setApiData] = useState("");
@@ -103,7 +105,30 @@ const GuidePage = () => {
   };
 
   return (
-    <div className="flex">
+    <>
+
+<div className="relative left-[21rem] mt-6">
+      <p className="relative mt-2 mb-9">
+        <Link href="/">
+          <span className="text-[#A1A1A1] text-xs">Home</span>
+        </Link>
+        <span className="text-gray-400 mx-1">/</span>
+        <span className="text-black text-xs">How to guide</span>
+      </p>
+      <div className="flex items-start mt-6 gap-4 mb-5">
+        <Image src={notebook} alt="single blog post" height={40} width={40} className="rounded-md" />
+        <div className="flex flex-row">
+          <h1 className="text-xl font-semibold text-gray-800"> How to guide</h1>
+          <Image src={tokenCoin} alt="single blog post" className="rounded-md h-5 w-5 ml-2 mt-1" />
+          <span className="text-gray-500 text-sm ml-1 mt-1">1 Token</span>
+        </div>
+      </div>
+      <div className="bg-[#FFF0CC] p-3 rounded w-80">
+        <p className="text-[#6E4D00] text-sm">You can edit generated content here.</p>
+      </div>
+      
+    </div>
+    <div className="flex flex-col justify-center items-center">
       <GuideSidebar
         productLink={productLink}
         setProductLink={setProductLink}
@@ -116,6 +141,7 @@ const GuidePage = () => {
         editorRef={editorRef} // Pass the editorRef to ProductContent
       />
     </div>
+    </>
   );
 };
 

@@ -1,15 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
-import Link from "next/link";
-import Image from "next/image";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 import 'highlight.js/styles/github.css';
-
-import notebook from "@/../public/single-blog-post.png";
-import tokenCoin from "@/../public/tokenCoin.png";
 import { EDITOR_TOOLS } from "./editor";
 
 const convertToMarkdown = (blocks) => {
@@ -137,6 +129,8 @@ function markdownToEditorJS(markdown) {
   return { blocks };
 }
 
+
+
 const ProductContent = ({ apiData, featName, editorRef }) => {
   const [markdownContent, setMarkdownContent] = useState("");
 
@@ -188,27 +182,27 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
   }, [apiData]);
 
   return (
-    <div className="relative top-2 left-12">
-      <p className="relative mt-2 mb-9">
+    <div className="relative">
+      {/* <p className="relative mt-2 mb-9">
         <Link href="/">
           <span className="text-[#A1A1A1] text-xs">Home</span>
         </Link>
         <span className="text-gray-400 mx-1">/</span>
         <span className="text-black text-xs">{featName}</span>
-      </p>
-      <div className="flex items-start mt-6 gap-4 mb-5">
+      </p> */}
+      {/* <div className="flex items-start mt-6 gap-4 mb-5">
         <Image src={notebook} alt="single blog post" height={40} width={40} className="rounded-md" />
         <div className="flex flex-row">
           <h1 className="text-xl font-semibold text-gray-800">{featName}</h1>
           <Image src={tokenCoin} alt="single blog post" className="rounded-md h-5 w-5 ml-2 mt-1" />
           <span className="text-gray-500 text-sm ml-1 mt-1">1 Token</span>
         </div>
-      </div>
-      <div className="bg-[#FFF0CC] p-3 rounded w-80">
+      </div> */}
+      {/* <div className="bg-[#FFF0CC] p-3 rounded w-80">
         <p className="text-[#6E4D00] text-sm">You can edit generated content here.</p>
-      </div>
-      <div id="editorjs" className="mt-4 w-[50rem] max-h-[40rem] overflow-auto border p-4 rounded bg-white"></div>
-
+      </div> */}
+      <div id="editorjs" className="mt-8 ml-[-0.8rem] w-[49rem] h-[35rem] max-h-[40rem] overflow-auto border p-4 rounded bg-white"></div>
+      
       {/* Markdown Preview
       <div className="mt-4 prose max-w-full">
         <Markdown 

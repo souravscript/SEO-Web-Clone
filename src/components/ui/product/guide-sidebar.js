@@ -10,10 +10,11 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
   const [description, setDescription] = useState(""); // Stores description input
   const [articleSize, setArticleSize] = useState(""); // Stores article size selection
 
+  const [isTitleGenerating, setIsTitleGenerating] = useState(false);
+  const [isDescriptionGenerating, setIsDescriptionGenerating] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const [step, setStep] = useState(1); // Controls which input field is visible
 
   const handleTitleGeneration = async () => {
     if (title.trim() === "") {
@@ -21,7 +22,7 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
       return;
     }
 
-    setIsGenerating(true);
+    setIsTitleGenerating(true);
 
     try {
       const response = await fetch("/api/product/guide/title", {
@@ -42,13 +43,11 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
       let cleanTitle = data.title.replace(/^"(.*)"$/, "$1").trim();
       console.log("Cleaned title:", cleanTitle);
       setTitle(cleanTitle);
-      //await handleGenerate(data.title);
-      setStep(2); // Move to the description input
 
     } catch (error) {
       console.error("Error during title generation:", error);
     } finally {
-      setIsGenerating(false);
+      setIsTitleGenerating(false);
     }
   };
 
@@ -58,32 +57,32 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
       return;
     }
 
-
-    setIsGenerating(true);
+    setIsDescriptionGenerating(true);
 
     try {
+      console.log("title ", title)
         const response = await fetch("/api/product/guide/description", {
             method: "POST",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ titleInput: description }),
+            body: JSON.stringify({ titleInput: title }),
           });
     
           if (!response.ok) {
             throw new Error("Failed to generate title");
           }
-    
+          
           const data = await response.json();
-          const cleanDescription = data.description.replace(/^"(.*)"$/, "$1").trim();
+          console.log("Generated description:", data?.description);
+          const cleanDescription = data?.description?.replace(/^"(.*)"$/, "$1").trim();
           console.log("Generated description:", cleanDescription);
           setDescription(cleanDescription);
-      setStep(3); // Move to the article size selection
     } catch (error) {
       console.error("Error during description generation:", error);
     } finally {
-      setIsGenerating(false);
+      setIsDescriptionGenerating(false);
     }
   };
 
@@ -105,60 +104,56 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
   };
 
   return (
-    <Card className="relative left-[24px] top-[24px] h-screen w-[300px] mr-4 p-4">
+    <Card className=" h-[23rem] mt-8 w-[780px] mr-4 p-4">
       <CardContent className="space-y-4">
         {/* Step 1: Title Input */}
-        {step >= 1 && (
           <div>
-            <p className="font-sans text-xs opacity-40 mx-2 my-2">Enter Title*</p>
+            <p className="font-sans text-xs opacity-40 mx-2 my-2">Title*</p>
+            <div className="flex gap-4">
             <Input
               type="text"
+              placeholder="Enter Title Keywords..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full h-[40px]"
-              disabled={step > 1}
             />
-            {step === 1 && (
               <Button
-                className="mt-2 w-full bg-tabColor hover:bg-white hover:text-backButtonColors"
+                className="mt-2 w-[13rem] relative top-[-0.5rem] py-5 bg-tabColor hover:bg-white hover:text-backButtonColors"
                 onClick={handleTitleGeneration}
-                disabled={isGenerating}
+                disabled={isTitleGenerating}
               >
-                {isGenerating ? "Generating..." : "Generate Title"}
+                {isTitleGenerating ? "Generating..." : "Generate Title"}
               </Button>
-            )}
+              </div>
           </div>
-        )}
 
         {/* Step 2: Description Input (Appears after title generation) */}
-        {step >= 2 && (
           <div>
-            <p className="font-sans text-xs opacity-40 mx-2 my-2">Enter Description*</p>
+            <p className="font-sans text-xs opacity-40 mx-2 my-2">Description*</p>
+            <div className="flex gap-4">
             <Input
               type="text"
-              value={!description? title : description}
+              value={description}
+              placeholder="Enter Description..."
               onChange={(e) => setDescription(e.target.value)}
               className="w-full h-[40px]"
-              disabled={step > 2}
             />
-            {step === 2 && (
               <Button
-                className="mt-2 w-full bg-tabColor hover:bg-white hover:text-backButtonColors"
+                className="mt-2 w-[10rem] relative top-[-0.5rem] py-5 bg-tabColor hover:bg-white hover:text-backButtonColors"
                 onClick={handleDescriptionGeneration}
-                disabled={isGenerating}
+                disabled={isDescriptionGenerating}
               >
-                {isGenerating ? "Generating..." : "Generate Description"}
+                {isDescriptionGenerating ? "Generating..." : "Generate Description"}
               </Button>
-            )}
+              </div>
           </div>
-        )}
 
         {/* Step 3: Article Size Selection (Appears after description generation) */}
-        {step >= 3 && (
-          <div>
+        
+          <div className="w-[589px]">
             <p className="font-sans text-xs opacity-40 mx-2 my-2">Select Article Size*</p>
-            <Select onValueChange={setArticleSize} value={articleSize}>
-              <SelectTrigger className="w-full h-[40px] border border-gray-300">
+            <Select className="w-full" onValueChange={setArticleSize} value={articleSize}>
+              <SelectTrigger className="w-[524px] h-[40px] border border-gray-300">
                 <SelectValue placeholder="Choose Size" />
               </SelectTrigger>
               <SelectContent>
@@ -168,10 +163,16 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
               </SelectContent>
             </Select>
           </div>
-        )}
 
         {/* Final Generate Button (Appears after selecting article size) */}
-        {step === 3 && (
+        <div className="flex gap-5 float-right mt-6 relative top-[1rem]">
+          <Button
+            className="mt-4 w-full hover:bg-white hover:text-backButtonColors border bg-white border-tabColor text-tabColor"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving Content..." : "Save Content"}
+          </Button>
           <Button
             className="mt-4 w-full bg-tabColor hover:bg-white hover:text-backButtonColors"
             onClick={handleFinalGeneration}
@@ -179,7 +180,8 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
           >
             {isGenerating ? "Generating Content..." : "Generate Content"}
           </Button>
-        )}
+        
+          </div>
       </CardContent>
     </Card>
   );

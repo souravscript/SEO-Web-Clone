@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     profilePic: { type: String, default: '' },
     createdAt: { type: Date, default: Date.now },
     phoneNumber: { type: String, default: '' },
-    token: {type: Number, default:0}
+    token: {type: Number, default:10}
   },
   { timestamps: true }
 );

@@ -37,7 +37,7 @@ export async function POST(req) {
     const { access_token, refresh_token } = session;
 
 
-    const authUser=await User.findOne({supabaseId:user.id})
+    const authUser = await User.findOne({ supabaseId: user.id })
     console.log("auth user in login ", {
       supabaseId: user.id,
       fullName: authUser?.fullName,
@@ -51,10 +51,10 @@ export async function POST(req) {
           email: user.email,
           role: user.role,
           fullName: authUser.fullName,
-          phoneNumber:authUser.phoneNumber
+          phoneNumber: authUser.phoneNumber
           // Include other user fields as needed
         },
-        token:authUser.token,
+        token: authUser.token,
         message: "Login successful",
       },
       { status: 200 }
@@ -64,7 +64,7 @@ export async function POST(req) {
       name: "access_token",
       value: access_token,
       httpOnly: true, // Secure cookie, not accessible via JavaScript
-      secure:true,
+      secure: false,
       //process.env.NODE_ENV === "production", // Use HTTPS in production
       sameSite: "Strict", // Prevent CSRF attacks
       maxAge: 60 * 60 * 24 * 7, // 7 days in seconds

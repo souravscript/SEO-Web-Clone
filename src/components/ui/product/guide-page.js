@@ -1,5 +1,6 @@
 "use client";
 import ProductContent from "@/components/ui/product/product-content";
+import { markdownToEditorJS } from "@/components/ui/product/product-content";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -28,13 +29,9 @@ const GuidePage = () => {
         throw new Error("Editor instance is not available");
       }
 
-      console.log("product link ", productLink)
-      const savedData = await editorRef.current.save();
-      console.log("Saved Data:", savedData.blocks[0].data.text);
+      const content = finalContent;
 
-      const content = JSON.stringify(savedData.blocks[0].data.text);
-
-      const res = await fetch("/api/product/guide", {
+      const res = await fetch("/api/product/guide/save-guide", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -76,33 +73,36 @@ const GuidePage = () => {
 
 
   const handleGuideGeneration = async (title, description, articleSize) => {
-    //scrapeProductData()
-    const response = await fetch("/api/product/guide/", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title: title, article_size: articleSize, description: description }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to generate title");
-    }
-
-    const data = await response.json().content;
-    console.log("Generated title:", data.description);
-    //console.log("Data fetched from Gemini:", data);
-
-    // Set the generated data in the EditorJS instance
-    setApiData({
-      blocks: [
-        {
-          type: "paragraph",
-          data: { text: data },
+    try {
+      const response = await fetch("/api/product/guide/", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ],
-    });
+        body: JSON.stringify({ title: title, article_size: articleSize, description: description }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate guide");
+      }
+
+      const data = await response.json();
+      console.log("Generated guide content:", data.content);
+
+      // Convert markdown to EditorJS blocks
+      const { blocks } = markdownToEditorJS(data.content);
+
+      // Set the generated data in the EditorJS instance
+      setApiData({ blocks });
+    } catch (error) {
+      console.error('Error generating guide:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate guide",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

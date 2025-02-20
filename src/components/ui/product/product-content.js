@@ -260,7 +260,7 @@ const ProductContent = ({ apiData, featName, editorRef, setFinalContent }) => {
       >
         <div
           id="editorjs"
-          className="p-6 mt-4 h-40 overflow-auto prose prose-sm 
+          className="p-6 mt-4 h-[40rem] overflow-auto prose prose-sm 
           prose-headings:text-gray-800 
           prose-p:text-gray-700 
           prose-a:text-blue-600 

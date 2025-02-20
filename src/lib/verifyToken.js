@@ -7,6 +7,6 @@ export const verifyToken= (token) => {
     //console.log("This is the user", decoded)
     return { user: decoded, error: null };
   } catch (error) {
-    return { user: null, error: 'Invalid token' };
+    return { user: null, error: error };
   }
 }

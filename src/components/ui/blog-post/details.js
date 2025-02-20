@@ -1,5 +1,10 @@
 "use client";
 import React from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const Details = ({ register, errors, watch }) => {
   const structures = [
@@ -30,22 +35,17 @@ const Details = ({ register, errors, watch }) => {
       {/* Details Section */}
       <div className="space-y-4">
         <div>
-          <label
-            htmlFor="details"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-           Additional Information
-          </label>
-          <textarea
+          <Label htmlFor="details">Additional Information</Label>
+          <Textarea
             {...register("details.additionalInfo", {
               required: "Details are required",
             })}
             id="details"
-            className="w-full min-h-[100px] p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Example: phone number 270-555-1234"
+            className="mt-2"
           />
           {errors.details?.includeDetails && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-destructive text-sm mt-1">
               {errors.details.includeDetails.message}
             </p>
           )}
@@ -55,39 +55,34 @@ const Details = ({ register, errors, watch }) => {
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-3">Structure</h3>
 
-          <div className="flex flex-wrap gap-4">
+          <RadioGroup 
+            {...register("details.structure")} 
+            className="flex flex-wrap gap-4"
+          >
             {structures.map((structure) => (
-              <div key={structure.id} className="flex items-center gap-2">
-                <input
-                  {...register("details.structure")}
-                  type="radio"
-                  value={structure.id}
-                  id={structure.id}
-                  defaultChecked={structure.isDefault}
-                  className="w-4 h-4"
+              <div key={structure.id} className="flex items-center space-x-2">
+                <RadioGroupItem 
+                  value={structure.id} 
+                  id={structure.id} 
+                  defaultChecked={structure.isDefault} 
                 />
-                <label
-                  htmlFor={structure.id}
-                  className="text-sm font-medium text-gray-600"
-                >
-                  {structure.label}
-                </label>
+                <Label htmlFor={structure.id}>{structure.label}</Label>
               </div>
             ))}
-          </div>
+          </RadioGroup>
         </div>
 
         {/* Opening Sentence Textarea */}
         <div>
-          <textarea
+          <Textarea
             {...register("details.openingSentence", {
               required: "Opening sentence is required",
             })}
-            className="w-full min-h-[120px] p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter the type of opening sentence for blog"
+            className="mt-2"
           />
           {errors.details?.openingSentence && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-destructive text-sm mt-1">
               {errors.details.openingSentence.message}
             </p>
           )}
@@ -97,49 +92,34 @@ const Details = ({ register, errors, watch }) => {
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-3">Elements</h3>
           <div className="flex flex-wrap gap-4">
-          {elements.map((element) => (
-    <div key={element.id} className="flex flex-col gap-4">
-        {element.type === 'checkbox' ? (
-            <div className="flex items-center gap-4">
-              <label
-                    htmlFor={element.id}
-                    className="text-sm font-medium text-gray-600 mt-1"
-                >
-                    {element.label}
-                </label>
-                <input
-                    {...register(`details.elements.checkType`)}
-                    type="checkbox"
-                    value={element.id}
-                    id={element.id}
-                    className="w-4 h-4 mt-1"
-                />
-                
-            </div>
-        ) : element.type === 'number' ? (
-            <div className="flex items-center gap-4 ">
-                <label
-                    htmlFor={element.id}
-                    className="text-sm font-medium text-gray-600"
-                >
-                    {element.label}
-                </label>
-                <input
-                    {...register(`details.elements.numType.${element.id}`)}
-                    type="number"
-                    min={0}
-                    max={10}
-                    defaultValue={0}
-                    id={element.id}
-                    className="w-[80px] h-[28px] border border-gray-300 rounded px-3 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                />
-            </div>
-        ) : null}
-    </div>
-))}
-
-</div>
-
+            {elements.map((element) => (
+              <div key={element.id} className="flex flex-col gap-4 items-center justify-center">
+                {element.type === 'checkbox' ? (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      {...register(`details.elements.checkType`)}
+                      value={element.id}
+                      id={element.id}
+                    />
+                    <Label htmlFor={element.id}>{element.label}</Label>
+                  </div>
+                ) : element.type === 'number' ? (
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor={element.id}>{element.label}</Label>
+                    <Input
+                      {...register(`details.elements.numType.${element.id}`)}
+                      type="number"
+                      min={0}
+                      max={10}
+                      defaultValue={0}
+                      id={element.id}
+                      className="w-[80px]"
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -1,14 +1,23 @@
-const SEO = ({ register }) => {
+"use client";
+import React from "react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
+const SEO = ({ register, errors }) => {
   return (
     <div className="space-y-4 p-6 border border-gray-300 rounded-lg bg-white shadow-md w-[725px] mx-auto">
-      <label className="block text-lg font-semibold text-gray-700">
+      <Label className="text-lg font-semibold">
         Keywords to include in text
-      </label>
-      <textarea
+      </Label>
+      <Textarea
         {...register("seo.keywords", { required: "This field is required" })}
         placeholder="Enter keywords or phrase"
-        className="w-full min-h-[120px] p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 placeholder-gray-400 transition-all ease-in-out duration-300"
       />
+      {errors.seo?.keywords && (
+        <p className="text-destructive text-sm mt-1">
+          {errors.seo.keywords.message}
+        </p>
+      )}
     </div>
   );
 };

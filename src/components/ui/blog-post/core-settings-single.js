@@ -1,5 +1,14 @@
-import { Slider } from '@/components/ui/slider';
 import React, { useState } from 'react';
+import { 
+    Select, 
+    SelectContent, 
+    SelectItem, 
+    SelectTrigger, 
+    SelectValue 
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 
 const CoreSettingsSingle = ({ register, errors, setValue }) => {
     const [articleSize, setArticleSize] = useState(400); // State for slider
@@ -8,61 +17,74 @@ const CoreSettingsSingle = ({ register, errors, setValue }) => {
         setArticleSize(value);
         setValue('coreSettings.articleSize', value); // Update React Hook Form state
     };
+
     return (
-        <div className="w-[725px] mx-auto flex flex-wrap gap-6 p-6 border border-gray-300 rounded-lg shadow-sm">
+        <div className="w-[725px] mx-auto flex flex-wrap gap-4 p-6 border border-gray-300 rounded-lg shadow-sm">
             {/* AI Model */}
-            <div className="flex flex-col w-[48%]">
-                <label className="text-gray-700 font-medium mb-1">AI Model</label>
-                <select
-                    {...register('coreSettings.aiModel')}
-                    className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option>Open Router</option>
-                </select>
+            <div className="flex flex-col w-[48%] space-y-2">
+                <Label>AI Model</Label>
+                <Select {...register('coreSettings.aiModel')}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select AI Model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="openrouter">Default (mix of models & expertise)</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             {/* Language */}
-            <div className="flex flex-col w-[48%]">
-                <label className="text-gray-700 font-medium mb-1">Language</label>
-                <select
-                    {...register('coreSettings.language')}
-                    className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option>English</option>
-                    <option>Spanish</option>
-                    <option>French</option>
-                </select>
+            <div className="flex flex-col w-[48%] space-y-2">
+                <Label>Language</Label>
+                <Select {...register('coreSettings.language')}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select Language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="English">English</SelectItem>
+                        <SelectItem value="Spanish">Spanish</SelectItem>
+                        <SelectItem value="French">French</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             {/* Target Country */}
-            <div className="flex flex-col w-[48%]">
-                <label className="text-gray-700 font-medium mb-1">Target Country</label>
-                <select
-                    {...register('coreSettings.targetCountry')}
-                    className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option>USA</option>
-                    <option>India</option>
-                    <option>Germany</option>
-                </select>
+            <div className="flex flex-col w-[48%] space-y-2">
+                <Label>Target Country</Label>
+                <Select {...register('coreSettings.targetCountry')}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select Country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="USA">USA</SelectItem>
+                        <SelectItem value="India">India</SelectItem>
+                        <SelectItem value="Germany">Germany</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             {/* Tone of Voice */}
-            <div className="flex flex-col w-[48%]">
-                <label className="text-gray-700 font-medium mb-1">Tone of Voice</label>
-                <select
-                    {...register('coreSettings.toneOfVoice', { required: 'tone of voice is required' })}
-                    className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <div className="flex flex-col w-[48%] space-y-2">
+                <Label>Tone of Voice</Label>
+                <Select 
+                    {...register('coreSettings.toneOfVoice', { 
+                        required: 'tone of voice is required' 
+                    })}
                 >
-                    <option>Professional</option>
-                    <option>Casual</option>
-                    <option>Creative</option>
-                </select>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select Tone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Professional">Professional</SelectItem>
+                        <SelectItem value="Casual">Casual</SelectItem>
+                        <SelectItem value="Creative">Creative</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             {/* Article Size */}
-            <div className="flex flex-col w-[47%]">
-                <label className="text-gray-700 font-medium mb-1">Article Size</label>
+            <div className="flex flex-col w-[47%] space-y-2">
+                <Label>Article Size</Label>
                 <Slider
                     min={400}
                     max={2000}
@@ -71,19 +93,27 @@ const CoreSettingsSingle = ({ register, errors, setValue }) => {
                     onValueChange={([value]) => handleSliderChange(value)}
                     className="w-full"
                 />
-                <span className="text-sm text-gray-500 mt-1">Current Size: {articleSize} words</span>
-                <span className="text-sm text-gray-500">Range: 400 - 2000 words</span>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Current Size: {articleSize} words</span>
+                    <span>Range: 400 - 2000 words</span>
+                </div>
             </div>
 
             {/* Audience */}
-            <div className="flex flex-col w-[48%] ml-2">
-                <label className="text-gray-700 font-medium mb-2">Audience</label>
-                <input
+            <div className="flex flex-col w-[48%] space-y-2">
+                <Label>Audience</Label>
+                <Input
                     type="text"
-                    {...register('coreSettings.audience', { required: 'audience is required' })}
-                    placeholder="Enter your audience"
-                    className="w-full h-[40px] border border-gray-300 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="eg: AI professionals, developers, entrepreneurs"
+                    {...register('coreSettings.audience', { 
+                        required: 'audience is required' 
+                    })}
                 />
+                {errors?.coreSettings?.audience && (
+                    <span className="text-destructive text-sm">
+                        {errors.coreSettings.audience.message}
+                    </span>
+                )}
             </div>
         </div>
     );

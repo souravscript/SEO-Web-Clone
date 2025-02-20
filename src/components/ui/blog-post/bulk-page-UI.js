@@ -1,5 +1,3 @@
-
-
 "use client";
 import Details from "@/components/ui/blog-post/details";
 import SEO from "@/components/ui/blog-post/seo";
@@ -12,36 +10,37 @@ import BulkBlogForm from "./bulk-blog-form";
 import { usePathname, useRouter } from "next/navigation";
 import { calculatePercentage, markTabChecked, markTabUnchecked, reset, setFieldCountDecrement, setFieldCountIncrement, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
+import { useCookieValue } from "@/hooks/useCookie";
 //import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import { InfinitySpin } from "react-loader-spinner";
 import { useFormState } from "@/context/FormProgressContext";
 import { setTokenAfterBlog } from "@/redux/tokenSlice";
 
 const BulkPageUI = () => {
+    const access_token = useCookieValue('access_token');
     const dispatch = useDispatch();
     const router = useRouter();
-    //const access_token = useCookieValue('access_token');
-    
+
     const [submitted, setSubmitted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const pathName = usePathname();
-    const {progress,
-            activeTabIndex,
-            totalInputs,
-            completedFields,
-            sections,
-            updateProgress,
-            addFieldCount,
-            removeFieldCount,
-            resetFormState,
-            setActiveTabIndex,
-            completeSection,
-            uncompleteSection,}=useFormState()
+    const { progress,
+        activeTabIndex,
+        totalInputs,
+        completedFields,
+        sections,
+        updateProgress,
+        addFieldCount,
+        removeFieldCount,
+        resetFormState,
+        setActiveTabIndex,
+        completeSection,
+        uncompleteSection, } = useFormState()
 
-        useEffect(()=>{
-            resetFormState()
-            },[pathName])
+    useEffect(() => {
+        resetFormState()
+    }, [pathName])
 
     const tabs = [
         { name: "Core Settings", component: CoreSettingsBulk, next: "Next" },
@@ -55,11 +54,11 @@ const BulkPageUI = () => {
         defaultValues: {
             blogEntries: [{ mainKeyword: "", title: "" }],
             coreSettings: {
-                aiModel: "GPT-4",
+                aiModel: "openrouter",
                 language: "English",
                 targetCountry: "USA",
                 toneOfVoice: "Professional",
-                articleSize: "Medium",
+                articleSize: 1200,
             },
             seo: {
                 keywords: "",
@@ -86,12 +85,8 @@ const BulkPageUI = () => {
 
     const submitHandler = async (data) => {
         try {
-            // const session = localStorage.getItem("session");
-            // if (!session) {
-            //     throw new Error("Session data is not available in localStorage");
-            // }
-
-            // const { access_token } = JSON.parse(session);
+            console.log({ data })
+            setLoading(true);
             setSubmitted(true);
             console.log("Form data:", data);
 
@@ -102,255 +97,243 @@ const BulkPageUI = () => {
             })).filter(blog => blog.title && blog.mainKeyword);
 
             if (blogEntries.length === 0) {
-                console.error("No valid blog entries found.");
-                return;
+                throw new Error("No valid blog entries found.");
             }
 
-            const payload = {
-                blogEntries, // Changed from 'blogs' to 'blogEntries'
-                coreSettings: data.coreSettings,
-                seo: data.seo,
-                link: data.link
+            // Safe checking for elements
+            const elements = Array.isArray(data.details?.elements)
+                ? data.details.elements
+                : (data.details?.elements?.checkType || []);
+
+            const reqJSONdata = {
+                titles: blogEntries.map(entry => entry.title),
+                structure_dict: {
+                    conclusion: elements.includes("conclusion") ? true : false,
+                    tables: data.details?.elements?.numType?.tables || 0,
+                    video_urls: data.link?.links || [],
+                    video_quantity: data.link?.links?.length || 0,
+                    layout: data.details?.structure || "comprehensive",
+                    h3: data.details?.elements?.numType?.h3 || 0,
+                    lists: data.details?.elements?.numType?.lists || 0,
+                    italics: elements.includes("italics") ? true : false,
+                    quotes: elements.includes("quotes") ? true : false,
+                    key_takeaways: elements.includes("keyTakeaways") ? true : false,
+                    faq: elements.includes("faqs") ? true : false,
+                    bold: elements.includes("bold") ? true : false,
+                },
+                article_size: data.coreSettings?.articleSize || 1500,
+                arguments: {
+                    web_search_bool: data.coreSettings?.webSearch || false,
+                    video_search_bool: data.link?.connectToWeb === "yes" ? true : false,
+                    image_gen_bool: data.coreSettings?.imageGeneration || false,
+                    web_search: data.coreSettings?.webSearchEngine || "BS4",
+                    tone: data.coreSettings?.tone || "professional",
+                    audience: data.coreSettings?.audience || "tech professionals",
+                    "Additional Info": data.details?.additionalInfo || ""
+                },
+                improve_context: data.coreSettings?.improveContext || false,
+                llm: data.coreSettings?.llm || "openrouter"
             };
 
-            console.log("Payload:", payload);
-
-
-            const titles = payload.blogEntries.map(entry => entry.title)
-            console.log("titles", titles)
-            
-            const {elements}=data.details
-        const reqJSONdata={
-            structure_dict: {
-            conclusion: elements.includes("conclusion")?true:false,
-            tables: elements.includes("tables")?1:0,
-            video_urls: ["https://example.com/video1", "https://example.com/video2"],
-            video_quantity: 2,
-            layout: "comprehensive",
-            h3: elements.includes("h3")?3:0,
-            lists: elements.includes("lists")?2:0,
-            italics: elements.includes("italics")?true:false,
-            quotes: elements.includes("quotes")?true:false,
-            key_takeaways: elements.includes("KeyTakeaways")?true:false,
-            faq: elements.includes("faqs")?true:false,
-            bold: elements.includes("bold")?true:false,   
-            },
-            article_size: 1500,
-            arguments: {
-                web_search_bool: false,
-                video_search_bool: false,
-                image_gen_bool: false,
-                web_search: "BS4",
-                tone: "professional",
-                audience: "tech professionals",
-                "Additional Info": ""
-            },
-            improve_context: false,
-            llm: "openrouter"
-        }
+            console.log("Request JSON data:", reqJSONdata);
 
             const response = await fetch("/api/documents/bulk-blog", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
+                    // Authorization: `Bearer ${access_token}`,
                 },
-                //credentials: 'include',
-                body: JSON.stringify(titles, reqJSONdata),
+                body: JSON.stringify(reqJSONdata)
             });
 
             if (!response.ok) {
-                throw new Error("Failed to submit blogs.");
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to submit blogs");
             }
-            // addFieldCount(tabs[prevIndex].filledNum)
-            // completeSection({tabName: tabs[prevIndex].name })
-            // setActiveTabIndex(newIndex)
-            // updateProgress()
+
+            const responseData = await response.json();
+
             dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
             dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
             dispatch(calculatePercentage());
-            setCurrentIndex(tabs.length - 1);
-            dispatch(setTokenAfterBlog(titles.length))
-            // setToastData({ title });
+            dispatch(setTokenAfterBlog(blogEntries.length));
+
             setCurrentIndex(tabs.length - 1);
 
         } catch (error) {
             console.error("Error submitting blogs:", error);
+            // Optional: Show error toast or notification
+            // setErrorToast(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     const CurrentComponent = tabs[currentIndex].component;
 
-    
-        const backHandler = () => {
-            if (currentIndex > 0) {
-                setCurrentIndex(prevIndex => {
-                    const newIndex = prevIndex - 1;
-                    console.log("currentIndex from back ", newIndex);
-                    // removeFieldCount(tabs[prevIndex].filledNum)
-                    // uncompleteSection({ tabName: tabs[prevIndex].name })
-                    // setActiveTabIndex(newIndex)
-                    // updateProgress()
-                    dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
-                    dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
-                    dispatch(setTabIndex(newIndex));
-                    dispatch(calculatePercentage());
-                    return newIndex;
-                });
-            }
-        };
-        
-        const nextHandler = () => {
-            if (currentIndex < tabs.length - 1) {
-                setCurrentIndex(prevIndex => {
-                    const newIndex = prevIndex + 1;
-                    console.log("currentIndex from next ", newIndex);
-                    // addFieldCount(tabs[prevIndex].filledNum)
-                    // completeSection({tabName: tabs[prevIndex].name })
-                    // setActiveTabIndex(newIndex)
-                    // updateProgress()
-                    dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
-                    dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
-                    dispatch(setTabIndex(newIndex));
-                    dispatch(calculatePercentage());
-                    return newIndex;
-                });
-            }
-        };
-        
-        const exitHandler = () => {
-            //resetFormState()
-            dispatch(reset());
-            router.push("/");
-        };
+    const backHandler = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(prevIndex => {
+                const newIndex = prevIndex - 1;
+                console.log("currentIndex from back ", newIndex);
+                // removeFieldCount(tabs[prevIndex].filledNum)
+                // uncompleteSection({ tabName: tabs[prevIndex].name })
+                // setActiveTabIndex(newIndex)
+                // updateProgress()
+                dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
+                dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
+                dispatch(setTabIndex(newIndex));
+                dispatch(calculatePercentage());
+                return newIndex;
+            });
+        }
+    };
 
+    const nextHandler = () => {
+        if (currentIndex < tabs.length - 1) {
+            setCurrentIndex(prevIndex => {
+                const newIndex = prevIndex + 1;
+                console.log("currentIndex from next ", newIndex);
+                // addFieldCount(tabs[prevIndex].filledNum)
+                // completeSection({tabName: tabs[prevIndex].name })
+                // setActiveTabIndex(newIndex)
+                // updateProgress()
+                dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
+                dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
+                dispatch(setTabIndex(newIndex));
+                dispatch(calculatePercentage());
+                return newIndex;
+            });
+        }
+    };
 
+    const exitHandler = () => {
+        //resetFormState()
+        dispatch(reset());
+        router.push("/");
+    };
 
     return (
         <div className="relative left-4">
-        {loading && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
-                            <div className="relative">
-                                {/* <ThreeCircles
+            {loading && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
+                    <div className="relative">
+                        {/* <ThreeCircles
                                     visible={true}
                                     height="100"
                                     width="100"
                                     color="#f6B647"
                                     ariaLabel="three-circles-loading"
                                 /> */}
-                                <InfinitySpin
-                                    visible={true}
-                                    width="200"
-                                    color="#f6B647"
-                                    ariaLabel="infinity-spin-loading"
-                                />
-                            </div>
-                        </div>
-                    )}
-        <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
-            <BulkBlogForm
-                fields={fields}
-                register={register}
-                errors={errors}
-                addMoreHandler={addMoreHandler}
-                removeEntryHandler={removeEntryHandler}
-            />
-            
-            {/* Rest of the JSX remains the same */}
+                        <InfinitySpin
+                            visible={true}
+                            width="200"
+                            color="#f6B647"
+                            ariaLabel="infinity-spin-loading"
+                        />
+                    </div>
+                </div>
+            )}
+            <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
+                <BulkBlogForm
+                    fields={fields}
+                    register={register}
+                    errors={errors}
+                    setValue={setValue}
+                    watch={watch}
+                    addMoreHandler={addMoreHandler}
+                    removeEntryHandler={removeEntryHandler}
+                />
 
-            {/* Tab Navigation */}
-             <div className="p-6 mt-6 max-w-3xl">
-             <div className="flex gap-[24px] mb-5">
-                            {tabs.map((tab, index) => (
-                                <button
-                                    key={index}
-                                    type="button"
-                                    className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
-                                        ${
-                                            currentIndex === index
-                                                ? "bg-paleYellow text-tabColor font-bold border-tabColor"
-                                                : "bg-gray-100 text-gray-600 border-gray-300"
-                                        } ${
-                                            submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
-                                        }`}
-                                    style={{
-                                        width: '360px',
-                                        height: '36px',
-                                        boxSizing: 'border-box',
-                                    }}
-                                >
-                                    {tab.name}
-                                </button>
-                            ))}
-                            </div>
+                {/* Rest of the JSX remains the same */}
 
-                            {/* Tab Content */}
-                            <div className="flex flex-col items-start">
-                                <CurrentComponent
-                                    register={register}
-                                    watch={watch}
-                                    setValue={setValue}
-                                    getValues={getValues}
-                                    errors={errors}
-                                />
-                            </div>
+                {/* Tab Navigation */}
+                <div className="p-6 mt-2 max-w-3xl">
+                    <div className="flex gap-[24px] mb-5">
+                        {tabs.map((tab, index) => (
+                            <button
+                                key={index}
+                                type="button"
+                                className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
+                                        ${currentIndex === index
+                                        ? "bg-paleYellow text-tabColor font-bold border-tabColor"
+                                        : "bg-gray-100 text-gray-600 border-gray-300"
+                                    } ${submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
+                                    }`}
+                                style={{
+                                    width: '360px',
+                                    height: '36px',
+                                    boxSizing: 'border-box',
+                                }}
+                            >
+                                {tab.name}
+                            </button>
+                        ))}
+                    </div>
 
+                    {/* Tab Content */}
+                    <div className="flex flex-col items-start">
+                        <CurrentComponent
+                            register={register}
+                            watch={watch}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors}
+                        />
+                    </div>
 
-                            <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] gap-[16px] right-[1.7rem]">
-                                {currentIndex > 0 && currentIndex < tabs.length - 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={backHandler}
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
-                                    >
-                                        Back
-                                    </button>
-                                )}
+                    <div className="flex w-full px-8 justify-end mt-8 ml-10 gap-[16px]">
+                        {currentIndex > 0 && currentIndex < tabs.length - 1 && (
+                            <button
+                                type="button"
+                                onClick={backHandler}
+                                className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
+                            >
+                                Back
+                            </button>
+                        )}
 
-                                {currentIndex === tabs.length - 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={exitHandler}
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-[#C8C9B5]"
-                                    >
-                                        Exit
-                                    </button>
-                                )}
+                        {currentIndex === tabs.length - 1 && (
+                            <button
+                                type="button"
+                                onClick={exitHandler}
+                                className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-[#C8C9B5]"
+                            >
+                                Exit
+                            </button>
+                        )}
 
-                                {currentIndex < tabs.length - 2 && (
-                                    <button
-                                        type="button"
-                                        onClick={nextHandler}
-                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white "
-                                    >
-                                        Next
-                                    </button>
-                                )}
+                        {currentIndex < tabs.length - 2 && (
+                            <button
+                                type="button"
+                                onClick={nextHandler}
+                                className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                            >
+                                Next
+                            </button>
+                        )}
 
-                                {currentIndex === tabs.length - 2 && (
-                                    <button
-                                        type="submit"
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
-                                    >
-                                        Generate
-                                    </button>
-                                )}
+                        {currentIndex === tabs.length - 2 && (
+                            <button
+                                type="submit"
+                                className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                            >
+                                Generate
+                            </button>
+                        )}
 
-                                {currentIndex === tabs.length - 1 && (
-                                    <button
-                                        type="button"
-                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
-                                    >
-                                        Publish
-                                    </button>
-                                )}
-                            </div>
-
-
-
+                        {currentIndex === tabs.length - 1 && (
+                            <button
+                                type="button"
+                                className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                            >
+                                Publish
+                            </button>
+                        )}
+                    </div>
                 </div>
 
-        </form>
+            </form>
         </div>
     );
 };

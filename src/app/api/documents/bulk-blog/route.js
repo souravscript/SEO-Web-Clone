@@ -8,56 +8,70 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
     await connectToDatabase();
 
+    // Authenticate the user
+    try {
+        //console.log("This is the request", req.cookies['access_token'])
+        const { user, error } = await authenticate(req);
+        if (error) {
+            return NextResponse.json({ "Error message": error }, { status: 401 });
+        }
+
+        const reqJSONdata = await req.json()
+        const hostedMLService = "http://34.131.28.178:8080/api/layouts/generate-bulk-content"
+        const content = await fetch(hostedMLService, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(reqJSONdata),
+        });
+        const responseBody = await content.json();
+
+        console.log("Response body:", responseBody);
+
+        // Create a new Document associated with the user
+        const authUser = await User.findOne({ supabaseId: user.sub })
+
+        // const newDoc = await Docs.create({ userId: authUser._id, title, content: responseBody.content, docType: 'blog' });
+        // if (newDoc) {
+        //     console.log(newDoc)
+        //     authUser.token -= 1;
+        //     await authUser.save();
+        // }
+
+        return NextResponse.json(responseBody, { status: 201 });
+    } catch (err) {
+        return NextResponse.json({ error: err.message }, { status: 500 });
+
+    }
+}
+export async function GET(req) {
+    await connectToDatabase();
+
     try {
         // Authenticate the user
         const { user, error } = await authenticate(req);
         if (error) {
-            return NextResponse.json({ error: error }, { status: 401 });
-        }
-        console.log("User ID:", user.sub);
-        // Parse the request body
-        const titles  = await req.json(); // Expecting an array of titles
-        if(!titles){
-            return NextResponse.json({ error: "No titles provided" }, { status: 400 });
-        }
-        console.log("Titles:", titles);
-        if (!Array.isArray(titles) || titles.length === 0) {
-            return NextResponse.json({ error: "Titles must be a non-empty array" }, { status: 400 });
+            return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
         }
 
-        // Fetch the authenticated user
+        // Find the authenticated user in MongoDB
         const authUser = await User.findOne({ supabaseId: user.sub });
-        console.log("auth user from bulk blog", authUser);
         if (!authUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
-        
 
-        // Process each title
-        const results = await Promise.allSettled(
-            titles.map(async (title) => {
-                try {
-                    const content = await generateBlog(title); // Generate content
-                    const newDoc = await Docs.create({ userId: authUser._id, title, content }); // Create document
-                    return { status: "fulfilled", value: newDoc };
-                } catch (err) {
-                    return { status: "rejected", reason: err.message };
-                }
-            })
-        );
+        // Fetch bulk blog documents associated with the authenticated user
+        const documents = await Docs.find({
+            userId: authUser._id,
+            docType: 'bulk-blog'
+        }).sort({ createdAt: -1 });
 
-        // Separate successful and failed results
-        const successful = results
-            .filter((result) => result.status === "fulfilled")
-            .map((result) => result.value);
-        const failed = results
-            .filter((result) => result.status === "rejected")
-            .map((result) => result.reason);
-        authUser.token -= successful.length; // Corrected variable name
-        await authUser.save();
-        // Return the results
-        return NextResponse.json({ successful, failed }, { status: 207 }); // 207 Multi-Status
+        // Return documents in the response
+        return NextResponse.json({ documents }, { status: 200 });
     } catch (err) {
+        console.error("Error fetching documents:", err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

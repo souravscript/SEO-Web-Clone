@@ -88,7 +88,7 @@ const Navbar = () => {
     // },[token])
 
     return pathname === "/auth" ? null : (
-        <div className="w-full h-[60px] bg-white shadow-[0_4px_40px_rgba(0,0,0,0.04)] px-4 fixed z-50">
+        <div className="w-full h-[60px] bg-white shadow-[0_4px_40px_rgba(0,0,0,0.04)] px-4 fixed z-30">
             <div className="max-w-screen-xl mx-auto flex justify-between items-center h-full">
                 {/* Logo */}
                 <div className="flex items-center">

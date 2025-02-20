@@ -161,7 +161,7 @@ const SinglePageUI = () => {
         try {
             setLoading(true)
             setSubmitted(true); // Mark as submitted
-            setCurrentIndex(tabs.length - 1); // Navigate to "Publish" tab
+            // setCurrentIndex(tabs.length - 1); // Navigate to "Publish" tab
 
             // // Destructure title and mainKeyword directly from the form data
             const { title } = data;
@@ -172,11 +172,9 @@ const SinglePageUI = () => {
             const res = await fetch("/api/documents/single-blog", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
+                    "Content-Type": "application/json"
                 },
-                credentials: 'include',
-                body: JSON.stringify({ reqJSONdata }),
+                body: JSON.stringify({reqJSONdata}),
             });
 
             if (!res.ok) {

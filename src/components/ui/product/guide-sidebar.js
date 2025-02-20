@@ -1,20 +1,54 @@
 "use client";
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
+  const [keywords, setKeywords] = useState(""); // New state for keywords
   const [title, setTitle] = useState(""); // Stores title input
   const [description, setDescription] = useState(""); // Stores description input
   const [articleSize, setArticleSize] = useState(""); // Stores article size selection
 
+  const [isKeywordsGenerating, setIsKeywordsGenerating] = useState(false);
   const [isTitleGenerating, setIsTitleGenerating] = useState(false);
   const [isDescriptionGenerating, setIsDescriptionGenerating] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const handleKeywordsGeneration = async () => {
+    if (keywords.trim() === "") {
+      console.error("Please enter valid keywords.");
+      return;
+    }
+
+    setIsKeywordsGenerating(true);
+
+    try {
+      const response = await fetch("/api/product/guide/title", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ keywords }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate title from keywords");
+      }
+
+      const data = await response.json();
+      console.log("Generated title from keywords:", data.title);
+      let cleanTitle = data.title.replace(/^"(.*)"$/, "$1").trim();
+      console.log("Cleaned title:", cleanTitle);
+      setTitle(cleanTitle);
+
+    } catch (error) {
+      console.error("Error during keywords generation:", error);
+    } finally {
+      setIsKeywordsGenerating(false);
+    }
+  };
 
   const handleTitleGeneration = async () => {
     if (title.trim() === "") {
@@ -25,7 +59,7 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
     setIsTitleGenerating(true);
 
     try {
-      const response = await fetch("/api/product/guide/title", {
+      const response = await fetch("/api/product/guide/description", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -35,54 +69,19 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate title");
+        throw new Error("Failed to generate description");
       }
-
+      
       const data = await response.json();
-      console.log("Generated title:", data.title);
-      let cleanTitle = data.title.replace(/^"(.*)"$/, "$1").trim();
-      console.log("Cleaned title:", cleanTitle);
-      setTitle(cleanTitle);
+      console.log("Generated description:", data?.description);
+      const cleanDescription = data?.description?.replace(/^"(.*)"$/, "$1").trim();
+      console.log("Generated description:", cleanDescription);
+      setDescription(cleanDescription);
 
-    } catch (error) {
-      console.error("Error during title generation:", error);
-    } finally {
-      setIsTitleGenerating(false);
-    }
-  };
-
-  const handleDescriptionGeneration = async () => {
-    if (description.trim() === "") {
-      console.error("Please enter a valid description.");
-      return;
-    }
-
-    setIsDescriptionGenerating(true);
-
-    try {
-      console.log("title ", title)
-        const response = await fetch("/api/product/guide/description", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ titleInput: title }),
-          });
-    
-          if (!response.ok) {
-            throw new Error("Failed to generate title");
-          }
-          
-          const data = await response.json();
-          console.log("Generated description:", data?.description);
-          const cleanDescription = data?.description?.replace(/^"(.*)"$/, "$1").trim();
-          console.log("Generated description:", cleanDescription);
-          setDescription(cleanDescription);
     } catch (error) {
       console.error("Error during description generation:", error);
     } finally {
-      setIsDescriptionGenerating(false);
+      setIsTitleGenerating(false);
     }
   };
 
@@ -104,86 +103,209 @@ const GuideSidebar = ({ handleGenerate, handleSave, setApiData }) => {
   };
 
   return (
-    <Card className=" h-[23rem] mt-8 w-[780px] mr-4 p-4">
-      <CardContent className="space-y-4">
-        {/* Step 1: Title Input */}
-          <div>
-            <p className="font-sans text-xs opacity-40 mx-2 my-2">Title*</p>
-            <div className="flex gap-4">
-            <Input
-              type="text"
-              placeholder="Enter Title Keywords..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full h-[40px]"
-            />
-              <Button
-                className="mt-2 w-[13rem] relative top-[-0.5rem] py-5 bg-tabColor hover:bg-white hover:text-backButtonColors"
-                onClick={handleTitleGeneration}
-                disabled={isTitleGenerating}
-              >
-                {isTitleGenerating ? "Generating..." : "Generate Title"}
-              </Button>
-              </div>
-          </div>
-
-        {/* Step 2: Description Input (Appears after title generation) */}
-          <div>
-            <p className="font-sans text-xs opacity-40 mx-2 my-2">Description*</p>
-            <div className="flex gap-4">
-            <Input
-              type="text"
-              value={description}
-              placeholder="Enter Description..."
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full h-[40px]"
-            />
-              <Button
-                className="mt-2 w-[10rem] relative top-[-0.5rem] py-5 bg-tabColor hover:bg-white hover:text-backButtonColors"
-                onClick={handleDescriptionGeneration}
-                disabled={isDescriptionGenerating}
-              >
-                {isDescriptionGenerating ? "Generating..." : "Generate Description"}
-              </Button>
-              </div>
-          </div>
-
-        {/* Step 3: Article Size Selection (Appears after description generation) */}
-        
-          <div className="w-[589px]">
-            <p className="font-sans text-xs opacity-40 mx-2 my-2">Select Article Size*</p>
-            <Select className="w-full" onValueChange={setArticleSize} value={articleSize}>
-              <SelectTrigger className="w-[524px] h-[40px] border border-gray-300">
-                <SelectValue placeholder="Choose Size" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="short">Short</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="long">Long</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-        {/* Final Generate Button (Appears after selecting article size) */}
-        <div className="flex gap-5 float-right mt-6 relative top-[1rem]">
-          <Button
-            className="mt-4 w-full hover:bg-white hover:text-backButtonColors border bg-white border-tabColor text-tabColor"
-            onClick={handleSave}
-            disabled={isSaving}
+    <div className="w-[780px] mx-auto mt-3">
+      <div className="flex items-end gap-4 w-full mb-3">
+        <div className="flex flex-col flex-grow">
+          <label className="text-gray-700 font-medium">Keywords <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter Keywords for Guide..."
+            value={keywords}
+            onChange={(e) => setKeywords(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
+          />
+        </div>
+        <div className="flex-shrink-0">
+          <button
+            type="button"
+            onClick={handleKeywordsGeneration}
+            disabled={isKeywordsGenerating || keywords.trim() === ""}
+            className={`px-4 py-2 text-primary border border-solid bg-paleYellow text-tabColor border-tabColor rounded-md 
+              ${(isKeywordsGenerating || keywords.trim() === "") ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isSaving ? "Saving Content..." : "Save Content"}
-          </Button>
-          <Button
-            className="mt-4 w-full bg-tabColor hover:bg-white hover:text-backButtonColors"
-            onClick={handleFinalGeneration}
-            disabled={isGenerating}
+            {isKeywordsGenerating ? (
+              <div className="flex items-center justify-center">
+                <svg 
+                  className="animate-spin h-5 w-5 mr-2" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24"
+                >
+                  <circle 
+                    className="opacity-25" 
+                    cx="12" 
+                    cy="12" 
+                    r="10" 
+                    stroke="currentColor" 
+                    strokeWidth="4"
+                  ></circle>
+                  <path 
+                    className="opacity-75" 
+                    fill="currentColor" 
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Generating Title...
+              </div>
+            ) : (
+              "Generate Title"
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-end gap-4 w-full mb-3">
+        <div className="flex flex-col flex-grow">
+          <label className="text-gray-700 font-medium">Title <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter Title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
+          />
+        </div>
+        <div className="flex-shrink-0">
+          <button
+            type="button"
+            onClick={handleTitleGeneration}
+            disabled={isTitleGenerating || title.trim() === ""}
+            className={`px-4 py-2 text-primary border border-solid bg-paleYellow text-tabColor border-tabColor rounded-md 
+              ${(isTitleGenerating || title.trim() === "") ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isGenerating ? "Generating Content..." : "Generate Content"}
-          </Button>
-        
-          </div>
-      </CardContent>
-    </Card>
+            {isTitleGenerating ? (
+              <div className="flex items-center justify-center">
+                <svg 
+                  className="animate-spin h-5 w-5 mr-2" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24"
+                >
+                  <circle 
+                    className="opacity-25" 
+                    cx="12" 
+                    cy="12" 
+                    r="10" 
+                    stroke="currentColor" 
+                    strokeWidth="4"
+                  ></circle>
+                  <path 
+                    className="opacity-75" 
+                    fill="currentColor" 
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Generating Description...
+              </div>
+            ) : (
+              "Generate Description"
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-end gap-4 w-full mb-3">
+        <div className="flex flex-col flex-grow">
+          <label className="text-gray-700 font-medium">Description <span className="text-red-500">*</span></label>
+          <Textarea
+            placeholder="Enter a detailed description for your guide..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="resize-y min-h-[100px]"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col flex-grow mb-3">
+        <label className="text-gray-700 font-medium mb-2">Select Article Size <span className="text-red-500">*</span></label>
+        <Select
+          value={articleSize}
+          onValueChange={setArticleSize}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select Article Size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="small">Small</SelectItem>
+            <SelectItem value="medium">Medium</SelectItem>
+            <SelectItem value="large">Large</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex gap-2 justify-end mt-4">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isSaving}
+          className={`px-4 py-2 text-primary border border-solid bg-white text-tabColor border-tabColor rounded-md 
+            ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isSaving ? (
+            <div className="flex items-center justify-center">
+              <svg 
+                className="animate-spin h-5 w-5 mr-2" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24"
+              >
+                <circle 
+                  className="opacity-25" 
+                  cx="12" 
+                  cy="12" 
+                  r="10" 
+                  stroke="currentColor" 
+                  strokeWidth="4"
+                ></circle>
+                <path 
+                  className="opacity-75" 
+                  fill="currentColor" 
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Saving...
+            </div>
+          ) : (
+            "Save Content"
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={handleFinalGeneration}
+          disabled={isGenerating || !articleSize || !title || !description}
+          className={`px-4 py-2 text-primary border border-solid bg-tabColor text-white border-tabColor rounded-md 
+            ${(isGenerating || !articleSize || !title || !description) ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isGenerating ? (
+            <div className="flex items-center justify-center">
+              <svg 
+                className="animate-spin h-5 w-5 mr-2" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24"
+              >
+                <circle 
+                  className="opacity-25" 
+                  cx="12" 
+                  cy="12" 
+                  r="10" 
+                  stroke="currentColor" 
+                  strokeWidth="4"
+                ></circle>
+                <path 
+                  className="opacity-75" 
+                  fill="currentColor" 
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Generating...
+            </div>
+          ) : (
+            "Generate Content"
+          )}
+        </button>
+      </div>
+    </div>
   );
 };
 

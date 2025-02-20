@@ -10,7 +10,7 @@ import Cookies from "js-cookie";
 
 const SideProgress = () => {
   const [progressPercent, setProgressPercent] = useState(0);
-  const percentArr = JSON.parse(Cookies.get("progressState")); 
+  const percentArr = JSON.parse(Cookies.get("progressState") || {}); 
   const [percentState, setPercentState] = useState(percentArr);
 
   // Extracting values from the Redux store

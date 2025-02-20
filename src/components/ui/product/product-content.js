@@ -55,7 +55,7 @@ export function markdownToEditorJS(markdown) {
 
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
-    
+
     // Skip empty lines
     if (!line) continue;
 
@@ -90,10 +90,10 @@ export function markdownToEditorJS(markdown) {
           });
         }
       });
-      
+
       // Remove image URLs from the line for further processing
       line = line.replace(imageRegex, '').trim();
-      
+
       // If line is empty after removing images, continue to next line
       if (!line) continue;
     }
@@ -119,7 +119,7 @@ export function markdownToEditorJS(markdown) {
         currentListItems = [];
       }
       currentListItems.push(listItemMatch[1]);
-      
+
       // If next line is not a list item or it's the last line, add the list block
       if (!lines[i + 1]?.trim().match(/^[-*+]\s+/) || i === lines.length - 1) {
         blocks.push({
@@ -159,7 +159,7 @@ export function markdownToEditorJS(markdown) {
 
 
 
-const ProductContent = ({ apiData, featName, editorRef }) => {
+const ProductContent = ({ apiData, featName, editorRef, setFinalContent }) => {
   const [markdownContent, setMarkdownContent] = useState("");
 
   useEffect(() => {
@@ -198,7 +198,7 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
       }
     };
   }, []);
-  
+
   useEffect(() => {
     if (editorRef.current && apiData && apiData.blocks) {
       editorRef.current.isReady.then(async () => {
@@ -219,55 +219,54 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
     }
   }, [apiData]);
 
+  useEffect(() => {
+    setFinalContent(markdownContent);
+  }, [markdownContent]);
+
   return (
-    <div className="relative">
-      {/* <p className="relative mt-2 mb-9">
-        <Link href="/">
-          <span className="text-[#A1A1A1] text-xs">Home</span>
-        </Link>
-        <span className="text-gray-400 mx-1">/</span>
-        <span className="text-black text-xs">{featName}</span>
-      </p> */}
-      {/* <div className="flex items-start mt-6 gap-4 mb-5">
-        <Image src={notebook} alt="single blog post" height={40} width={40} className="rounded-md" />
-        <div className="flex flex-row">
-          <h1 className="text-xl font-semibold text-gray-800">{featName}</h1>
-          <Image src={tokenCoin} alt="single blog post" className="rounded-md h-5 w-5 ml-2 mt-1" />
-          <span className="text-gray-500 text-sm ml-1 mt-1">1 Token</span>
+    <div className="relative my-4">
+      <div className="flex items-center justify-between bg-[#FFF0CC] p-4 rounded-t-lg border-b border-[#FFE5B4] w-[49rem]">
+        <div className="flex items-center space-x-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-[#6E4D00]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+          <span className="text-[#6E4D00] font-medium text-sm">
+            Generated Content Editor
+          </span>
         </div>
-      </div> */}
-      {/* <div className="bg-[#FFF0CC] p-3 rounded w-80">
-        <p className="text-[#6E4D00] text-sm">You can edit generated content here.</p>
-      </div> */}
-      <div id="editorjs" className="mt-8 ml-[-0.8rem] w-[49rem] h-[35rem] max-h-[40rem] overflow-auto border p-4 rounded bg-white"></div>
-      
-      {/* Markdown Preview
-      <div className="mt-4 prose max-w-full">
-        <Markdown 
-          remarkPlugins={[remarkGfm]} 
-          rehypePlugins={[rehypeHighlight]}
-          components={{
-            code: ({ node, inline, className, children, ...props }) => {
-              const match = /language-(\w+)/.exec(className || '');
-              return !inline && match ? (
-                <code 
-                  className={`language-${match[1]} hljs`} 
-                  {...props}
-                >
-                  {children}
-                </code>
-              ) : (
-                <code className="inline-code" {...props}>
-                  {children}
-                </code>
-              );
-            }
-          }}
-        >
-          {markdownContent}
-        </Markdown>
-      </div> */}
-      <div className="mt-28"></div>
+        {apiData && apiData.blocks && apiData.blocks.length > 0 && (
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-gray-500">AI-Generated</span>
+            <span className="px-2 py-1 bg-[#FFE5B4] text-[#6E4D00] rounded-full text-xs">
+              1 Token Used
+            </span>
+          </div>
+        )}
+      </div>
+      <div
+        className="bg-white border border-gray-200 rounded-b-lg shadow-sm transition-all duration-300 ease-in-out 
+        hover:shadow-md"
+      >
+        <div
+          id="editorjs"
+          className="p-6 mt-4 h-40 overflow-auto prose prose-sm 
+          prose-headings:text-gray-800 
+          prose-p:text-gray-700 
+          prose-a:text-blue-600 
+          prose-strong:text-gray-900"
+        ></div>
+      </div>
     </div>
   );
 };

@@ -16,8 +16,8 @@ export async function POST(req) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const {titleInput } = await req.json();
-        
+        const { keywords } = await req.json();
+
 
 
         // Find the authenticated user in the database
@@ -27,20 +27,20 @@ export async function POST(req) {
         }
 
         console.log("Authenticated user:", authUser);
-        
-        const response= await fetch('http://34.131.28.178:8080/api/guides/generate-guide-title/',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
+
+        const response = await fetch('http://34.131.28.178:8080/api/guides/generate-guide-title/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            body:JSON.stringify({keywords:titleInput, llm:DEFAULT_LLM}),
+            body: JSON.stringify({ keywords, llm: DEFAULT_LLM }),
         })
-        if(!response.ok){
+        if (!response.ok) {
             console.error("Failed to generate title");
             return NextResponse.json({ error: "Failed to generate title" }, { status: 500 });
         }
-        const data=await response.json()
-        console.log("generated title",data)
+        const data = await response.json()
+        console.log("generated title", data)
 
         // Return the newly created document
         return NextResponse.json(data, { status: 201 });

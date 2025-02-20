@@ -1,7 +1,6 @@
-
 const { createSlice } = require("@reduxjs/toolkit");
 const initialState={
-    token:0,
+    token:0
 }
 const tokenSlice=createSlice({
     name:"token",
@@ -11,7 +10,11 @@ const tokenSlice=createSlice({
             state.token=action.payload
         },
         setTokenAfterBlog(state,action){
-            state.token-=action.payload;
+            // Prevent token from going below 0
+            if (state.token - action.payload < 0) {
+                throw new Error("Insufficient token balance");
+            }
+            state.token -= action.payload;
         },
         resetToken(state){
             state.token=0

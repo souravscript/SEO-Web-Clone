@@ -3,30 +3,29 @@
 import { setInitialTokenValue } from "@/redux/tokenSlice";
 import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
+import { useEffect } from "react";
 
 const TopDashboard = () => {
-    const dispatch=useDispatch()
-    // const localUser = localStorage.getItem("user");
-    // const user= localUser ? JSON.parse(localUser) : null;
-    // const localToken=localStorage.getItem("token")
-    // const token=localToken? JSON.parse(localToken) : 'null'
+    const dispatch = useDispatch()
 
     const localUser = Cookies.get("user");
 
     let user = null;
     try {
-    user = localUser ? JSON.parse(localUser) : null;
+        user = localUser ? JSON.parse(localUser) : null;
     } catch (error) {
-    console.error("Error parsing user from cookies:", error);
-    user = null;
+        console.error("Error parsing user from cookies:", error);
+        user = null;
     }
 
-    const localToken = Cookies.get("token") || null;
-    dispatch(setInitialTokenValue(localToken));
+    useEffect(() => {
+        const localToken = Cookies.get("token") || null;
+        if (localToken && user) {
+            dispatch(setInitialTokenValue(localToken));
+        }
+    }, [user]);
 
     const fullName = user?.fullName?.split(" ")[0];
-
-    // console.log(user)
 
     return (
         <div className="text-center flex flex-col items-start space-y-8">

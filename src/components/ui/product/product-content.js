@@ -33,15 +33,15 @@ const convertToMarkdown = (blocks) => {
           return `> ${block.data.text}\n`;
 
         case "code":
-          return block.data.code 
-            ? `\`\`\`\n${block.data.code}\n\`\`\`` 
+          return block.data.code
+            ? `\`\`\`\n${block.data.code}\n\`\`\``
             : "";
 
         case "checklist":
           return block.data.items
             ? block.data.items
-                .map((item) => `- [${item.checked ? 'x' : ' '}] ${item.text}`)
-                .join("\n")
+              .map((item) => `- [${item.checked ? 'x' : ' '}] ${item.text}`)
+              .join("\n")
             : "";
 
         default:
@@ -52,42 +52,131 @@ const convertToMarkdown = (blocks) => {
     .join("\n\n");
 };
 
+function markdownToEditorJS(markdown) {
+  const blocks = [];
+  const lines = markdown.split('\n');
+  let currentListItems = [];
+  let inList = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Skip empty lines
+    if (!line) continue;
+
+    // Headers
+    const headerMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headerMatch) {
+      blocks.push({
+        type: 'header',
+        data: {
+          text: headerMatch[2],
+          level: headerMatch[1].length
+        }
+      });
+      continue;
+    }
+
+    // Images
+    const imageMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
+    if (imageMatch) {
+      blocks.push({
+        type: 'image',
+        data: {
+          caption: imageMatch[1],
+          url: imageMatch[2],
+          withBorder: false,
+          withBackground: false,
+          stretched: false
+        }
+      });
+      continue;
+    }
+
+    // Lists
+    const listItemMatch = line.match(/^[-*+]\s+(.+)$/);
+    if (listItemMatch) {
+      if (!inList) {
+        inList = true;
+        currentListItems = [];
+      }
+      currentListItems.push(listItemMatch[1]);
+      
+      // If next line is not a list item or it's the last line, add the list block
+      if (!lines[i + 1]?.trim().match(/^[-*+]\s+/) || i === lines.length - 1) {
+        blocks.push({
+          type: 'list',
+          data: {
+            style: 'unordered',
+            items: currentListItems
+          }
+        });
+        inList = false;
+        currentListItems = [];
+      }
+      continue;
+    }
+
+    // Bold text
+    const boldRegex = /\*\*(.*?)\*\*/g;
+    let paragraphText = line.replace(boldRegex, '<b>$1</b>');
+
+    // Italic text
+    const italicRegex = /\*(.*?)\*/g;
+    paragraphText = paragraphText.replace(italicRegex, '<i>$1</i>');
+
+    // Regular paragraph
+    blocks.push({
+      type: 'paragraph',
+      data: {
+        text: paragraphText
+      }
+    });
+  }
+
+  return { blocks };
+}
+
 const ProductContent = ({ apiData, featName, editorRef }) => {
   const [markdownContent, setMarkdownContent] = useState("");
 
   useEffect(() => {
-    if (!editorRef.current) {
-      const editor = new EditorJS({
-        holder: "editorjs",
-        placeholder: "Start writing here...",
-        tools: EDITOR_TOOLS,
-        onChange: async (api) => {
-          const content = await api.saver.save();
-          const markdown = convertToMarkdown(content.blocks);
-          setMarkdownContent(markdown);
-        }
-      });
-
-      editorRef.current = editor;
+    // Add a guard to prevent multiple initializations
+    if (editorRef.current) {
+      return;
     }
 
+    // Initialize editor only if it hasn't been initialized
+    const editor = new EditorJS({
+      holder: "editorjs",
+      placeholder: "Start writing here...",
+      tools: EDITOR_TOOLS,
+      onChange: async (api) => {
+        const content = await api.saver.save();
+        const markdown = convertToMarkdown(content.blocks);
+        setMarkdownContent(markdown);
+      },
+      // Add an onReady callback to ensure proper initialization
+      onReady: () => {
+        console.log('Editor.js is ready to work!');
+      }
+    });
+
+    editorRef.current = editor;
+
+    // Cleanup function
     return () => {
-      if (editorRef.current) {
+      if (editorRef.current && typeof editorRef.current.destroy === 'function') {
         try {
-          if (typeof editorRef.current.destroy === 'function') {
-            editorRef.current.destroy();
-          } else {
-            console.warn('EditorJS destroy method not found');
-          }
+          editorRef.current.destroy();
+          editorRef.current = null;
         } catch (error) {
           console.error('Error destroying EditorJS:', error);
-        } finally {
-          editorRef.current = null;
         }
       }
     };
   }, []);
-
+  
   useEffect(() => {
     if (editorRef.current && apiData) {
       editorRef.current.isReady.then(() => {
@@ -119,7 +208,7 @@ const ProductContent = ({ apiData, featName, editorRef }) => {
         <p className="text-[#6E4D00] text-sm">You can edit generated content here.</p>
       </div>
       <div id="editorjs" className="mt-4 w-[50rem] max-h-[40rem] overflow-auto border p-4 rounded bg-white"></div>
-      
+
       {/* Markdown Preview
       <div className="mt-4 prose max-w-full">
         <Markdown 

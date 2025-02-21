@@ -49,38 +49,30 @@ export async function POST(req) {
         user: {
           id: user.id,
           email: user.email,
-          role: user.role,
-          fullName: authUser.fullName,
-          phoneNumber: authUser.phoneNumber
-          // Include other user fields as needed
-        },
-        token: authUser.token,
-        message: "Login successful",
+          fullName: authUser?.fullName,
+          phoneNumber: authUser?.phoneNumber,
+          token: authUser?.token
+        }
       },
       { status: 200 }
     );
 
-    response.cookies.set({
-      name: "access_token",
-      value: access_token,
-      httpOnly: true, // Secure cookie, not accessible via JavaScript
-      secure: false,
-      //process.env.NODE_ENV === "production", // Use HTTPS in production
-      sameSite: "Strict", // Prevent CSRF attacks
-      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
-      path: "/", // Available to all routes
+    // Set access token cookie
+    response.cookies.set('access_token', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 15 * 60, // 15 minutes
+      path: '/'
     });
 
-    // Optionally store the refresh token in another cookie
-    response.cookies.set({
-      name: "refresh_token",
-      value: refresh_token,
+    // Set refresh token cookie
+    response.cookies.set('refresh_token', refresh_token, {
       httpOnly: true,
-      secure: true,
-      //process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 60 * 60 * 24 * 30, // 30 days in seconds
-      path: "/",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/'
     });
 
     return response;

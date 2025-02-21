@@ -3,13 +3,14 @@ import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
+import { useTokenRefresh } from "@/hooks/useTokenRefresh";
 
 const ProtectedRoute=({children})=>{
     // const localUser = localStorage.getItem("user");
     // const user= localUser ? JSON.parse(localUser) : null;
     // const isLoggedIn=localStorage.getItem("isLoggedin");
     
-
+    useTokenRefresh();
     const localUser = Cookies.get("user");
     const user = localUser ? JSON.parse(localUser) : null;
     const isLoggedIn = Cookies.get("isLoggedin") === "true";

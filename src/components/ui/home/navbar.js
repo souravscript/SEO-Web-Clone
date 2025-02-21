@@ -10,33 +10,37 @@ import { MdExpandMore } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogout } from "@/lib/auth";
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+import { setInitialTokenValue } from "@/redux/tokenSlice";
 
 const Navbar = () => {
-    // const localUser = localStorage.getItem("user");
-    // const user= localUser ? JSON.parse(localUser) : null;
-    // const isLoggedIn=localStorage.getItem("isLoggedin");
-
     const dispatch = useDispatch();
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [searchHistory, setSearchHistory] = useState(["React", "Tailwind", "JavaScript", "Node.js"]);
     const dropdownRef = useRef(null); 
     const router = useRouter();
-    //const user=useGetUser('/api/profile');
 
     const localUser = Cookies.get("user");
 
     let user = null;
     try {
-    user = localUser ? JSON.parse(localUser) : null;
+        user = localUser ? JSON.parse(localUser) : null;
     } catch (error) {
-    console.error("Error parsing user from cookies:", error);
-    user = null;
+        console.error("Error parsing user from cookies:", error);
+        user = null;
     }
     
     const isLoggedIn = Cookies.get("isLoggedin") === "true";
-    const token = useSelector((state) => state.token.token);
+    const token = useSelector((state) => state.token?.token ?? 0);
+
+    useEffect(() => {
+        // Initialize token from cookie if not already set
+        const localToken = Cookies.get("token");
+        if (localToken && user && token === 0) {
+            dispatch(setInitialTokenValue(parseInt(localToken)));
+        }
+    }, [dispatch, user, token]);
 
     const toggleDropdown = () => {
         setDropdownOpen((prev) => !prev);
@@ -47,31 +51,8 @@ const Navbar = () => {
         setDropdownOpen(false);
         router.push("/auth");
     };
-    // const fetchProfileData=async ()=>{
-    //     const session = localStorage.getItem("session");
-    //     if (!session) {
-    //         throw new Error("Session data is not available in localStorage");
-    //     }
-    //     const { access_token } = JSON.parse(session);
-    //     try{
-    //         const response=await fetch(`${url}`,{
-    //         method: 'GET',
-    //         headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${access_token}`,
-    //         },
-    //     });
-    //         const result=await response.json();
-    //         dispatch(setProfile(result.authUser));
-    //         console.log("User data fetched successfully: in navbar",result)
-    //     }catch(err){
-    //         console.error("Error fetching user data: ",err);
-    //     }
-    // }
+
     useEffect(() => {
-        //fetchProfileData();
-        //dispatch(setProfile(user));
-        //console.log("token in navbar",token);
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setDropdownOpen(false);
@@ -83,9 +64,6 @@ const Navbar = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-    // useEffect(()=>{
-        
-    // },[token])
 
     return pathname === "/auth" ? null : (
         <div className="w-full h-[60px] bg-white shadow-[0_4px_40px_rgba(0,0,0,0.04)] px-4 fixed z-30">

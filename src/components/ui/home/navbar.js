@@ -12,8 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleLogout } from "@/lib/auth";
 import Cookies from 'js-cookie';
 import { setInitialTokenValue } from "@/redux/tokenSlice";
+import { useCoinTokenSync } from '@/hooks/useCoinTokenSync';
 
 const Navbar = () => {
+    useCoinTokenSync();
     const dispatch = useDispatch();
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = useState(false);

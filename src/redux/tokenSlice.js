@@ -12,13 +12,16 @@ const tokenSlice = createSlice({
             // Ensure token is a number
             state.token = parseInt(action.payload) || 0;
         },
-        setTokenAfterBlog(state, action) {
+        setTokenAfterAction(state, action) {
             const deduction = parseInt(action.payload) || 0;
             // Prevent token from going below 0
             if (state.token - deduction < 0) {
                 throw new Error("Insufficient token balance");
             }
             state.token -= deduction;
+        },
+        setTokenSyncWithServer(state, action) {
+            state.token = action.payload;
         },
         resetToken(state) {
             state.token = 0;
@@ -27,5 +30,5 @@ const tokenSlice = createSlice({
 })
 
 const { actions, reducer } = tokenSlice;
-export const { setTokenAfterBlog, resetToken, setInitialTokenValue } = actions;
+export const { setTokenAfterAction, resetToken, setInitialTokenValue, setTokenSyncWithServer } = actions;
 export default reducer;

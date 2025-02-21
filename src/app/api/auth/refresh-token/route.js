@@ -67,7 +67,7 @@ export async function POST(req) {
             maxAge: 7 * 24 * 60 * 60, // 7 days
             path: '/'
         });
-
+        console.log("response in the api/auth/refresh-token/route.js ",response);
         return response;
     } catch (error) {
         console.error("Unexpected error during token refresh:", error);

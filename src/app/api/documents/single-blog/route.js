@@ -1,4 +1,3 @@
-
 import connectToDatabase from "@/db/db-connect";
 //import Doc from "@/models/Doc";
 import { NextResponse } from "next/server";
@@ -51,6 +50,11 @@ export async function POST(req) {
         const authUser = await User.findOne({ supabaseId: user.sub })
         console.log("authUser ", authUser)
 
+        // Check if user has sufficient tokens
+        if (authUser.token < 1) {
+            return NextResponse.json({ error: "Insufficient balance. Please add more tokens to continue." }, { status: 403 });
+        }
+
         //console.log("auth user", authUser)
         //console.log("This is supabase user",user)
         //console.log("This is mongo user ", JSON.stringify(authUser))
@@ -102,5 +106,3 @@ export async function GET(req) {
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
-
-

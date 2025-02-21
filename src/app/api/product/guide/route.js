@@ -38,6 +38,14 @@ export async function POST(req) {
         const data=await response.json()
 
         console.log(" Data from API:", data);
+
+
+        console.log("Authenticated user:", authUser);
+        if (authUser.token < 1) {
+            return NextResponse.json({ error: "Insufficient tokens" }, { status: 403 });
+        }
+        authUser.token=authUser.token-1
+        await authUser.save();
         const newDoc = await Docs.create({
             userId: authUser?._id,
             title:title,

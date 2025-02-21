@@ -26,8 +26,6 @@ export async function POST(req) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        console.log("Authenticated user:", authUser);
-        
         const response= await fetch('http://34.131.28.178:8080/api/guides/generate-guide-description/',{
             method:'POST',
             headers:{

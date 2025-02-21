@@ -175,7 +175,8 @@ const ProductContent = ({ apiData, featName, editorRef, setFinalContent }) => {
       tools: EDITOR_TOOLS,
       onChange: async (api) => {
         const content = await api.saver.save();
-        const markdown = convertToMarkdown(content.blocks);
+        const markdown = convertToMarkdown(content?.blocks)?.replace("'''markdown", "")?.replace("'''", "");
+        console.log("Markdown content:", markdown);
         setMarkdownContent(markdown);
       },
       // Add an onReady callback to ensure proper initialization

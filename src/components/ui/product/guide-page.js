@@ -88,10 +88,13 @@ const GuidePage = () => {
       }
 
       const data = await response.json();
-      console.log("Generated guide content:", data.content);
+      console.log("Generated guide content:", data?.content);
+      if(data){
+        setTokenAfterAction(1)
+      }
 
       // Convert markdown to EditorJS blocks
-      const { blocks } = markdownToEditorJS(data.content);
+      const { blocks } = markdownToEditorJS(data?.content);
 
       // Set the generated data in the EditorJS instance
       setApiData({ blocks });

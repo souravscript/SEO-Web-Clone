@@ -106,6 +106,7 @@ import Image from "next/image";
 import notebook from "@/../public/single-blog-post.png";
 import tokenCoin from "@/../public/tokenCoin.png";
 import { markdownToEditorJS } from "@/components/ui/product/product-content";
+import { setTokenAfterAction } from "@/redux/tokenSlice";
 
 const ReviewPage = () => {
   const [apiData, setApiData] = useState("");
@@ -172,7 +173,10 @@ const ReviewPage = () => {
   const handleReviewGeneration = async (product_url) => {
     try {
       const data = await generateReview(product_url);
-
+      console.log("Generated review:", data);
+      if(data){
+        setTokenAfterAction(1)
+      }
       // Convert markdown to EditorJS blocks
       const { blocks } = markdownToEditorJS(data);
 

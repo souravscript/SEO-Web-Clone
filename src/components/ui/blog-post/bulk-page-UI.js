@@ -14,7 +14,7 @@ import { useCookieValue } from "@/hooks/useCookie";
 //import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import { InfinitySpin } from "react-loader-spinner";
 import { useFormState } from "@/context/FormProgressContext";
-import { setTokenAfterBlog } from "@/redux/tokenSlice";
+import { setTokenAfterAction } from "@/redux/tokenSlice";
 
 const BulkPageUI = () => {
     const access_token = useCookieValue('access_token');
@@ -156,7 +156,7 @@ const BulkPageUI = () => {
             dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
             dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
             dispatch(calculatePercentage());
-            dispatch(setTokenAfterBlog(blogEntries.length));
+            dispatch(setTokenAfterAction(blogEntries.length));
 
             setCurrentIndex(tabs.length - 1);
 

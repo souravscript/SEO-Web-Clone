@@ -15,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { InfinitySpin, ThreeCircles } from "react-loader-spinner";
 import { useCookieValue } from "@/hooks/useCookie";
 import { useFormState } from "@/context/FormProgressContext";
-import { setTokenAfterBlog } from "@/redux/tokenSlice";
+import { setTokenAfterAction } from "@/redux/tokenSlice";
 import useBeforeUnload from "@/hooks/useBeforeUnload";
 
 const tabs = [
@@ -195,7 +195,7 @@ const SinglePageUI = () => {
             dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
             dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
             dispatch(calculatePercentage());
-            dispatch(setTokenAfterBlog(1))
+            dispatch(setTokenAfterAction(1))
             setToastData({ title });
             dispatch(setTabIndex(tabs.length - 1))
             setCurrentIndex(tabs.length - 1);

@@ -33,12 +33,19 @@ export async function POST(req) {
         // Create a new Document associated with the user
         const authUser = await User.findOne({ supabaseId: user.sub })
 
-        // const newDoc = await Docs.create({ userId: authUser._id, title, content: responseBody.content, docType: 'blog' });
-        // if (newDoc) {
-        //     console.log(newDoc)
-        //     authUser.token -= 1;
-        //     await authUser.save();
-        // }
+        // Check if user has sufficient tokens for bulk operation
+        if (authUser.token < reqJSONdata.titles.length) {
+            return NextResponse.json({ 
+                error: `Insufficient balance. You need ${reqJSONdata.titles.length} tokens but have only ${authUser.token} tokens.` 
+            }, { status: 403 });
+        }
+
+        const newDoc = await Docs.create({ userId: authUser._id, title: reqJSONdata.titles[0], content: responseBody.content, docType: 'blog' });
+        if (newDoc) {
+            console.log(newDoc)
+            authUser.token -= reqJSONdata.titles.length;
+            await authUser.save();
+        }
 
         return NextResponse.json(responseBody, { status: 201 });
     } catch (err) {

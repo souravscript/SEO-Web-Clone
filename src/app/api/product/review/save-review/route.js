@@ -35,18 +35,18 @@ export async function POST(req) {
         }
 
         // Check if user has sufficient tokens
-        if (authUser.tokens < 0) {
-            // Rollback token decrement
-            await User.findOneAndUpdate(
-                { supabaseId: user.sub },
-                { $inc: { tokens: 1 } }
-            );
+        // if (authUser.tokens < 0) {
+        //     // Rollback token decrement
+        //     await User.findOneAndUpdate(
+        //         { supabaseId: user.sub },
+        //         { $inc: { tokens: 1 } }
+        //     );
 
-            return NextResponse.json(
-                { error: "Insufficient tokens to save review" }, 
-                { status: 403 }
-            );
-        }
+        //     return NextResponse.json(
+        //         { error: "Insufficient tokens to save review" }, 
+        //         { status: 403 }
+        //     );
+        // }
 
         // Parse request body
         const { content } = await req.json();

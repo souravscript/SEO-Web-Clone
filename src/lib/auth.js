@@ -151,15 +151,8 @@ export const handleLogin = async (email, password, dispatch) => {
     }
 
 
-    // // Dispatch the user data
-    //  dispatch(login(user));
-    //  dispatch(setToken(token))
-    //console.log("Dispatched user data:", user);
-
-    //console.log("Dispatched token data:", token);
   } catch (error) {
-    //console.error("Login error:", error.message);
-    throw error; // Optional: Pass this error to higher-level error handlers
+    throw error;
   }
 };
 

@@ -41,7 +41,8 @@ export async function POST(req) {
     console.log("auth user in login ", {
       supabaseId: user.id,
       fullName: authUser?.fullName,
-      phoneNumber: authUser?.phoneNumber
+      phoneNumber: authUser?.phoneNumber,
+      token: authUser?.token
     })
     // Set a secure cookie with the access token
     const response = NextResponse.json(

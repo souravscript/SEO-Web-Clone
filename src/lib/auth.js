@@ -37,6 +37,7 @@ const userLogin = (user, token) => {
   Cookies.set("progressState", JSON.stringify(percentData)); 
   
 
+  console.log("token value from login",Cookies.get("token"))
   // Optional: Log to confirm
   console.log("User logged in, data stored in cookies");
 };
@@ -140,7 +141,9 @@ export const handleLogin = async (email, password, dispatch) => {
     const responseData = await res.json();
     //console.log("Login response data:", responseData);
     // Dispatch user data to your store (e.g., Redux)
-    const { user,token } = responseData;
+    const { user } = responseData;
+    const token=user.token
+    console.log("response value from login",responseData)
 
     
     if(res.ok){

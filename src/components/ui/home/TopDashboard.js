@@ -20,6 +20,8 @@ const TopDashboard = () => {
 
     useEffect(() => {
         const localToken = Cookies.get("token") || null;
+
+        console.log("token value from cookie",localToken)
         if (localToken && user) {
             dispatch(setInitialTokenValue(localToken));
         }

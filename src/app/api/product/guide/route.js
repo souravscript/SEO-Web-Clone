@@ -1,67 +1,91 @@
 import connectToDatabase from "@/db/db-connect";
 import { authenticate } from "@/lib/authenticate";
 import User from "@/models/User";
-import Docs from "@/models/Docs"; // Ensure this import is correct
+import Docs from "@/models/Docs";
 import { NextResponse } from "next/server";
 
 const DEFAULT_LLM = "openrouter";
 
 export async function POST(req) {
-    await connectToDatabase(); // Ensure the database connection is established
+    await connectToDatabase();
 
     try {
-        // Authenticate the user
         const { user, error } = await authenticate(req);
         if (error) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const {title,article_size, description } = await req.json();
-        
+        const { title, article_size, description } = await req.json();
+        if (!title || !article_size || !description) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
 
-
-        // Find the authenticated user in the database
         const authUser = await User.findOne({ supabaseId: user.sub });
         if (!authUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
-         
-        const response=await fetch('http://34.131.28.178:8080/api/guides/generate-guide-content/',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({title:title, article_size:article_size, description:description, llm:DEFAULT_LLM, verbose:false}),
-        })
-        //const userDocs = await Docs.find({ userId: authUser._id, docType: 'guide' });
-        // Create a new document in the database
-        const data=await response.json()
 
-        console.log(" Data from API:", data);
-
-
-        console.log("Authenticated user:", authUser);
         if (authUser.token < 1) {
             return NextResponse.json({ error: "Insufficient tokens" }, { status: 403 });
         }
-        authUser.token=authUser.token-1
-        await authUser.save();
-        const newDoc = await Docs.create({
-            userId: authUser?._id,
-            title:title,
-            content: data?.content,
-            docType: 'guide', // Ensure this matches your schema
+
+        const response = await fetch('http://34.131.28.178:8080/api/guides/generate-guide-content/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title,
+                article_size,
+                description,
+                llm: DEFAULT_LLM,
+                verbose: false
+            }),
         });
 
-        if (newDoc) {
-            console.log("New document created:", newDoc);
-
-            // Deduct a token from the user's account
-            authUser.token -= 1;
-            await authUser.save();
+        if (!response.ok) {
+            let errorMessage = "Failed to generate guide content";
+            try {
+                const text = await response.text();
+                // Try to parse as JSON first
+                try {
+                    const errorData = JSON.parse(text);
+                    errorMessage = errorData.error || errorMessage;
+                } catch {
+                    // If not JSON, use the text as error message
+                    errorMessage = text;
+                }
+            } catch (e) {
+                console.error("Error reading response:", e);
+            }
+            return NextResponse.json({ error: errorMessage }, { status: response.status });
         }
 
-        // Return the newly created document
+        let data;
+        try {
+            const text = await response.text();
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error("Error parsing response:", e);
+            return NextResponse.json({ error: "Invalid response from guide generation service" }, { status: 500 });
+        }
+
+        if (!data || !data.content) {
+            return NextResponse.json({ error: "No content received from guide generation service" }, { status: 500 });
+        }
+
+        // Deduct token and save user
+        authUser.token -= 1;
+        await authUser.save();
+
+        // Create new document
+        const newDoc = await Docs.create({
+            userId: authUser._id,
+            title,
+            content: data.content,
+            docType: 'guide',
+        });
+
         return NextResponse.json(newDoc, { status: 201 });
 
     } catch (err) {

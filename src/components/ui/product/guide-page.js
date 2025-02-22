@@ -9,6 +9,8 @@ import Image from "next/image";
 import Link from "next/link";
 import notebook from "@/../public/single-blog-post.png";
 import tokenCoin from "@/../public/tokenCoin.png";
+import { useDispatch } from "react-redux";
+import { setTokenAfterAction } from "@/redux/tokenSlice";
 
 const GuidePage = () => {
   const [apiData, setApiData] = useState("");
@@ -17,7 +19,7 @@ const GuidePage = () => {
   const editorRef = useRef(null); // Ref to hold the EditorJS instance
   const router = useRouter();
   const { toast } = useToast();
-
+  const dispatch = useDispatch();
 
   const handleSaveGuide = async () => {
     try {
@@ -90,7 +92,7 @@ const GuidePage = () => {
       const data = await response.json();
       console.log("Generated guide content:", data?.content);
       if(data){
-        setTokenAfterAction(1)
+        dispatch(setTokenAfterAction(1));
       }
 
       // Convert markdown to EditorJS blocks

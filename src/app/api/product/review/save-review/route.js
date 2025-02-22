@@ -21,11 +21,7 @@ export async function POST(req) {
         }
 
         // Find authenticated user
-        const authUser = await User.findOneAndUpdate(
-            { supabaseId: user.sub },
-            { $inc: { tokens: -1 } }, // Decrement tokens by 1
-            { new: true } // Return the updated document
-        );
+        const authUser = await User.findOne({ supabaseId: user.sub });
 
         if (!authUser) {
             return NextResponse.json(
@@ -33,20 +29,6 @@ export async function POST(req) {
                 { status: 404 }
             );
         }
-
-        // Check if user has sufficient tokens
-        // if (authUser.tokens < 0) {
-        //     // Rollback token decrement
-        //     await User.findOneAndUpdate(
-        //         { supabaseId: user.sub },
-        //         { $inc: { tokens: 1 } }
-        //     );
-
-        //     return NextResponse.json(
-        //         { error: "Insufficient tokens to save review" }, 
-        //         { status: 403 }
-        //     );
-        // }
 
         // Parse request body
         const { content } = await req.json();
@@ -71,8 +53,7 @@ export async function POST(req) {
         return NextResponse.json(
             { 
                 message: "Review saved successfully", 
-                review: newDoc,
-                remainingTokens: authUser.tokens
+                review: newDoc
             }, 
             { status: 201 }
         );

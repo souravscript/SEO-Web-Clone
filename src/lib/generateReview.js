@@ -36,7 +36,8 @@ export const generateReview = async (product_url) => {
         
         // Return the technical review or a fallback message
         const content = data?.technical_review || "Unable to generate review at this time.";
-        return content;
+        // Clean up markdown markers
+        return content.replace(/^```markdown\n?/, '').replace(/```$/, '').trim();
 
     } catch (error) {
         console.error("Review Generation Process Error:", error);

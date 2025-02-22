@@ -1,3 +1,4 @@
+"use client";
 // "use client";
 // import SideBarInput from "@/components/ui/product/sidebar-input";
 // import ReviewContent from "@/components/ui/product/product-content";
@@ -107,6 +108,7 @@ import notebook from "@/../public/single-blog-post.png";
 import tokenCoin from "@/../public/tokenCoin.png";
 import { markdownToEditorJS } from "@/components/ui/product/product-content";
 import { setTokenAfterAction } from "@/redux/tokenSlice";
+import { useDispatch } from "react-redux";
 
 const ReviewPage = () => {
   const [apiData, setApiData] = useState("");
@@ -115,7 +117,7 @@ const ReviewPage = () => {
   const editorRef = useRef(null); // Ref to hold the EditorJS instance
   const router = useRouter();
   const { toast } = useToast();
-
+  const dispatch = useDispatch();
 
   const handleSaveReview = async () => {
     try {
@@ -174,9 +176,12 @@ const ReviewPage = () => {
     try {
       const data = await generateReview(product_url);
       console.log("Generated review:", data);
-      if(data){
-        setTokenAfterAction(1)
+      
+      // Only update token if we got valid content
+      if(data && !data.startsWith('Review generation failed')) {
+        dispatch(setTokenAfterAction(1));
       }
+      
       // Convert markdown to EditorJS blocks
       const { blocks } = markdownToEditorJS(data);
 

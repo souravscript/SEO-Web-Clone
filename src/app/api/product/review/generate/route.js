@@ -46,14 +46,11 @@ export async function POST(req) {
         
         let responseData;
         try {
-
-
             console.log("Authenticated user:", authUser);
             if (authUser.token < 1) {
                 return NextResponse.json({ error: "Insufficient tokens" }, { status: 403 });
             }
-            authUser.token=authUser.token-1
-            await authUser.save();
+
             const response = await fetch("http://34.131.28.178:8080/api/products/generate-technical-review/", {
                 method: "POST",
                 headers: {
@@ -62,9 +59,7 @@ export async function POST(req) {
                 body: JSON.stringify({ 
                     product_url, 
                     llm: llm || "openrouter" 
-                }),
-                // Add timeout to prevent hanging
-                //signal: AbortSignal.timeout(30000) // 30 seconds timeout
+                })
             });
 
             // Check if the external service call was successful
@@ -82,8 +77,11 @@ export async function POST(req) {
 
             // Parse the response from the ML service
             responseData = await response.json();
-            authUser.token=authUser.token-1
+            
+            // Deduct token only after successful response
+            authUser.token = authUser.token - 1;
             await authUser.save();
+            
             console.log("ML Service Response:", responseData);
 
         } catch (fetchError) {

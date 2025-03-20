@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
-import { useTokenRefresh } from "@/hooks/useTokenRefresh";
+import { useTokenRefresh } from "@/hooks/use-token-refresh";
 
 const ProtectedRoute=({children})=>{
     // const localUser = localStorage.getItem("user");

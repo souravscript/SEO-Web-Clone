@@ -13,10 +13,10 @@ import ToastComponent from "@/components/ui/blog-post/toast-component";
 import { setFieldCountIncrement, calculatePercentage, setFieldCountDecrement, markTabChecked, markTabUnchecked, reset, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
 import { InfinitySpin, ThreeCircles } from "react-loader-spinner";
-import { useCookieValue } from "@/hooks/useCookie";
+import { useCookieValue } from "@/hooks/use-cookie";
 import { useFormState } from "@/context/FormProgressContext";
 import { setTokenAfterAction } from "@/redux/tokenSlice";
-import useBeforeUnload from "@/hooks/useBeforeUnload";
+import useBeforeUnload from "@/hooks/use-before-unload";
 
 const tabs = [
     {

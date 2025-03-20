@@ -237,7 +237,7 @@ import React, { useEffect, useState } from "react";
 import { X, Trash2, Check, Copy } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useCookieValue } from "@/hooks/useCookie";
+import { useCookieValue } from "@/hooks/use-cookie";
 
 const DocumentModal = ({ document, isOpen, onClose, onDelete,refreshDocuments }) => {
   const [data, setData] = useState({ title: "", content: "" });

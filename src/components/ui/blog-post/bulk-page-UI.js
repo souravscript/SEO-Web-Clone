@@ -10,7 +10,7 @@ import BulkBlogForm from "./bulk-blog-form";
 import { usePathname, useRouter } from "next/navigation";
 import { calculatePercentage, markTabChecked, markTabUnchecked, reset, setFieldCountDecrement, setFieldCountIncrement, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
 import { useDispatch } from "react-redux";
-import { useCookieValue } from "@/hooks/useCookie";
+import { useCookieValue } from "@/hooks/use-cookie";
 //import { useGetAccessToken } from "@/hooks/use-get-accessToken";
 import { InfinitySpin } from "react-loader-spinner";
 import { useFormState } from "@/context/FormProgressContext";

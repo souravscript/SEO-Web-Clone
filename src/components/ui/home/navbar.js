@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleLogout } from "@/lib/auth";
 import Cookies from 'js-cookie';
 import { setInitialTokenValue } from "@/redux/tokenSlice";
-import { useCoinTokenSync } from '@/hooks/useCoinTokenSync';
+import { useCoinTokenSync } from '@/hooks/use-coin-token-sync';
 
 const Navbar = () => {
     useCoinTokenSync();

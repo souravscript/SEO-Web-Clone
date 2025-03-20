@@ -2,7 +2,7 @@
 // import { useEffect, useState } from "react";
 
 import { useEffect, useState } from "react";
-import { useCookieValue } from "./useCookie";
+import { useCookieValue } from "./use-cookie";
 import { useSelector } from "react-redux";
 
 export const useGetUser = (url) => {

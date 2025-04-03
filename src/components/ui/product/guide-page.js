@@ -3,7 +3,6 @@ import ProductContent from "@/components/ui/product/product-content";
 import { markdownToEditorJS } from "@/components/ui/product/product-content";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
 import GuideSidebar from "./guide-sidebar";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +10,7 @@ import notebook from "@/../public/single-blog-post.png";
 import tokenCoin from "@/../public/tokenCoin.png";
 import { useDispatch } from "react-redux";
 import { setTokenAfterAction } from "@/redux/tokenSlice";
+import { toast } from "sonner";
 
 const GuidePage = () => {
   const [apiData, setApiData] = useState("");
@@ -18,17 +18,14 @@ const GuidePage = () => {
   const [productLink, setProductLink] = useState("");
   const editorRef = useRef(null); // Ref to hold the EditorJS instance
   const router = useRouter();
-  const { toast } = useToast();
   const dispatch = useDispatch();
 
   const handleSaveGuide = async () => {
     try {
-      if (!productLink.trim()) {
-        throw new Error("Please enter a valid product link.");
-      }
 
       if (!editorRef.current) {
-        throw new Error("Editor instance is not available");
+        toast.error("Editor instance is not available");
+        return;
       }
 
       const content = finalContent;
@@ -64,11 +61,8 @@ const GuidePage = () => {
       });
     } catch (err) {
       console.error("Error saving guide:", err.message || err);
-
-      toast({
-        title: "Error",
-        description: err.message,
-        variant: "destructive",
+      toast.error("Failed to save guide", {
+        description: err.message || "Please try again"
       });
     }
   };
@@ -76,6 +70,16 @@ const GuidePage = () => {
 
   const handleGuideGeneration = async (title, description, articleSize) => {
     try {
+      if (!title.trim()) {
+        toast.error("Please enter a title");
+        return;
+      }
+
+      if (!description.trim()) {
+        toast.error("Please enter a description");
+        return;
+      }
+
       const response = await fetch("/api/product/guide/", {
         method: "POST",
         credentials: "include",
@@ -102,10 +106,8 @@ const GuidePage = () => {
       setApiData({ blocks });
     } catch (error) {
       console.error('Error generating guide:', error);
-      toast({
-        title: "Error",
-        description: "Failed to generate guide",
-        variant: "destructive"
+      toast.error("Failed to generate guide", {
+        description: error.message || "Please try again"
       });
     }
   };

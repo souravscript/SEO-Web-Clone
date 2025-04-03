@@ -1,4 +1,4 @@
-
+"use client";
 import Link from "next/link";
 //style={{ objectFit: "cover" }}
 // Correct import of images

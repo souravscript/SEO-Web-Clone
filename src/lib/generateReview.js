@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 //const { GoogleGenerativeAI } = require("@google/generative-ai");
 const DEFAULT_LLM = "openrouter";
 
@@ -22,12 +23,13 @@ export const generateReview = async (product_url) => {
             const errorData = await response.json();
             console.error("Review Generation Error:", errorData);
             
-            // Throw an error with a descriptive message
-            throw new Error(
-                errorData.details || 
-                errorData.error || 
-                "Failed to generate review"
+            // Show error toast and return
+            toast.error(
+                "Failed to generate review", {
+                    description: "Please try again"
+                }
             );
+            return null;
         }
 
         // Parse the response
@@ -42,7 +44,10 @@ export const generateReview = async (product_url) => {
     } catch (error) {
         console.error("Review Generation Process Error:", error);
         
-        // Provide a user-friendly error message
-        return `Review generation failed: ${error.message}. Please try again later.`;
+        // Show error toast and return
+        toast.error("Review Generation Failed", {
+            description: error.message
+        });
+        return null;
     }
 };

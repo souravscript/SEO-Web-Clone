@@ -1,375 +1,368 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { redirect, usePathname, useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+
+// Shadcn UI Components
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+// Import the toast from your project's specific location
+// If you haven't set up shadcn/ui toast yet, you can install it with:
+// // npx shadcn-ui@latest add toast
+// import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
+// For loading indicator, you can use:
+// npx shadcn-ui@latest add loader
+import { Loader2 } from "lucide-react";
+
+// Custom Components (assuming these will be refactored to use shadcn internally)
 import CoreSettingsSingle from "@/components/ui/blog-post/core-settings-single";
 import Details from "@/components/ui/blog-post/details";
 import SEO from "@/components/ui/blog-post/seo";
 import LinkComponent from "@/components/ui/blog-post/link-component";
 import Publish from "@/components/ui/blog-post/publish";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { FormProvider } from "react-hook-form";
 import SingleBlogForm from "./single-blog-form";
-import { usePathname, useRouter } from "next/navigation";
-import ToastComponent from "@/components/ui/blog-post/toast-component";
-import { setFieldCountIncrement, calculatePercentage, setFieldCountDecrement, markTabChecked, markTabUnchecked, reset, setTabIndex } from "@/redux/singleBlogFormProgressSlice";
-import { useDispatch } from "react-redux";
-import { InfinitySpin, ThreeCircles } from "react-loader-spinner";
-import { useCookieValue } from "@/hooks/use-cookie";
-import { useFormState } from "@/context/FormProgressContext";
-import { setTokenAfterAction } from "@/redux/tokenSlice";
-import useBeforeUnload from "@/hooks/use-before-unload";
 
-const tabs = [
-    {
-        name: "Core Settings",
-        component: CoreSettingsSingle,
-        next: "Next",
-        isCheckedOut: false,
-        filledNum: 3
-    },
-    {
-        name: "Details",
-        component: Details,
-        next: "Next",
-        isCheckedOut: false,
-        filledNum: 2,
-    },
-    {
-        name: "SEO",
-        component: SEO,
-        next: "Next",
-        isCheckedOut: false,
-        filledNum: 1
-    },
-    {
-        name: "Link",
-        component: LinkComponent,
-        next: "Generate",
-        isCheckedOut: false,
-        filledNum: 2
-    },
-    {
-        name: "Publish",
-        component: Publish,
-        next: "Publish",
-        isCheckedOut: false,
-        filledNum: 1,
-    },
+// Redux and Context
+import { 
+  setFieldCountIncrement, 
+  calculatePercentage, 
+  setFieldCountDecrement, 
+  markTabChecked, 
+  markTabUnchecked, 
+  reset, 
+  setTabIndex 
+} from "@/redux/singleBlogFormProgressSlice";
+import { setTokenAfterAction } from "@/redux/tokenSlice";
+import { useFormState } from "@/context/FormProgressContext";
+import BlogBuilderNotification from "./blog-notification";
+
+// Configuration
+const TABS = [
+  {
+    id: "core-settings",
+    name: "Core Settings",
+    component: CoreSettingsSingle,
+    next: "Next",
+    filledNum: 3
+  },
+  {
+    id: "details",
+    name: "Details",
+    component: Details,
+    next: "Next",
+    filledNum: 2,
+  },
+  {
+    id: "seo",
+    name: "SEO",
+    component: SEO,
+    next: "Next",
+    filledNum: 1
+  },
+  {
+    id: "link",
+    name: "Link",
+    component: LinkComponent,
+    next: "Generate",
+    filledNum: 2
+  },
+  // Publish tab commented out in original code
+  // {
+  //   id: "publish",
+  //   name: "Publish",
+  //   component: Publish,
+  //   next: "Publish",
+  //   filledNum: 1,
+  // },
 ];
 
+// Default form values
+const DEFAULT_FORM_VALUES = {
+  mainKeyword: '',
+  title: '',
+  coreSettings: {
+    aiModel: 'Open Router',
+    language: 'English',
+    targetCountry: 'USA',
+    toneOfVoice: 'Professional',
+    articleSize: 400,
+  },
+  details: {
+    includeDetails: '',
+    structure: '',
+    openingSentence: '',
+    elements: [],
+  },
+  seo: {
+    keywords: '',
+  },
+  link: {
+    connectToWeb: "yes",
+    links: [],
+  },
+  publish: {
+    isPublish: false
+  },
+};
+
 const SinglePageUI = () => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [submitted, setSubmitted] = useState(false);
-    const [toastData, setToastData] = useState(null);
-    const [tabData, setTabData] = useState(tabs);
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
-    const dispatch = useDispatch();
-    const percentState = [0, 29, 75, 79, 87, 96, 100]
-    const CurrentComponent = tabs[currentIndex]?.component;
-    //const access_token = useCookieValue('access_token');
-    //useBeforeUnload();
-    //const user = useGetUser("/api/profile");
-    const { progress,
-        activeTabIndex,
-        totalInputs,
-        completedFields,
-        sections,
-        updateProgress,
-        addFieldCount,
-        removeFieldCount,
-        resetFormState,
-        setActiveTabIndex,
-        completeSection,
-        uncompleteSection, } = useFormState()
-    const pathName = usePathname();
-    useEffect(() => {
-        resetFormState()
-        dispatch(reset())
-    }, [pathName])
+  const [currentTabId, setCurrentTabId] = useState(TABS[0].id);
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const pathName = usePathname();
+  // No need to destructure with the direct import
+  
+  const { resetFormState } = useFormState();
+  
+  // Find current tab index
+  const currentIndex = TABS.findIndex(tab => tab.id === currentTabId);
+  
+  // Get current tab component
+  const CurrentComponent = TABS[currentIndex]?.component;
 
-    const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        getValues,
-        trigger,
-        formState: { errors },
-    } = useForm({
-        defaultValues: {
-            mainKeyword: '',
-            title: '',
-            coreSettings: {
-                aiModel: 'Open Router',
-                language: 'English',
-                targetCountry: 'USA',
-                toneOfVoice: 'Professional',
-                articleSize: 400,
-            },
-            details: {
-                includeDetails: '',
-                structure: '',
-                openingSentence: '',
-                elements: [],
-            },
-            seo: {
-                keywords: '',
-            },
-            link: {
-                connectToWeb: "yes",
-                links: [],
-            },
-            publish: {
-                isPublish: false
-            },
+  // Initialize form
+  const methods = useForm({
+    defaultValues: DEFAULT_FORM_VALUES,
+  });
+  
+  const { 
+    register, 
+    handleSubmit, 
+    watch, 
+    setValue, 
+    getValues, 
+    trigger, 
+    formState: { errors } 
+  } = methods;
+
+  // Reset form state when pathname changes
+  // useEffect(() => {
+  //   resetFormState();
+  //   dispatch(reset());
+  // }, [pathName, resetFormState, dispatch]);
+
+  // Create request payload from form data
+  const createRequestPayload = (data) => {
+    const { title } = data;
+    const { elements } = data.details;
+    
+    return {
+      title: title,
+      structure_dict: {
+        conclusion: elements.includes("conclusion"),
+        tables: elements.includes("tables") ? 1 : 0,
+        video_urls: ["https://example.com/video1", "https://example.com/video2"],
+        video_quantity: 2,
+        layout: "comprehensive",
+        h3: elements.includes("h3") ? 3 : 0,
+        lists: elements.includes("lists") ? 2 : 0,
+        italics: elements.includes("italics"),
+        quotes: elements.includes("quotes"),
+        key_takeaways: elements.includes("KeyTakeaways"),
+        faq: elements.includes("faqs"),
+        bold: elements.includes("bold"),
+      },
+      article_size: 1500,
+      arguments: {
+        web_search_bool: false,
+        video_search_bool: false,
+        image_gen_bool: false,
+        web_search: "BS4",
+        tone: "professional",
+        audience: "tech professionals",
+        "Additional Info": ""
+      },
+      improve_context: false,
+      llm: "openrouter"
+    };
+  };
+
+  // Handle form submission
+  const submitHandler = async (data) => {
+    try {
+      setLoading(true);
+      
+      const { title } = data;
+      if (!title) {
+        throw new Error("Title is missing");
+      }
+      
+      const reqJSONdata = createRequestPayload(data);
+      
+      const res = await fetch("/api/documents/single-blog", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
         },
-    });
-    const methods = { register, handleSubmit, watch, setValue, getValues, trigger, formState: { errors } };
+        body: JSON.stringify({ reqJSONdata }),
+      });
 
-    const submitHandler = async (data) => {
-        const { title } = data;
-        const { elements } = data.details
-        const reqJSONdata = {
-            title: title,
-            structure_dict: {
-                conclusion: elements.includes("conclusion") ? true : false,
-                tables: elements.includes("tables") ? 1 : 0,
-                video_urls: ["https://example.com/video1", "https://example.com/video2"],
-                video_quantity: 2,
-                layout: "comprehensive",
-                h3: elements.includes("h3") ? 3 : 0,
-                lists: elements.includes("lists") ? 2 : 0,
-                italics: elements.includes("italics") ? true : false,
-                quotes: elements.includes("quotes") ? true : false,
-                key_takeaways: elements.includes("KeyTakeaways") ? true : false,
-                faq: elements.includes("faqs") ? true : false,
-                bold: elements.includes("bold") ? true : false,
-            },
-            article_size: 1500,
-            arguments: {
-                web_search_bool: false,
-                video_search_bool: false,
-                image_gen_bool: false,
-                web_search: "BS4",
-                tone: "professional",
-                audience: "tech professionals",
-                "Additional Info": ""
-            },
-            improve_context: false,
-            llm: "openrouter"
-        }
-        try {
-            setLoading(true)
-            setSubmitted(true); // Mark as submitted
-            // setCurrentIndex(tabs.length - 1); // Navigate to "Publish" tab
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData?.error || "Failed to create document");
+      }
+      
+      // Update UI state
+      updateUIAfterSubmission(title);
+      
+      // Set submitted state to show success UI
+      setSubmitted(true);
+      
+    } catch (err) {
+      toast.error(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            // // Destructure title and mainKeyword directly from the form data
-            const { title } = data;
-            if (!title) {
-                throw new Error("Title or content is missing");
-            }
-            //console.log("req JSON data in frontend",reqJSONdata)
-            const res = await fetch("/api/documents/single-blog", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({reqJSONdata}),
-            });
+  // Update UI after successful form submission
+  const updateUIAfterSubmission = (title) => {
+    dispatch(setFieldCountIncrement(TABS[currentIndex].filledNum));
+    dispatch(markTabChecked({ tabName: TABS[currentIndex].name }));
+    dispatch(calculatePercentage());
+    dispatch(setTokenAfterAction(1));
+    
+    // Navigate to last tab (which would be publish if uncommented)
+    const lastTabId = TABS[TABS.length - 1].id;
+    setCurrentTabId(lastTabId);
+    dispatch(setTabIndex(TABS.length - 1));
+    toast.success(`${title} has been pushed to the queue.`);
 
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData?.error || "Failed to create document");
-            }
-            // const tokenRes = await fetch("/api/tokens", {
-            //     method: "PUT",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         Authorization: `Bearer ${access_token}`,
-            //     },
-            //     //credentials: 'include',
-            // })
-            // if (tokenRes.ok) {
-            //     dispatch(setProfile(user));
-            // }
-            dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
-            dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
-            dispatch(calculatePercentage());
-            dispatch(setTokenAfterAction(1))
-            setToastData({ title });
-            dispatch(setTabIndex(tabs.length - 1))
-            setCurrentIndex(tabs.length - 1);
-        } catch (err) {
-            //console.log("Error is:", err.message || err);
-        } finally {
-            setLoading(false)
-        }
-    };
-    const closeToast = () => setToastData(null);
+  };
 
+  // Navigation handlers
+  const handleTabChange = (newTabId) => {
+    const newIndex = TABS.findIndex(tab => tab.id === newTabId);
+    const oldIndex = currentIndex;
+    
+    if (newIndex > oldIndex) {
+      // Moving forward
+      dispatch(setFieldCountIncrement(TABS[oldIndex].filledNum));
+      dispatch(markTabChecked({ tabName: TABS[oldIndex].name }));
+    } else if (newIndex < oldIndex) {
+      // Moving backward
+      dispatch(setFieldCountDecrement(TABS[oldIndex].filledNum));
+      dispatch(markTabUnchecked({ tabName: TABS[oldIndex].name }));
+    }
+    
+    dispatch(setTabIndex(newIndex));
+    dispatch(calculatePercentage());
+    setCurrentTabId(newTabId);
+  };
 
-    const backHandler = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(prevIndex => {
-                const newIndex = prevIndex - 1;
-                console.log("currentIndex from back ", newIndex);
-                // removeFieldCount(tabs[prevIndex].filledNum)
-                // uncompleteSection({ tabName: tabs[prevIndex].name })
-                // setActiveTabIndex(newIndex)
-                // updateProgress()
-                dispatch(setFieldCountDecrement(tabs[prevIndex].filledNum));
-                dispatch(markTabUnchecked({ tabName: tabs[prevIndex].name }));
-                dispatch(setTabIndex(newIndex));
-                dispatch(calculatePercentage());
-                return newIndex;
-            });
-        }
-    };
+  const nextHandler = () => {
+    if (currentIndex < TABS.length - 1) {
+      const nextTabId = TABS[currentIndex + 1].id;
+      handleTabChange(nextTabId);
+    }
+  };
 
-    const nextHandler = () => {
-        if (currentIndex < tabs.length - 1) {
-            setCurrentIndex(prevIndex => {
-                const newIndex = prevIndex + 1;
-                console.log("currentIndex from next ", newIndex);
-                // addFieldCount(tabs[prevIndex].filledNum)
-                // completeSection({tabName: tabs[prevIndex].name })
-                // setActiveTabIndex(newIndex)
-                // updateProgress()
-                dispatch(setFieldCountIncrement(tabs[prevIndex].filledNum));
-                dispatch(markTabChecked({ tabName: tabs[prevIndex].name }));
-                dispatch(setTabIndex(newIndex));
-                dispatch(calculatePercentage());
-                return newIndex;
-            });
-        }
-    };
+  const backHandler = () => {
+    if (currentIndex > 0) {
+      const prevTabId = TABS[currentIndex - 1].id;
+      handleTabChange(prevTabId);
+    }
+  };
 
-    const exitHandler = () => {
-        // resetFormState()
-        dispatch(reset());
-        router.push("/");
-    };
+  const exitHandler = () => {
+    dispatch(reset());
+    router.push("/");
+  };
 
-    return (
-        <div className="relative left-4">
-            {loading && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
-                    <div className="relative">
-                        {/* <ThreeCircles
-                            visible={true}
-                            height="100"
-                            width="100"
-                            color="#f6B647"
-                            ariaLabel="three-circles-loading"
-                        /> */}
-                        <InfinitySpin
-                            visible={true}
-                            width="200"
-                            color="#f6B647"
-                            ariaLabel="infinity-spin-loading"
-                        />
-                    </div>
-                </div>
-            )}
-
-            <div className={` relative ${loading ? 'opacity-50' : ''}`} style={{ zIndex: 1 }}>
-                {toastData && <ToastComponent title={toastData.title} onClose={closeToast} />}
-                {!loading && (
-                    <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
-                        <FormProvider {...methods}>
-                            <SingleBlogForm watch={watch} errors={errors} register={register} />
-                        </FormProvider>
-
-                        <div className="p-6 max-w-3xl">
-                            <div className="flex gap-[24px] mb-3">
-                                {tabData.map((tab, index) => (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
-                                        ${currentIndex === index
-                                                ? "bg-paleYellow text-tabColor font-bold border-tabColor"
-                                                : "bg-gray-100 text-gray-600 border-gray-300"
-                                            } ${submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
-                                            }`}
-                                        style={{
-                                            width: '360px',
-                                            height: '36px',
-                                            boxSizing: 'border-box',
-                                        }}
-                                    >
-                                        {tab.name}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="flex flex-col items-start">
-                                <CurrentComponent
-                                    register={register}
-                                    watch={watch}
-                                    setValue={setValue}
-                                    getValues={getValues}
-                                    errors={errors}
-                                />
-                            </div>
-
-                            <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] gap-[16px] right-[1.6rem]">
-                                {currentIndex > 0 && currentIndex < tabs.length - 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={backHandler}
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
-                                    >
-                                        Back
-                                    </button>
-                                )}
-
-                                {currentIndex === tabs.length - 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={exitHandler}
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-[#C8C9B5]"
-                                    >
-                                        Exit
-                                    </button>
-                                )}
-
-                                {currentIndex < tabs.length - 2 && (
-                                    <button
-                                        type="button"
-                                        onClick={nextHandler}
-                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white "
-                                    >
-                                        Next
-                                    </button>
-                                )}
-
-                                {currentIndex === tabs.length - 2 && (
-                                    <button
-                                        type="submit"
-                                        className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
-                                    >
-                                        Generate
-                                    </button>
-                                )}
-
-                                {currentIndex === tabs.length - 1 && (
-                                    <button
-                                        type="button"
-                                        className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
-                                    >
-                                        Publish
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </form>
-                )}
-            </div>
-
-            <div className="h-[12rem] w-full"></div>
+  return (
+    <div className="relative left-4">
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
+          <div className="relative">
+            <Loader2 className="h-16 w-16 animate-spin text-primaryYellow" />
+          </div>
         </div>
-    );
+      )}
+      {submitted ? (
+        <BlogBuilderNotification />
+      ) : (
+        <div className={`relative ${loading ? 'opacity-50' : ''}`} style={{ zIndex: 1 }}>
+          <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
+            <FormProvider {...methods}>
+              <SingleBlogForm watch={watch} errors={errors} register={register} />
+            </FormProvider>
+
+            <div className="p-6 max-w-3xl">
+              <div className="flex gap-[24px] mb-3">
+                {TABS.map((tab, index) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
+                      ${currentTabId === tab.id
+                        ? "bg-paleYellow text-tabColor font-bold border-tabColor"
+                        : "bg-gray-100 text-gray-600 border-gray-300"
+                      } ${submitted && index !== TABS.length - 1 ? "cursor-not-allowed" : ""}`}
+                    style={{
+                      width: '360px',
+                      height: '36px',
+                      boxSizing: 'border-box',
+                    }}
+                    disabled={submitted && index !== TABS.length - 1}
+                  >
+                    {tab.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex flex-col items-start">
+                <CurrentComponent
+                  register={register}
+                  watch={watch}
+                  setValue={setValue}
+                  getValues={getValues}
+                  errors={errors}
+                />
+
+                <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] gap-[16px] right-[1.6rem]">
+                  {currentIndex > 0 && currentIndex < TABS.length && (
+                    <button
+                      type="button"
+                      onClick={backHandler}
+                      className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
+                    >
+                      Back
+                    </button>
+                  )}
+
+                  {currentIndex < TABS.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={nextHandler}
+                      className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                    >
+                      Next
+                    </button>
+                  )}
+
+                  {currentIndex === TABS.length - 1 && (
+                    <button
+                      type="submit"
+                      className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                    >
+                      Generate
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default SinglePageUI;

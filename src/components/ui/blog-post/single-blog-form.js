@@ -31,13 +31,13 @@ const SingleBlogForm = ({ register, errors, watch }) => {
             }
 
             const data = await result.json()
-            
+            console.log("generated title: ",data)
             // Clean and set the generated title
             if (data && data.title) {
                 const cleanedTitle = data.title.trim().replace(/^["'\s]+|["'\s]+$/g, '');
                 setValue('title', cleanedTitle);
             }
-        } catch (error) {
+        } catch (error) { 
             console.error("Error generating title:", error);
         } finally {
             setIsGeneratingTitle(false);

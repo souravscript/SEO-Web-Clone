@@ -34,6 +34,7 @@ const formProgressSlice = createSlice({
       state.percent = (state.filledFormFields / state.totalFields) * 100;
     },
     reset: (state) => {
+      state.currentTabIndex=0;
       state.filledFormFields = 0;
       state.tabs.forEach((tab)=>{
         tab.isCheckedOut=false;

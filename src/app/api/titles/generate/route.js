@@ -10,7 +10,7 @@ export async function POST(request) {
                 error: 'Keywords are required' 
             }, { status: 400 });
         }
-
+        console.log("keywords: ",keywords)
         // Forward request to external title generation service
         const result = await fetch('http://34.131.28.178:8080/api/titles/generate-title', {
             method: 'POST',
@@ -21,13 +21,14 @@ export async function POST(request) {
         });
 
         if (!result.ok) {
+            console.error("Failed to generate title");
             return NextResponse.json({ 
                 error: 'Failed to generate title' 
             }, { status: result.status });
         }
 
         const data = await result.json();
-
+        console.log("generated title: ",data)
         return NextResponse.json(data, { status: 200 });
     } catch (error) {
         console.error('Title generation error:', error);

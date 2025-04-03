@@ -99,6 +99,15 @@ const Navbar = () => {
                             Documents
                         </span>
                     </Link>
+                    <Link href="/blog-builder">
+                        <span
+                            className={`${
+                                pathname === "/blog-builder" ? "text-primaryYellow" : "text-[#9D9D9D]"
+                            }`}
+                        >
+                            Blog Builder
+                        </span>
+                    </Link>
                     {/* <Link href="/whats-new">
                         <span
                             className={`${

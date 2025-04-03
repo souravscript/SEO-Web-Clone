@@ -122,11 +122,13 @@ const ReviewPage = () => {
   const handleSaveReview = async () => {
     try {
       if (!productLink.trim()) {
-        throw new Error("Please enter a valid product link.");
+        toast.error("Please enter a valid product link.");
+        return;
       }
 
       if (!editorRef.current) {
-        throw new Error("Editor instance is not available");
+        toast.error("Editor instance is not available");
+        return;
       }
       
       const content = finalContent;
@@ -137,7 +139,6 @@ const ReviewPage = () => {
         credentials: "include",
         body: JSON.stringify({ content }),
       });
-
       let responseData = null;
       const responseText = await res.text();
 
@@ -189,11 +190,11 @@ const ReviewPage = () => {
       setApiData({ blocks });
     } catch (error) {
       console.error('Error generating review:', error);
-      toast({
-        title: "Error",
-        description: "Failed to generate review",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Error",
+      //   description: "Failed to generate review",
+      //   variant: "destructive"
+      // });
     }
   };
 

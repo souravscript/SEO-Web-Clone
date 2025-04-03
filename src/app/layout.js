@@ -68,12 +68,12 @@ export default function RootLayout({ children }) {
   }, [pathname]);
   return (
     <html lang="en" className={`font-public-sans antialiased`}>
-      <body>
+      <body className="h-full w-full bg-gray-50">
         <StoreProvider store={store}>
           <FormProgressProvider>          
             <Toaster/>
             <ClientNavbar/>
-            <main className="bg-gray-50 h-full w-full pt-[60px]">{children}</main>
+            <main className="h-full w-full pt-[60px]">{children}</main>
           </FormProgressProvider>
         </StoreProvider>
       </body>

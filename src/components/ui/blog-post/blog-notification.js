@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const BlogBuilderNotification = () => {
   return (
-    <div className="relative left-[10rem] top-[8rem] max-w-2xl mx-auto rounded-lg overflow-hidden shadow-lg border border-yellow-200 bg-gradient-to-br from-white to-yellow-50">
+    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-8 w-[600px] rounded-lg overflow-hidden shadow-lg border border-yellow-200 bg-gradient-to-br from-white to-yellow-50">
       {/* Progress Bar */}
       <div className="w-full bg-gray-100 h-2">
         <div className="bg-yellow-500 h-2 w-2/3 rounded-r-full"></div>
@@ -22,17 +22,17 @@ const BlogBuilderNotification = () => {
         </p>
         
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/blog-builder">
-              <button className="px-6 py-3 bg-yellow-500 text-white font-medium rounded-md hover:bg-yellow-600 transition-colors shadow-md">
-                Go to Blog Builder
-              </button>
-            </Link>
-            <Link href="/single-blog">
-              <button className="px-6 py-3 bg-white text-yellow-600 font-medium rounded-md border border-yellow-200 hover:bg-yellow-50 transition-colors">
-                Create Another
-              </button>
-            </Link>
+        <div className="flex justify-center gap-4">
+          <Link href="/blog-builder" className="w-[180px]">
+            <button className="w-full py-3 bg-tabColor text-white font-medium rounded-md hover:bg-opacity-90 transition-colors">
+              Go to Blog Builder
+            </button>
+          </Link>
+          <Link href="/single-blog" className="w-[180px]">
+            <button className="w-full py-3 bg-white text-backButtonColors border border-backButtonColors font-medium rounded-md hover:bg-gray-50 transition-colors">
+              Create Another
+            </button>
+          </Link>
         </div>
       </div>
       

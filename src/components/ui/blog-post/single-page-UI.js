@@ -284,83 +284,86 @@ const SinglePageUI = () => {
           </div>
         </div>
       )}
-      {submitted ? (
-        <BlogBuilderNotification />
-      ) : (
-        <div className={`relative ${loading ? 'opacity-50' : ''}`} style={{ zIndex: 1 }}>
-          <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
-            <FormProvider {...methods}>
-              <SingleBlogForm watch={watch} errors={errors} register={register} />
-            </FormProvider>
-
-            <div className="p-6 max-w-3xl">
-              <div className="flex gap-[24px] mb-3">
-                {TABS.map((tab, index) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => handleTabChange(tab.id)}
-                    className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
-                      ${currentTabId === tab.id
-                        ? "bg-paleYellow text-tabColor font-bold border-tabColor"
-                        : "bg-gray-100 text-gray-600 border-gray-300"
-                      } ${submitted && index !== TABS.length - 1 ? "cursor-not-allowed" : ""}`}
-                    style={{
-                      width: '360px',
-                      height: '36px',
-                      boxSizing: 'border-box',
-                    }}
-                    disabled={submitted && index !== TABS.length - 1}
-                  >
-                    {tab.name}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex flex-col items-start">
-                <CurrentComponent
-                  register={register}
-                  watch={watch}
-                  setValue={setValue}
-                  getValues={getValues}
-                  errors={errors}
-                />
-
-                <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] gap-[16px] right-[1.6rem]">
-                  {currentIndex > 0 && currentIndex < TABS.length && (
-                    <button
-                      type="button"
-                      onClick={backHandler}
-                      className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
-                    >
-                      Back
-                    </button>
-                  )}
-
-                  {currentIndex < TABS.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={nextHandler}
-                      className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
-                    >
-                      Next
-                    </button>
-                  )}
-
-                  {currentIndex === TABS.length - 1 && (
-                    <button
-                      type="submit"
-                      className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
-                    >
-                      Generate
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </form>
+      {submitted && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
+          <div className="relative bg-white rounded-lg shadow-xl" style={{ maxWidth: '90vw', maxHeight: '90vh' }}>
+            <BlogBuilderNotification />
+          </div>
         </div>
       )}
+      <div className={`relative ${loading ? 'opacity-50' : ''}`} style={{ zIndex: 1 }}>
+        <form onSubmit={handleSubmit(submitHandler)} className="relative top-[1rem] left-[10rem]">
+          <FormProvider {...methods}>
+            <SingleBlogForm watch={watch} errors={errors} register={register} />
+          </FormProvider>
+
+          <div className="p-6 max-w-3xl">
+            <div className="flex gap-[24px] mb-3">
+              {TABS.map((tab, index) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
+                    ${currentTabId === tab.id
+                      ? "bg-paleYellow text-tabColor font-bold border-tabColor"
+                      : "bg-gray-100 text-gray-600 border-gray-300"
+                    } ${submitted && index !== TABS.length - 1 ? "cursor-not-allowed" : ""}`}
+                  style={{
+                    width: '360px',
+                    height: '36px',
+                    boxSizing: 'border-box',
+                  }}
+                  disabled={submitted && index !== TABS.length - 1}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-col items-start">
+              <CurrentComponent
+                register={register}
+                watch={watch}
+                setValue={setValue}
+                getValues={getValues}
+                errors={errors}
+              />
+
+              <div className="flex justify-end mt-8 ml-10 absolute bottom-[-3rem] gap-[16px] right-[1.6rem]">
+                {currentIndex > 0 && currentIndex < TABS.length && (
+                  <button
+                    type="button"
+                    onClick={backHandler}
+                    className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
+                  >
+                    Back
+                  </button>
+                )}
+
+                {currentIndex < TABS.length - 1 && (
+                  <button
+                    type="button"
+                    onClick={nextHandler}
+                    className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                  >
+                    Next
+                  </button>
+                )}
+
+                {currentIndex === TABS.length - 1 && (
+                  <button
+                    type="submit"
+                    className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                  >
+                    Generate
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

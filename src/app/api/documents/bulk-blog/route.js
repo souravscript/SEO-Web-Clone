@@ -1,84 +1,75 @@
+
+
 import connectToDatabase from "@/db/db-connect";
 import { authenticate } from "@/lib/authenticate";
-import { generateBlog } from "@/lib/generateBlog";
-import Docs from "@/models/Docs";
+import { blogQueue, redisClient } from "@/lib/blogWorker";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 
+
+// 🔹 POST Route: Add Multiple Blog Generation Jobs
 export async function POST(req) {
     await connectToDatabase();
 
-    // Authenticate the user
     try {
-        //console.log("This is the request", req.cookies['access_token'])
         const { user, error } = await authenticate(req);
-        if (error) {
-            return NextResponse.json({ "Error message": error }, { status: 401 });
+        if (error) return NextResponse.json({ error }, { status: 401 });
+
+        const { blogRequests } = await req.json();
+        
+        // Validate input
+        if (!Array.isArray(blogRequests) || blogRequests.length === 0) {
+            return NextResponse.json({ 
+                error: "Invalid request: blogRequests must be a non-empty array" 
+            }, { status: 400 });
         }
 
-        const reqJSONdata = await req.json()
-        const hostedMLService = "http://34.131.28.178:8080/api/layouts/generate-bulk-content"
-        const content = await fetch(hostedMLService, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(reqJSONdata),
-        });
-        const responseBody = await content.json();
+        const authUser = await User.findOne({ supabaseId: user.sub });
+        if (!authUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-        console.log("Response body:", responseBody);
-
-        // Create a new Document associated with the user
-        const authUser = await User.findOne({ supabaseId: user.sub })
-
-        // Check if user has sufficient tokens for bulk operation
-        if (authUser.token < reqJSONdata.titles.length) {
+        // Check if user has enough tokens
+        if (authUser.token < blogRequests.length) {
             return NextResponse.json({ 
-                error: `Insufficient balance. You need ${reqJSONdata.titles.length} tokens but have only ${authUser.token} tokens.` 
+                error: `Insufficient balance. You need ${blogRequests.length} tokens but have only ${authUser.token} tokens.` 
             }, { status: 403 });
         }
 
-        const newDoc = await Docs.create({ userId: authUser._id, title: reqJSONdata.titles[0], content: responseBody.content, docType: 'blog' });
-        if (newDoc) {
-            console.log(newDoc)
-            authUser.token -= reqJSONdata.titles.length;
-            await authUser.save();
-        }
+        // Process each blog request and add to queue
+        const jobs = await Promise.all(blogRequests.map(async (request) => {
+            const { title, ...requestData } = request;
+            
+            if (!title) {
+                return null; // Skip invalid entries
+            }
 
-        return NextResponse.json(responseBody, { status: 201 });
+            // Store "Processing" status in Redis
+            await redisClient.set(`jobStatus:${authUser._id}:${title}`, "Processing", "EX", 3600);
+
+            // Add job to queue
+            return await blogQueue.add("generateBlog", {
+                userId: authUser._id,
+                title,
+                requestData: { ...requestData, title },
+            });
+        }));
+
+        // Filter out null entries and get valid jobs
+        const validJobs = jobs.filter(Boolean);
+
+        // Deduct tokens upfront
+        authUser.token -= validJobs.length;
+        await authUser.save();
+
+        return NextResponse.json({ 
+            message: `Added ${validJobs.length} blog generation jobs to queue`,
+            jobs: validJobs.map(job => ({
+                jobId: job.id,
+                title: job.data.title
+            }))
+        }, { status: 202 });
+
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
-
-    }
-}
-export async function GET(req) {
-    await connectToDatabase();
-
-    try {
-        // Authenticate the user
-        const { user, error } = await authenticate(req);
-        if (error) {
-            return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
-        }
-
-        // Find the authenticated user in MongoDB
-        const authUser = await User.findOne({ supabaseId: user.sub });
-        if (!authUser) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
-        }
-
-        // Fetch bulk blog documents associated with the authenticated user
-        const documents = await Docs.find({
-            userId: authUser._id,
-            docType: 'bulk-blog'
-        }).sort({ createdAt: -1 });
-
-        // Return documents in the response
-        return NextResponse.json({ documents }, { status: 200 });
-    } catch (err) {
-        console.error("Error fetching documents:", err);
+        console.error("Bulk blog generation error:", err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

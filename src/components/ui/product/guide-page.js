@@ -22,42 +22,55 @@ const GuidePage = () => {
 
   const handleSaveGuide = async () => {
     try {
-
       if (!editorRef.current) {
         toast.error("Editor instance is not available");
         return;
       }
 
-      const content = finalContent;
+      // if (!finalContent || !finalContent.trim()) {
+      //   toast.error("Content is required");
+      //   return;
+      // }
+
+      console.log("Saving content:", finalContent); // Debug log
 
       const res = await fetch("/api/product/guide/save-guide", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ 
+          content: finalContent,
+          title: "How to Guide", // Add a default title if required
+          type: "guide" // Add type if required
+        }),
       });
 
       let responseData = null;
       const responseText = await res.text();
+      console.log("Server response:", responseText); // Debug log
 
       if (responseText) {
         try {
           responseData = JSON.parse(responseText);
         } catch (jsonError) {
           console.error("Invalid JSON response:", responseText);
-          throw new Error("Unexpected server response");
+          toast.error("Server returned invalid response");
+          return;
         }
       }
 
       if (!res.ok) {
-        throw new Error(responseData?.error || "Failed to save document");
+        const errorMessage = responseData?.error || "Failed to save document";
+        console.error("Save error:", errorMessage); // Debug log
+        toast.error("Failed to save guide", {
+          description: errorMessage
+        });
+        return;
       }
 
       router.push("/");
-
-      toast({
-        title: "How to Guide Saved",
-        description: "The Guide has been saved successfully.",
+      toast.success("How to Guide Saved", {
+        description: "The Guide has been saved successfully."
       });
     } catch (err) {
       console.error("Error saving guide:", err.message || err);

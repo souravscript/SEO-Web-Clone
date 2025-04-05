@@ -15,6 +15,9 @@ import { useCookieValue } from "@/hooks/use-cookie";
 import { InfinitySpin } from "react-loader-spinner";
 import { useFormState } from "@/context/FormProgressContext";
 import { setTokenAfterAction } from "@/redux/tokenSlice";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import BlogBuilderNotification from "./blog-notification";
 
 const BulkPageUI = () => {
     const access_token = useCookieValue('access_token');
@@ -47,7 +50,7 @@ const BulkPageUI = () => {
         { name: "Details", component: Details, next: "Next" },
         { name: "SEO", component: SEO, next: "Next" },
         { name: "Link", component: LinkComponent, next: "Generate" },
-        { name: "Publish", component: Publish, next: "Publish" },
+        //{ name: "Publish", component: Publish, next: "Publish" },
     ];
 
     const { control, handleSubmit, register, watch, setValue, getValues, formState: { errors } } = useForm({
@@ -87,83 +90,104 @@ const BulkPageUI = () => {
         try {
             console.log({ data })
             setLoading(true);
-            setSubmitted(true);
-            console.log("Form data:", data);
-
-            // Extract blog entries from the form data
-            const blogEntries = data.blogEntries.map(blog => ({
-                title: blog.title.trim(),
-                mainKeyword: blog.mainKeyword.trim()
-            })).filter(blog => blog.title && blog.mainKeyword);
-
-            if (blogEntries.length === 0) {
-                throw new Error("No valid blog entries found.");
-            }
-
-            // Safe checking for elements
-            const elements = Array.isArray(data.details?.elements)
-                ? data.details.elements
-                : (data.details?.elements?.checkType || []);
-
-            const reqJSONdata = {
-                titles: blogEntries.map(entry => entry.title),
+            const blogEntries = data.blogEntries || [];
+            const titles = blogEntries.map(item => item.title); // Extract titles array
+    
+            // Format data for the new API structure
+            const blogRequests = titles.map(title => ({
+                title: title,
+                // Include all the data previously in bulkBlogData as requestData properties
                 structure_dict: {
-                    conclusion: elements.includes("conclusion") ? true : false,
-                    tables: data.details?.elements?.numType?.tables || 0,
-                    video_urls: data.link?.links || [],
-                    video_quantity: data.link?.links?.length || 0,
-                    layout: data.details?.structure || "comprehensive",
-                    h3: data.details?.elements?.numType?.h3 || 0,
-                    lists: data.details?.elements?.numType?.lists || 0,
-                    italics: elements.includes("italics") ? true : false,
-                    quotes: elements.includes("quotes") ? true : false,
-                    key_takeaways: elements.includes("keyTakeaways") ? true : false,
-                    faq: elements.includes("faqs") ? true : false,
-                    bold: elements.includes("bold") ? true : false,
+                    conclusion: data.elements?.includes("conclusion") || false,
+                    tables: data.elements?.includes("tables") ? 1 : 0,
+                    video_urls: ["https://example.com/video1", "https://example.com/video2"],
+                    video_quantity: 2,
+                    layout: "comprehensive",
+                    h3: data.elements?.includes("h3") ? 3 : 0,
+                    lists: data.elements?.includes("lists") ? 2 : 0,
+                    italics: data.elements?.includes("italics") || false,
+                    quotes: data.elements?.includes("quotes") || false,
+                    key_takeaways: data.elements?.includes("KeyTakeaways") || false,
+                    faq: data.elements?.includes("faqs") || false,
+                    bold: data.elements?.includes("bold") || false,
                 },
-                article_size: data.coreSettings?.articleSize || 1500,
+                article_size: data.articleSize || 1500,
                 arguments: {
-                    web_search_bool: data.coreSettings?.webSearch || false,
-                    video_search_bool: data.link?.connectToWeb === "yes" ? true : false,
-                    image_gen_bool: data.coreSettings?.imageGeneration || false,
-                    web_search: data.coreSettings?.webSearchEngine || "BS4",
-                    tone: data.coreSettings?.tone || "professional",
-                    audience: data.coreSettings?.audience || "tech professionals",
-                    "Additional Info": data.details?.additionalInfo || ""
+                    web_search_bool: false,
+                    video_search_bool: false,
+                    image_gen_bool: false,
+                    web_search: "BS4",
+                    tone: data.tone || "professional",
+                    audience: data.audience || "tech professionals",
+                    "Additional Info": data.additionalInfo || ""
                 },
-                improve_context: data.coreSettings?.improveContext || false,
-                llm: data.coreSettings?.llm || "openrouter"
-            };
-
-            console.log("Request JSON data:", reqJSONdata);
-
+                improve_context: false,
+                llm: "openrouter"
+            }));
+    
+            console.log("Sending request to /api/documents/bulk-blog with payload:", { blogRequests });
+    
             const response = await fetch("/api/documents/bulk-blog", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     // Authorization: `Bearer ${access_token}`,
                 },
-                body: JSON.stringify(reqJSONdata)
+                body: JSON.stringify({ blogRequests }), // Changed from { blogs: bulkBlogData }
             });
-
+    
+            // Log the raw response for debugging
+            const responseText = await response.text();
+            console.log("Raw API response:", responseText);
+    
+            // If not JSON, handle appropriately
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Failed to submit blogs");
+                let errorMessage;
+                try {
+                    // Try to parse as JSON first
+                    const errorData = JSON.parse(responseText);
+                    errorMessage = errorData.error || errorData.message || "Failed to create bulk blogs";
+                } catch (parseError) {
+                    // If not JSON, use the raw text with a limit
+                    const truncated = responseText.substring(0, 100) + (responseText.length > 100 ? '...' : '');
+                    errorMessage = `Server error (non-JSON response): ${truncated}`;
+                }
+                throw new Error(errorMessage);
             }
-
-            const responseData = await response.json();
-
+    
+            // Safely parse the JSON response
+            let responseData;
+            try {
+                responseData = JSON.parse(responseText);
+            } catch (parseError) {
+                throw new Error("Invalid JSON in successful response");
+            }
+    
+            console.log("Bulk blog jobs created:", responseData);
+    
+            // You might want to store the job IDs for status checking
+            if (responseData.jobs && responseData.jobs.length > 0) {
+                // Optional: Store job IDs for later status checking
+                localStorage.setItem('pendingBlogJobs', JSON.stringify(responseData.jobs));
+            }
+    
             dispatch(setFieldCountIncrement(tabs[currentIndex].filledNum));
             dispatch(markTabChecked({ tabName: tabs[currentIndex].name }));
             dispatch(calculatePercentage());
-            dispatch(setTokenAfterAction(blogEntries.length));
-
+            dispatch(setTokenAfterAction(titles.length));
+    
             setCurrentIndex(tabs.length - 1);
-
+            setSubmitted(true);
+            
+            toast.success("Blogs Queued Successfully", {
+                description: `${responseData.jobs?.length || titles.length} blogs have been queued for generation`
+            });
+    
         } catch (error) {
-            console.error("Error submitting blogs:", error);
-            // Optional: Show error toast or notification
-            // setErrorToast(error.message);
+            console.error("Error submitting bulk blogs:", error);
+            toast.error("Failed to create bulk blogs", {
+                description: error.message || "Please try again"
+            });
         } finally {
             setLoading(false);
         }
@@ -218,19 +242,14 @@ const BulkPageUI = () => {
             {loading && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
                     <div className="relative">
-                        {/* <ThreeCircles
-                                    visible={true}
-                                    height="100"
-                                    width="100"
-                                    color="#f6B647"
-                                    ariaLabel="three-circles-loading"
-                                /> */}
-                        <InfinitySpin
-                            visible={true}
-                            width="200"
-                            color="#f6B647"
-                            ariaLabel="infinity-spin-loading"
-                        />
+                        <Loader2 className="h-16 w-16 animate-spin text-primaryYellow" />
+                    </div>
+                </div>
+            )}
+            {submitted && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ zIndex: 9999 }}>
+                    <div className="relative bg-white rounded-lg shadow-xl" style={{ maxWidth: '90vw', maxHeight: '90vh' }}>
+                        <BlogBuilderNotification />
                     </div>
                 </div>
             )}
@@ -245,26 +264,24 @@ const BulkPageUI = () => {
                     removeEntryHandler={removeEntryHandler}
                 />
 
-                {/* Rest of the JSX remains the same */}
-
-                {/* Tab Navigation */}
                 <div className="p-6 mt-2 max-w-3xl">
+                    {/* Tab Navigation */}
                     <div className="flex gap-[24px] mb-5">
                         {tabs.map((tab, index) => (
                             <button
                                 key={index}
                                 type="button"
                                 className={`flex justify-center items-center px-2 text-md py-2 border rounded-full 
-                                        ${currentIndex === index
+                                    ${currentIndex === index
                                         ? "bg-paleYellow text-tabColor font-bold border-tabColor"
                                         : "bg-gray-100 text-gray-600 border-gray-300"
-                                    } ${submitted && index !== tabs.length - 1 ? "cursor-not-allowed" : ""
                                     }`}
                                 style={{
                                     width: '360px',
                                     height: '36px',
                                     boxSizing: 'border-box',
                                 }}
+                                disabled={loading}
                             >
                                 {tab.name}
                             </button>
@@ -282,57 +299,39 @@ const BulkPageUI = () => {
                         />
                     </div>
 
+                    {/* Navigation Buttons */}
                     <div className="flex w-full px-8 justify-end mt-8 ml-10 gap-[16px]">
-                        {currentIndex > 0 && currentIndex < tabs.length - 1 && (
+                        {currentIndex > 0 && (
                             <button
                                 type="button"
                                 onClick={backHandler}
-                                className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
+                                disabled={loading}
+                                className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-backButtonColors"
                             >
                                 Back
                             </button>
                         )}
 
-                        {currentIndex === tabs.length - 1 && (
-                            <button
-                                type="button"
-                                onClick={exitHandler}
-                                className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-white text-backButtonColors border border-[#C8C9B5]"
-                            >
-                                Exit
-                            </button>
-                        )}
-
-                        {currentIndex < tabs.length - 2 && (
+                        {currentIndex < tabs.length - 1 ? (
                             <button
                                 type="button"
                                 onClick={nextHandler}
+                                disabled={loading}
                                 className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
                             >
                                 Next
                             </button>
-                        )}
-
-                        {currentIndex === tabs.length - 2 && (
+                        ) : (
                             <button
                                 type="submit"
-                                className=" w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
+                                disabled={loading}
+                                className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
                             >
                                 Generate
                             </button>
                         )}
-
-                        {currentIndex === tabs.length - 1 && (
-                            <button
-                                type="button"
-                                className="w-[180px] py-3 font-sans font-bold text-base rounded-md leading-5 flex justify-center items-center bg-tabColor text-white"
-                            >
-                                Publish
-                            </button>
-                        )}
                     </div>
                 </div>
-
             </form>
         </div>
     );

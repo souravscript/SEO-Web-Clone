@@ -64,7 +64,7 @@ const Details = ({ register, errors, watch }) => {
                 <RadioGroupItem 
                   value={structure.id} 
                   id={structure.id} 
-                  defaultChecked={structure.isDefault} 
+                  defaultChecked={structure.isDefault}
                 />
                 <Label htmlFor={structure.id}>{structure.label}</Label>
               </div>

@@ -17,12 +17,12 @@
 // }
 
 import { NextResponse } from "next/server";
-import { Queue } from "bullmq";
-import Redis from "ioredis";
+import { blogQueue } from "@/lib/blogWorker";
 
-// Initialize Redis and Queue
-const redisClient = new Redis();
-const blogQueue = new Queue("blogQueue", { connection: redisClient });
+// // Initialize Redis and Queue
+// const redisClient = new Redis();
+// const blogQueue = new Queue("blogQueue", { connection: redisClient });
+
 
 export async function GET(req) {
     try {

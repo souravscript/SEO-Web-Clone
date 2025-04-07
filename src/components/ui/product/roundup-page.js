@@ -4,7 +4,6 @@ import ProductContent from "@/components/ui/product/product-content";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { scrapeProductData } from "@/lib/scrappingData";
 import { generateRoundup } from "@/lib/generateRoundup";
 
 const RoundupPage = () => {

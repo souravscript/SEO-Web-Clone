@@ -106,6 +106,7 @@ let _blogWorker;
 export function getRedisClient() {
   if (!_redisClient) {
     _redisClient = new Redis({
+      url: process.env.REDIS_URL,
       maxRetriesPerRequest: null
     });
   }

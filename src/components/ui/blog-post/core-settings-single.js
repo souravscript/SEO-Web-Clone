@@ -34,7 +34,7 @@ const CoreSettingsSingle = ({ register, errors, setValue }) => {
             </div>
 
             {/* Language */}
-            <div className="flex flex-col w-[48%] space-y-2">
+            {/* <div className="flex flex-col w-[48%] space-y-2">
                 <Label>Language</Label>
                 <Select {...register('coreSettings.language')}>
                     <SelectTrigger>
@@ -46,10 +46,10 @@ const CoreSettingsSingle = ({ register, errors, setValue }) => {
                         <SelectItem value="French">French</SelectItem>
                     </SelectContent>
                 </Select>
-            </div>
+            </div> */}
 
             {/* Target Country */}
-            <div className="flex flex-col w-[48%] space-y-2">
+            {/* <div className="flex flex-col w-[48%] space-y-2">
                 <Label>Target Country</Label>
                 <Select {...register('coreSettings.targetCountry')}>
                     <SelectTrigger>
@@ -61,7 +61,7 @@ const CoreSettingsSingle = ({ register, errors, setValue }) => {
                         <SelectItem value="Germany">Germany</SelectItem>
                     </SelectContent>
                 </Select>
-            </div>
+            </div> */}
 
             {/* Tone of Voice */}
             <div className="flex flex-col w-[48%] space-y-2">

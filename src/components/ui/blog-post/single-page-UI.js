@@ -89,12 +89,16 @@ const DEFAULT_FORM_VALUES = {
     targetCountry: 'USA',
     toneOfVoice: 'Professional',
     articleSize: 400,
+    audience: 'Tech Professionals',
+    additionalInfo: ''
   },
   details: {
     includeDetails: '',
     structure: '',
     openingSentence: '',
     elements: [],
+    videoUrls: [],
+    videoQuantity: 0
   },
   seo: {
     keywords: '',
@@ -149,34 +153,34 @@ const SinglePageUI = () => {
 
   // Create request payload from form data
   const createRequestPayload = (data) => {
-    const { title } = data;
-    const { elements } = data.details;
+    const { title, coreSettings } = data;
+    const { elements, videoUrls = [], videoQuantity = 0 } = data.details;
     
     return {
       title: title,
       structure_dict: {
         conclusion: elements.includes("conclusion"),
-        tables: elements.includes("tables") ? 1 : 0,
-        video_urls: ["https://example.com/video1", "https://example.com/video2"],
-        video_quantity: 2,
+        tables: elements.includes("tables"),
+        video_urls: videoUrls.filter(url => url && url.trim() !== ''),
+        video_quantity: videoQuantity,
         layout: "comprehensive",
-        h3: elements.includes("h3") ? 3 : 0,
-        lists: elements.includes("lists") ? 2 : 0,
+        h3: elements.includes("h3"),
+        lists: elements.includes("lists"),
         italics: elements.includes("italics"),
         quotes: elements.includes("quotes"),
         key_takeaways: elements.includes("KeyTakeaways"),
         faq: elements.includes("faqs"),
         bold: elements.includes("bold"),
       },
-      article_size: 1500,
+      article_size: coreSettings.articleSize,
       arguments: {
         web_search_bool: false,
         video_search_bool: false,
         image_gen_bool: false,
         web_search: "BS4",
-        tone: "professional",
-        audience: "tech professionals",
-        "Additional Info": ""
+        tone: coreSettings.toneOfVoice.toLowerCase(),
+        audience: coreSettings.audience,
+        "Additional Info": coreSettings.additionalInfo
       },
       improve_context: false,
       llm: "openrouter"

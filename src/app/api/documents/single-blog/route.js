@@ -1,56 +1,9 @@
-
-
 import connectToDatabase from "@/db/db-connect";
 import { NextResponse } from "next/server";
 import Docs from "@/models/Docs";
 import { authenticate } from "@/lib/authenticate";
 import User from "@/models/User";
 import { blogQueue, redisClient } from "@/lib/blogWorker";
-
-
-
-// 🔹 Worker to process jobs asynchronously
-// new Worker(
-//   "blogQueue",
-//   async (job) => {
-//     await connectToDatabase();
-
-//     const { userId, title, requestData } = job.data;
-//     const authUser = await User.findById(userId);
-    
-//     if (!authUser || authUser.token < 1) {
-//       await redisClient.set(`jobError:${job.id}`, "Insufficient balance.", "EX", 3600);
-//       return;
-//     }
-
-//     // Fetch AI-generated content
-//     const hostedMLService = process.env.HOSTED_ML_SERVICE;
-//     const contentRes = await fetch(hostedMLService, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(requestData),
-//     });
-
-//     const responseBody = await contentRes.json();
-
-//     // Store in MongoDB
-//     const newDoc = await Docs.create({ 
-//       userId: authUser._id, 
-//       title, 
-//       content: responseBody.content, 
-//       docType: 'blog' 
-//     });
-
-//     if (newDoc) {
-//       authUser.token -= 1;
-//       await authUser.save();
-//     }
-
-//     // Store job result in Redis (expires in 1 hour)
-//     await redisClient.set(`jobResult:${job.id}`, JSON.stringify(newDoc), "EX", 3600);
-//   },
-//   { connection: redisClient }
-// );
 
 // 🔹 POST Route: Add Blog Generation Job
 export async function POST(req) {
@@ -61,23 +14,36 @@ export async function POST(req) {
         if (error) return NextResponse.json({ error }, { status: 401 });
 
         const { reqJSONdata } = await req.json();
+        console.log("Request JSON Data:", reqJSONdata);
         const { title } = reqJSONdata;
+
+        if (!title) {
+            return NextResponse.json({ error: "Title is required" }, { status: 400 });
+        }
 
         const authUser = await User.findOne({ supabaseId: user.sub });
         if (!authUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
         // Store "Processing" status in Redis
         await redisClient.set(`jobStatus:${authUser._id}:${title}`, "Processing", "EX", 3600);
+        const jobStatus = await redisClient.get(`jobStatus:${authUser._id}:${title}`);
+        console.log("Processing status set in Redis", jobStatus);
 
         // Add job to queue
         const job = await blogQueue.add("generateBlog", {
             userId: authUser._id,
             title,
             requestData: reqJSONdata,
+        }, {
+            removeOnComplete: true,
+            removeOnFail: 1000
         });
+
+        console.log("Blog generation job added to queue", job);
 
         return NextResponse.json({ jobId: job.id, message: "Processing your blog..." }, { status: 202 });
     } catch (err) {
+        console.error("Blog generation error:", err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

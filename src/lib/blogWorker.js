@@ -106,8 +106,8 @@ let _blogWorker;
 export function getRedisClient() {
   if (!_redisClient) {
     _redisClient = new Redis({
-      url: process.env.REDIS_URL,
-      maxRetriesPerRequest: null
+      maxRetriesPerRequest: null,
+      enableReadyCheck: true
     });
   }
   return _redisClient;
@@ -116,8 +116,18 @@ export function getRedisClient() {
 // Function to get or create the blog queue
 export function getBlogQueue() {
   if (!_blogQueue) {
-    _blogQueue = new Queue("blogQueue", { 
-      connection: getRedisClient() 
+    _blogQueue = new Queue("blogQueue", {
+      connection: getRedisClient(),
+      defaultJobOptions: {
+        removeOnComplete: {
+          age: 24 * 3600, // Keep completed jobs for 24 hours
+          count: 1000 // Keep last 1000 completed jobs
+        },
+        removeOnFail: {
+          age: 24 * 3600, // Keep failed jobs for 24 hours
+          count: 1000 // Keep last 1000 failed jobs
+        }
+      }
     });
   }
   return _blogQueue;
@@ -125,8 +135,7 @@ export function getBlogQueue() {
 
 // Function to initialize the worker (only on server, only once)
 export function initBlogWorker() {
-  // Only create worker in server environment and if it doesn't already exist
-  if (typeof window === 'undefined' && !_blogWorker) {
+  if (!_blogWorker) {
     _blogWorker = new Worker(
       "blogQueue",
       async (job) => {
@@ -136,11 +145,15 @@ export function initBlogWorker() {
         const authUser = await User.findById(userId);
         
         if (!authUser || authUser.token < 1) {
-          await getRedisClient().set(`jobError:${job.id}`, "Insufficient balance.", "EX", 3600);
-          return;
+          const error = "Insufficient balance.";
+          await getRedisClient().set(`jobError:${job.id}`, error, "EX", 24 * 3600);
+          throw new Error(error);
         }
 
         try {
+          // Update job progress
+          await job.updateProgress(10);
+
           // Fetch AI-generated content
           const hostedMLService = process.env.HOSTED_ML_SERVICE;
           const contentRes = await fetch(hostedMLService, {
@@ -153,6 +166,8 @@ export function initBlogWorker() {
             throw new Error(`ML service error: ${contentRes.statusText}`);
           }
 
+          await job.updateProgress(50);
+
           const responseBody = await contentRes.json();
 
           // Store in MongoDB
@@ -163,16 +178,39 @@ export function initBlogWorker() {
             docType: 'blog' 
           });
 
+          await job.updateProgress(80);
+
           if (newDoc) {
             authUser.token -= 1;
             await authUser.save();
           }
 
-          // Store job result in Redis (expires in 1 hour)
-          await getRedisClient().set(`jobResult:${job.id}`, JSON.stringify(newDoc), "EX", 3600);
-          await getRedisClient().set(`jobStatus:${authUser._id}:${title}`, "Completed", "EX", 3600);
+          // Store job result in Redis (expires in 24 hours)
+          const result = {
+            docId: newDoc._id,
+            title: newDoc.title,
+            createdAt: newDoc.createdAt,
+            status: 'completed'
+          };
 
-          return { success: true, docId: newDoc._id };
+          await getRedisClient().set(
+            `jobResult:${job.id}`,
+            JSON.stringify(result),
+            "EX",
+            24 * 3600
+          );
+
+          await getRedisClient().set(
+            `jobStatus:${authUser._id}:${title}`,
+            "Completed",
+            "EX",
+            24 * 3600
+          );
+
+          await job.updateProgress(100);
+
+          return result;
+
         } catch (error) {
           console.error(`Job ${job.id} failed:`, error);
           
@@ -181,14 +219,14 @@ export function initBlogWorker() {
             `jobError:${job.id}`,
             error.message || 'Unknown error',
             "EX",
-            3600
+            24 * 3600
           );
           
           await getRedisClient().set(
             `jobStatus:${authUser._id}:${title}`,
             "Failed",
             "EX",
-            3600
+            24 * 3600
           );
           
           throw error;
@@ -197,33 +235,32 @@ export function initBlogWorker() {
       { 
         connection: getRedisClient(),
         concurrency: 5,
-        removeOnComplete: true,
-        removeOnFail: 1000,
+        lockDuration: 30000, // 30 seconds lock
+        lockRenewTime: 15000 // Renew lock every 15 seconds
       }
     );
 
-    // Log worker initialization
-    console.log('Blog worker initialized');
-
-    // Add event handlers
-    _blogWorker.on('completed', job => {
+    // Handle worker events
+    _blogWorker.on('completed', async (job) => {
       console.log(`Job ${job.id} completed successfully`);
     });
 
-    _blogWorker.on('failed', (job, err) => {
-      console.error(`Job ${job?.id} failed with error ${err.message}`);
+    _blogWorker.on('failed', async (job, err) => {
+      console.error(`Job ${job.id} failed:`, err);
+    });
+
+    _blogWorker.on('error', err => {
+      console.error('Worker error:', err);
     });
   }
-  
   return _blogWorker;
 }
+
+// Initialize Redis client and queue
+export const redisClient = getRedisClient();
+export const blogQueue = getBlogQueue();
 
 // Initialize the worker when this module is imported (server-side only)
 if (typeof window === 'undefined') {
   initBlogWorker();
 }
-
-// Export convenience accessors
-export const redisClient = getRedisClient();
-export const blogQueue = getBlogQueue();
-export const blogWorker = _blogWorker;

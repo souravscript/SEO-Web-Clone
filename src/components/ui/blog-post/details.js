@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,7 +41,7 @@ const Details = ({ register, errors, watch }) => {
               required: "Details are required",
             })}
             id="details"
-            placeholder="Example: phone number 270-555-1234"
+            placeholder="In context of the blog"
             className="mt-2"
           />
           {errors.details?.includeDetails && (
@@ -52,7 +52,7 @@ const Details = ({ register, errors, watch }) => {
         </div>
 
         {/* Structure Section */}
-        <div>
+        {/* <div>
           <h3 className="text-sm font-medium text-gray-700 mb-3">Structure</h3>
 
           <RadioGroup 
@@ -70,10 +70,10 @@ const Details = ({ register, errors, watch }) => {
               </div>
             ))}
           </RadioGroup>
-        </div>
+        </div> */}
 
         {/* Opening Sentence Textarea */}
-        <div>
+        {/* <div>
           <Textarea
             {...register("details.openingSentence", {
               required: "Opening sentence is required",
@@ -86,7 +86,7 @@ const Details = ({ register, errors, watch }) => {
               {errors.details.openingSentence.message}
             </p>
           )}
-        </div>
+        </div> */}
 
         {/* Elements Section */}
         <div>
@@ -99,24 +99,20 @@ const Details = ({ register, errors, watch }) => {
                     <Checkbox
                       {...register(`details.elements.checkType`)}
                       value={element.id}
-                      id={element.id}
                     />
-                    <Label htmlFor={element.id}>{element.label}</Label>
+                    <Label>{element.label}</Label>
                   </div>
-                ) : element.type === 'number' ? (
+                ) : (
                   <div className="flex items-center space-x-2">
-                    <Label htmlFor={element.id}>{element.label}</Label>
                     <Input
-                      {...register(`details.elements.numType.${element.id}`)}
                       type="number"
-                      min={0}
-                      max={10}
-                      defaultValue={0}
-                      id={element.id}
-                      className="w-[80px]"
+                      {...register(`details.elements.${element.id}`)}
+                      min="0"
+                      className="w-20"
                     />
+                    <Label>{element.label}</Label>
                   </div>
-                ) : null}
+                )}
               </div>
             ))}
           </div>

@@ -1,49 +1,82 @@
-// import { NextResponse } from "next/server";
-// import { Queue } from "bullmq";
-// import Redis from "ioredis";
-
-// // Initialize Redis and Queue
-// const redisClient = new Redis();
-// const blogQueue = new Queue("blogQueue", { connection: redisClient });
-
-// export async function GET(req) {
-//     try {
-//         // Get queue status
-//         const jobs = await blogQueue.getWaiting(); // Jobs waiting in queue
-//         return NextResponse.json({ queueLength: jobs.length, jobs }, { status: 200 });
-//     } catch (err) {
-//         return NextResponse.json({ error: err.message }, { status: 500 });
-//     }
-// }
-
 import { NextResponse } from "next/server";
-import { blogQueue } from "@/lib/blogWorker";
-
-// // Initialize Redis and Queue
-// const redisClient = new Redis();
-// const blogQueue = new Queue("blogQueue", { connection: redisClient });
-
+import { blogQueue, redisClient } from "@/lib/blogWorker";
 
 export async function GET(req) {
     try {
+        console.log("Fetching queue status...");
+        
+        // Get jobs from queue
         const [waiting, active, failed, completed] = await Promise.all([
-            blogQueue.getWaiting(),    // Jobs waiting in queue
-            blogQueue.getActive(),     // Jobs currently running
-            blogQueue.getFailed(),     // Failed jobs
-            blogQueue.getCompleted(),  // Successfully completed jobs
+            blogQueue.getWaiting(),
+            blogQueue.getActive(),
+            blogQueue.getFailed(),
+            blogQueue.getCompleted()
         ]);
 
-        return NextResponse.json({
+        // Process jobs to include their results/errors from Redis
+        const processedCompleted = await Promise.all(
+            (completed || []).map(async (job) => {
+                const result = await redisClient.get(`jobResult:${job.id}`);
+                return {
+                    ...job,
+                    result: result ? JSON.parse(result) : null
+                };
+            })
+        );
+
+        const processedFailed = await Promise.all(
+            (failed || []).map(async (job) => {
+                const error = await redisClient.get(`jobError:${job.id}`);
+                return {
+                    ...job,
+                    error: error || job.failedReason
+                };
+            })
+        );
+
+        const queueStatus = {
             waitingCount: waiting.length,
             activeCount: active.length,
             failedCount: failed.length,
             completedCount: completed.length,
-            waiting,
-            active,
-            failed,
-            completed
-        }, { status: 200 });
+            waiting: waiting.map(job => ({
+                id: job.id,
+                timestamp: job.timestamp,
+                data: job.data
+            })),
+            active: active.map(job => ({
+                id: job.id,
+                timestamp: job.timestamp,
+                data: job.data,
+                progress: job.progress
+            })),
+            failed: processedFailed.map(job => ({
+                id: job.id,
+                timestamp: job.timestamp,
+                data: job.data,
+                error: job.error
+            })),
+            completed: processedCompleted.map(job => ({
+                id: job.id,
+                timestamp: job.timestamp,
+                data: job.data,
+                result: job.result
+            }))
+        };
+
+        console.log("Queue status counts:", {
+            waitingCount: queueStatus.waitingCount,
+            activeCount: queueStatus.activeCount,
+            failedCount: queueStatus.failedCount,
+            completedCount: queueStatus.completedCount
+        });
+
+        return NextResponse.json(queueStatus, { status: 200 });
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        console.error("Error fetching queue status:", err);
+        return NextResponse.json({ 
+            error: "Failed to fetch queue status",
+            details: err.message 
+        }, { status: 500 });
     }
 }

@@ -14,13 +14,17 @@ RUN npm install
 COPY . .
 
 # Step 6: Copy .env.local to .env for production
-RUN cp .env.local .env
+#RUN cp .env.local .env
 
 # Step 7: Accept build argument for Redis URL
-ARG REDIS_URL
-ENV REDIS_URL=${REDIS_URL}
+# ARG REDIS_URL
+# ENV REDIS_URL=${REDIS_URL}
 
-# Step 8: Build the Next.js app
+# Step 8: Set environment variables to prevent Redis connection during build
+ENV NEXT_PHASE=phase-production-build
+ENV NODE_ENV=production
+
+# Step 9: Build the Next.js app
 RUN npm run build
 
 # Step 9: Create a new image for serving the app
@@ -34,9 +38,6 @@ COPY --from=build /app ./
 
 # Step 12: Install only the production dependencies
 RUN npm install --production
-
-# Step 13: Accept runtime environment variable for Redis URL
-ENV REDIS_URL=${REDIS_URL}
 
 # Step 14: Expose the port that Next.js will run on
 EXPOSE 3000

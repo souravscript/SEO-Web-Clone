@@ -105,9 +105,31 @@ let _blogWorker;
 // Function to get or create the Redis client
 export function getRedisClient() {
   if (!_redisClient) {
-    _redisClient = new Redis({
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    console.log(`Connecting to Redis at: ${redisUrl}`);
+    
+    _redisClient = new Redis(redisUrl, {
       maxRetriesPerRequest: null,
-      enableReadyCheck: true
+      enableReadyCheck: true,
+      retryStrategy: (times) => {
+        // Retry with exponential backoff up to 30 seconds
+        const delay = Math.min(times * 500, 30000);
+        console.log(`Redis connection attempt ${times} failed. Retrying in ${delay}ms...`);
+        return delay;
+      },
+      reconnectOnError: (err) => {
+        console.error('Redis connection error:', err);
+        return true; // Always reconnect on error
+      }
+    });
+    
+    // Add event listeners for connection status
+    _redisClient.on('connect', () => {
+      console.log('Connected to Redis');
+    });
+    
+    _redisClient.on('error', (err) => {
+      console.error('Redis error:', err);
     });
   }
   return _redisClient;
@@ -256,11 +278,16 @@ export function initBlogWorker() {
   return _blogWorker;
 }
 
-// Initialize Redis client and queue
-export const redisClient = getRedisClient();
-export const blogQueue = getBlogQueue();
+// Initialize Redis client and queue only on the server side, not during build time
+export let redisClient;
+export let blogQueue;
 
-// Initialize the worker when this module is imported (server-side only)
-if (typeof window === 'undefined') {
+// Only initialize Redis and worker in a non-build environment
+if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production' || 
+    (typeof window === 'undefined' && process.env.NEXT_PHASE !== 'phase-production-build')) {
+  redisClient = getRedisClient();
+  blogQueue = getBlogQueue();
+  
+  // Initialize the worker
   initBlogWorker();
 }
